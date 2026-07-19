@@ -151,23 +151,28 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       return true;
     });
 
-    // Deduplicar por nombre (cartas con arte alternativo aparecen varias veces)
-    // Priorizar la versión del set poseído
-    const byName = new Map<string, Card>();
+    // Deduplicar solo cuando son la MISMA carta (mismo nombre + mismo aspecto).
+    // Cartas distintas con mismo nombre pero diferente aspecto se muestran ambas
+    // Ej: Daredevil Justice (Core) y Daredevil Protection (SP//dr) → ambas visibles
+    // Ej: Energy Basic en 25 sets → mostrar solo la mejor versión
+    function score(c: Card): number {
+      const owned = !c.setCode || ownedSets[c.setCode] ? 2 : 0;
+      const hasImg = c.imgsrc ? 1 : 0;
+      return owned + hasImg;
+    }
+    const byNameAspect = new Map<string, Card>();
     for (const c of filtered) {
-      const existing = byName.get(c.name);
-      if (!existing) {
-        byName.set(c.name, c);
-      } else {
-        const cOwned = !c.setCode || ownedSets[c.setCode];
-        const exOwned = !existing.setCode || ownedSets[existing.setCode];
-        if (cOwned && !exOwned) byName.set(c.name, c); // preferir poseída
+      // Clave única = nombre + aspecto (diferencia Daredevil Justice vs Protection)
+      const key = `${c.name}||${c.aspect ?? ''}`;
+      const existing = byNameAspect.get(key);
+      if (!existing || score(c) > score(existing)) {
+        byNameAspect.set(key, c);
       }
     }
-    return [...byName.values()].sort((a, b) =>
+    return [...byNameAspect.values()].sort((a, b) =>
       sortBy === 'name' ? a.name.localeCompare(b.name) : (a.aspect ?? '').localeCompare(b.aspect ?? '')
     );
-  }, [deck.cards, activeAspect, search, typeFilter, sortBy, ownedSets, localShowAll]);
+  }, [deck.cards, deck.aspects, activeAspect, search, typeFilter, sortBy, ownedSets, localShowAll]);
 
   // ── Hero selector ─────────────────────────────────────────────────────────
   if (!deck.hero) {
@@ -302,8 +307,10 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
             const active = deck.aspects.includes(a) || (a !== 'Basic' && detectedAspect === a);
             // Pool bloqueado si no tienes Deadpool en colección
             const poolLocked = a === 'Pool' && !deadpoolOwned;
-            // Aspecto principal bloqueado si hay cartas de ese aspecto en el mazo
-            const mainLocked = a !== 'Basic' && a !== 'Pool' && !!detectedAspect && detectedAspect !== a && !isMulti;
+            // El aspecto principal activo (seleccionado o detectado de cartas)
+            const selectedMain = detectedAspect ?? deck.aspects.find(x => x !== 'Basic') ?? null;
+            // Bloquear si ya hay OTRO aspecto principal activo (Basic nunca se bloquea así)
+            const mainLocked = a !== 'Basic' && !!selectedMain && selectedMain !== a && !isMulti;
             const locked = poolLocked || mainLocked || (heroRule?.rule === 'all4');
             const color = a === 'Pool' ? '#CC6699' : a === 'Basic' ? Colors.textMuted : aspectColor(a);
             return (
