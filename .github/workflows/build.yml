@@ -15,31 +15,31 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v3
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Install Expo CLI
-        run: npm install -g expo-cli @expo/cli
-
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Build APK
+      - name: Build Debug APK
         working-directory: android
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Find and upload APK
+        run: |
+          APK=$(find android -name "*.apk" | head -1)
+          echo "Found APK: $APK"
+          cp "$APK" mcdecks.apk
+
+      - uses: actions/upload-artifact@v4
         with:
           name: mcdecks-apk
-          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          path: mcdecks.apk
           retention-days: 30
