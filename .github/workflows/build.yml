@@ -28,14 +28,41 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Build Debug APK
-        working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+      - name: Create keystore
+        run: |
+          keytool -genkey -v \
+            -keystore android/app/release.keystore \
+            -alias mcdecks \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=MCDecks,O=MCDecks,C=ES" \
+            -storepass mcdecks123 \
+            -keypass mcdecks123
 
-      - name: Find and upload APK
+      - name: Configure signing
+        run: |
+          cat >> android/app/build.gradle << 'GRADLE'
+
+          android.signingConfigs {
+            release {
+              storeFile file("release.keystore")
+              storePassword "mcdecks123"
+              keyAlias "mcdecks"
+              keyPassword "mcdecks123"
+            }
+          }
+          android.buildTypes.release.signingConfig = android.signingConfigs.release
+          GRADLE
+
+      - name: Build Release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Find APK
         run: |
           APK=$(find android -name "*.apk" | head -1)
-          echo "Found APK: $APK"
+          echo "APK: $APK"
           cp "$APK" mcdecks.apk
 
       - uses: actions/upload-artifact@v4
