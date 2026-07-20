@@ -47,14 +47,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   function toggleAspect(aspect: string) {
     const has = deck.aspects.includes(aspect);
 
-    // Comprobar si hay cartas de este aspecto en el mazo (bloquea el cambio)
-    const aspectCardsInDeck = Object.keys(deck.cards).some(id => {
-      const card = ASPECT_CARDS.find(c => c.id === id);
-      return card?.aspect === aspect;
-    });
-    if (has && aspectCardsInDeck && !isMulti) return;
-
-    // Basic se puede combinar con cualquier aspecto (única excepción)
+    // Basic: toggle independiente, siempre combinable
     if (aspect === 'Basic') {
       update({ aspects: has
         ? deck.aspects.filter(a => a !== 'Basic')
@@ -66,6 +59,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
     // Pool: solo si Deadpool está en colección
     if (aspect === 'Pool' && !deadpoolOwned) return;
 
+    // Deseleccionar: siempre permitido (las cartas en conflicto quedan marcadas en rojo)
     if (has) {
       update({ aspects: deck.aspects.filter(a => a !== aspect) });
       return;
@@ -79,7 +73,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       return;
     }
 
-    // Normal: reemplazar el aspecto principal, conservar Basic si estaba
+    // Normal: reemplazar aspecto principal, conservar Basic
     const keepBasic = deck.aspects.includes('Basic');
     update({ aspects: keepBasic ? [aspect, 'Basic'] : [aspect] });
   }
@@ -145,10 +139,21 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       // Collection filter
       const inCollection = c.setCode ? !!ownedSets[c.setCode] : true;
       if (!localShowAll && !inCollection) return false;
-      // Aspect filter: cada aspecto seleccionado filtra exactamente ese aspecto.
-      // Basic NO se incluye automáticamente — hay que seleccionarlo explícitamente.
+      // Aspect filter:
+      // - Sin selección → mostrar todo
+      // - Basic seleccionado solo → solo básicas
+      // - Aspecto principal (Justice, etc.) → ese aspecto + Basic siempre visible
+      // - Aspecto + Basic seleccionados → mismo resultado
       if (deck.aspects.length > 0) {
-        if (!deck.aspects.includes(c.aspect ?? '')) return false;
+        const mainAspects = deck.aspects.filter(a => a !== 'Basic');
+        const basicSelected = deck.aspects.includes('Basic');
+        if (mainAspects.length > 0) {
+          // Aspecto principal: mostrar ese aspecto + Basic siempre
+          if (c.aspect !== 'Basic' && !mainAspects.includes(c.aspect ?? '')) return false;
+        } else if (basicSelected) {
+          // Solo Basic seleccionado: mostrar solo básicas
+          if (c.aspect !== 'Basic') return false;
+        }
       }
       // Sin selección = mostrar todo
       const q = search.toLowerCase();
