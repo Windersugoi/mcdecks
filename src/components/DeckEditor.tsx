@@ -95,10 +95,16 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   }
 
   // Compute effective owned based on collection
+  // Suma copias de TODOS los sets poseídos que incluyen esta carta.
+  // Energy en Core + Energy en Thor + Energy en Cap = 3 copias si tienes los 3 sets.
   function effectiveOwned(card: Card): number {
-    if (localShowAll) return card.qty ?? 3;
-    if (!card.setCode) return card.qty ?? 3;
-    return ownedSets[card.setCode] ? (card.qty ?? 3) : 0;
+    if (localShowAll) return 99;
+    return ASPECT_CARDS
+      .filter(c => c.name === card.name && c.aspect === card.aspect)
+      .reduce((sum, c) => {
+        const owned = !c.setCode || ownedSets[c.setCode];
+        return sum + (owned ? (c.qty ?? 1) : 0);
+      }, 0);
   }
 
   // Active aspect: detected from cards in deck, or selected

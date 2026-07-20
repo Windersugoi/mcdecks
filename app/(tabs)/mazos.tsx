@@ -121,7 +121,12 @@ export default function MazosScreen() {
           const isActive = deck.id === activeDeckId;
           // Un mazo es "completo" si tiene héroe asignado
           // La cuenta total incluye mandatory hero cards que ya están fijas
-          const mandCount = deck.hero ? (HERO_CARDS[deck.hero] ?? []).reduce((a,c)=>a+(c.qty??1),0) : 0;
+          // Excluir cartas de identidad (Hero/Alter-Ego) del conteo — no van al mazo
+          const mandCount = deck.hero
+            ? (HERO_CARDS[deck.hero] ?? [])
+                .filter(c => !c.isIdentity && c.type !== 'Hero' && c.type !== 'Alter-Ego')
+                .reduce((a,c)=>a+(c.qty??1),0)
+            : 0;
           const total = mandCount + Object.values(deck.cards).reduce((a,q)=>a+q,0);
           const hasHero = !!deck.hero;
           const valid = hasHero && total >= 40;

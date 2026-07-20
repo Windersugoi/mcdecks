@@ -8,6 +8,7 @@ export interface Card {
   aspect?: string;
   setCode?: string;
   maxPerDeck?: number;
+  isIdentity?: boolean;
   imgsrc?: string;
 }
 export interface DeckCards { [cardId: string]: number; }
