@@ -5,37 +5,21 @@ import { useApp } from '@/context/AppContext';
 import { SET_CATALOG } from '@/data/cards';
 import { Colors, Radius, Spacing } from '@/styles/theme';
 
-// Estructura de ciclos según Hall of Heroes
-const CYCLES_ORDER = [
-  'Core Set',
-  'Cycle 1', 'Rise of Red Skull',
-  'Cycle 2', "Galaxy's Most Wanted",
-  'Cycle 3', "Mad Titan's Shadow",
-  'Cycle 4', 'Sinister Motives',
-  'Cycle 5', 'Mutant Genesis',
-  'Cycle 6', 'NeXt Evolution',
-  'Cycle 7', 'Age of Apocalypse',
-  'Cycle 8', 'Agents of S.H.I.E.L.D.',
-  'Cycle 9', 'Civil War',
-  'Cycle 10', 'Fear No Evil',
-  'Cycle 11', 'Modules',
-];
-
-// Grupos visuales para el check de "ciclo completo"
-// Campaign boxes y sus ciclos de hero packs van agrupados
-const CYCLE_GROUPS = [
-  { label: 'Core Set',               cycles: ['Core Set'] },
-  { label: 'Cycle 1',                cycles: ['Cycle 1', 'Rise of Red Skull'] },
-  { label: 'Cycle 2 — Galaxy',       cycles: ['Cycle 2', "Galaxy's Most Wanted"] },
-  { label: 'Cycle 3 — Titan',        cycles: ['Cycle 3', "Mad Titan's Shadow"] },
-  { label: 'Cycle 4 — Sinister',     cycles: ['Cycle 4', 'Sinister Motives'] },
-  { label: 'Cycle 5 — Mutant',       cycles: ['Cycle 5', 'Mutant Genesis'] },
-  { label: 'Cycle 6 — NeXt',         cycles: ['Cycle 6', 'NeXt Evolution'] },
-  { label: 'Cycle 7 — Apocalypse',   cycles: ['Cycle 7', 'Age of Apocalypse'] },
-  { label: 'Cycle 8 — SHIELD',       cycles: ['Cycle 8', 'Agents of S.H.I.E.L.D.'] },
-  { label: 'Cycle 9 — Civil War',    cycles: ['Cycle 9', 'Civil War'] },
-  { label: 'Cycle 10 — Fear No Evil',cycles: ['Cycle 10', 'Fear No Evil', 'Cycle 11'] },
-  { label: 'Modules',                cycles: ['Modules'] },
+// Cada grupo = caja del ciclo (primera) + hero packs del ciclo
+// La caja es la primera entrada y va destacada
+const CYCLE_GROUPS: { label: string; codes: string[] }[] = [
+  { label: 'Core Set — Cycle 1',                   codes: ['Core','GG','A:CA','C:MM','TWC','A:T','A:BW','A:DS','A:H'] },
+  { label: 'The Rise of Red Skull — Cycle 2',       codes: ['A:TRoRS','OaFK','A:A','A:W','A:Q','A:SW'] },
+  { label: "Galaxy's Most Wanted — Cycle 3",        codes: ['G:GMW','G:SL','G:G','G:D','G:V'] },
+  { label: "The Mad Titan's Shadow — Cycle 4",      codes: ['G:TMTS','G:N','A:WM','TH','A:V','V','TT'] },
+  { label: 'Sinister Motives — Cycle 5',            codes: ['W:SM','C:N','C:I','W:SH','W:S'] },
+  { label: 'Mutant Genesis — Cycle 6',              codes: ['X:MG','X:C','X:P','X:MM','X:W','X:S','X:G','X:R'] },
+  { label: 'NeXt Evolution — Cycle 7',              codes: ['X:NE','X:Ps','X:A','X:X','X:D'] },
+  { label: 'The Age of Apocalypse — Cycle 8',       codes: ['X:AoA','X:I','X:J','X:N','X:M'] },
+  { label: 'Agents of S.H.I.E.L.D. — Cycle 9',     codes: ['S:AoS','BP','W:Si','S:F','S:WS','TT2'] },
+  { label: 'Civil War — Cycle 10',                  codes: ['CW','SS','A:WMn','A:He'] },
+  { label: 'Fear No Evil — Cycle 11 ★ Coming Soon', codes: ['D:FNE','D:JJ','D:LC','D:SH','D:EL','D:IF'] },
+  { label: 'Modules',                               codes: ['R'] },
 ];
 
 const TYPE_ICON: Record<string,string> = {
@@ -45,44 +29,44 @@ const TYPE_ICON: Record<string,string> = {
 export default function CuentaScreen() {
   const { ownedSets, setOwnedSets } = useApp();
 
-  const byCycle: Record<string, typeof SET_CATALOG> = {};
-  for (const s of SET_CATALOG) {
-    if (!byCycle[s.cycle]) byCycle[s.cycle] = [];
-    byCycle[s.cycle].push(s);
-  }
+  // Índice de sets por código para acceso rápido
+  const setByCode: Record<string, typeof SET_CATALOG[0]> = {};
+  for (const s of SET_CATALOG) setByCode[s.code] = s;
 
   const totalOwned = SET_CATALOG.filter(s => ownedSets[s.code]).length;
   const totalCards = SET_CATALOG.filter(s => ownedSets[s.code]).reduce((a,s) => a + s.totalCards, 0);
 
-  function toggleGroup(group: typeof CYCLE_GROUPS[0], value: boolean) {
-    const codes = CYCLE_GROUPS
-      .find(g => g.label === group.label)
-      ?.cycles.flatMap(cy => (byCycle[cy] ?? []).map(s => s.code)) ?? [];
-    setOwnedSets(prev => {
-      const next = { ...prev };
-      for (const code of codes) {
-        if (!SET_CATALOG.find(s => s.code === code)?.comingSoon) {
-          next[code] = value;
-        }
-      }
-      return next;
-    });
+  function getGroupSets(group: typeof CYCLE_GROUPS[0]) {
+    return group.codes
+      .map(code => setByCode[code])
+      .filter(Boolean)
+      .filter(s => !s.comingSoon);
   }
 
-  function isGroupComplete(group: typeof CYCLE_GROUPS[0]): boolean {
-    const sets = group.cycles.flatMap(cy => byCycle[cy] ?? []).filter(s => !s.comingSoon);
+  function isGroupComplete(group: typeof CYCLE_GROUPS[0]) {
+    const sets = getGroupSets(group);
     return sets.length > 0 && sets.every(s => ownedSets[s.code]);
   }
 
-  function isGroupPartial(group: typeof CYCLE_GROUPS[0]): boolean {
-    const sets = group.cycles.flatMap(cy => byCycle[cy] ?? []).filter(s => !s.comingSoon);
+  function isGroupPartial(group: typeof CYCLE_GROUPS[0]) {
+    const sets = getGroupSets(group);
     return sets.some(s => ownedSets[s.code]) && !sets.every(s => ownedSets[s.code]);
+  }
+
+  function toggleGroup(group: typeof CYCLE_GROUPS[0], value: boolean) {
+    const sets = getGroupSets(group);
+    setOwnedSets(prev => {
+      const next = { ...prev };
+      for (const s of sets) next[s.code] = value;
+      return next;
+    });
   }
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.container}>
         <Text style={s.title}>Mi Colección</Text>
+
         <View style={s.statsRow}>
           <View style={s.statCard}>
             <Text style={s.statNum}>{totalOwned}</Text>
@@ -95,57 +79,72 @@ export default function CuentaScreen() {
         </View>
 
         {CYCLE_GROUPS.map(group => {
-          const sets = group.cycles.flatMap(cy => byCycle[cy] ?? []);
-          if (sets.length === 0) return null;
+          const allSets = group.codes.map(code => setByCode[code]).filter(Boolean);
+          if (allSets.length === 0) return null;
           const complete = isGroupComplete(group);
           const partial = isGroupPartial(group);
+          const ownedCount = getGroupSets(group).filter(s => ownedSets[s.code]).length;
+          const totalCount = getGroupSets(group).length;
+          const isComingSoon = group.label.includes('Coming Soon');
 
           return (
             <View key={group.label} style={s.groupCard}>
-              {/* Cabecera del grupo con checkbox de ciclo completo */}
-              <Pressable style={s.groupHeader} onPress={() => toggleGroup(group, !complete)}>
-                <View style={[s.groupCheck, complete && s.groupCheckDone, partial && s.groupCheckPartial]}>
+              {/* Header del ciclo con checkbox */}
+              <Pressable
+                style={s.groupHeader}
+                onPress={() => !isComingSoon && toggleGroup(group, !complete)}
+                disabled={isComingSoon}
+              >
+                <View style={[
+                  s.groupCheck,
+                  complete && s.groupCheckDone,
+                  partial && !complete && s.groupCheckPartial
+                ]}>
                   {complete && <Text style={s.checkMark}>✓</Text>}
-                  {partial && !complete && <Text style={s.checkMarkPartial}>–</Text>}
+                  {partial && !complete && <Text style={s.checkMarkP}>–</Text>}
                 </View>
-                <Text style={[s.groupLabel, complete && { color: Colors.success }]}>
+                <Text style={[
+                  s.groupLabel,
+                  complete && { color: Colors.success },
+                  isComingSoon && { color: Colors.info }
+                ]}>
                   {group.label}
                 </Text>
-                <Text style={s.groupCount}>
-                  {sets.filter(x => ownedSets[x.code]).length}/{sets.filter(x => !x.comingSoon).length}
-                </Text>
+                {!isComingSoon && (
+                  <Text style={s.groupCount}>{ownedCount}/{totalCount}</Text>
+                )}
+                {isComingSoon && (
+                  <View style={s.soonBadge}><Text style={s.soonTxt}>Soon™</Text></View>
+                )}
               </Pressable>
 
-              {/* Sets individuales agrupados por ciclo */}
-              {group.cycles.map(cy => {
-                const cycleSets = byCycle[cy] ?? [];
-                if (cycleSets.length === 0) return null;
+              {/* Sets del ciclo */}
+              {allSets.map((exp, idx) => {
+                const isBox = idx === 0; // Primera entrada = la caja del ciclo
                 return (
-                  <View key={cy}>
-                    {group.cycles.length > 1 && (
-                      <Text style={s.cycleSubLabel}>{cy}</Text>
+                  <View key={exp.code}
+                    style={[s.setRow, isBox && s.setRowBox]}>
+                    <Text style={s.setIcon}>{TYPE_ICON[exp.type] ?? '📄'}</Text>
+                    <View style={s.setInfo}>
+                      <Text style={[
+                        s.setName,
+                        !ownedSets[exp.code] && s.setNameOff,
+                        isBox && s.setNameBox
+                      ]}>
+                        {exp.name}
+                      </Text>
+                      <Text style={s.setSub}>{exp.type} · {exp.totalCards} cartas</Text>
+                    </View>
+                    {exp.comingSoon ? (
+                      <View style={s.soonBadge}><Text style={s.soonTxt}>Soon™</Text></View>
+                    ) : (
+                      <Switch
+                        value={!!ownedSets[exp.code]}
+                        onValueChange={v => setOwnedSets(prev => ({ ...prev, [exp.code]: v }))}
+                        trackColor={{ false: Colors.border, true: Colors.success }}
+                        thumbColor={ownedSets[exp.code] ? Colors.text : Colors.textMuted}
+                      />
                     )}
-                    {cycleSets.map(exp => (
-                      <View key={exp.code} style={s.setRow}>
-                        <Text style={s.setIcon}>{TYPE_ICON[exp.type] ?? '📄'}</Text>
-                        <View style={s.setInfo}>
-                          <Text style={[s.setName, !ownedSets[exp.code] && s.setNameOff]}>
-                            {exp.name}
-                          </Text>
-                          <Text style={s.setSub}>{exp.type} · {exp.totalCards} cartas</Text>
-                        </View>
-                        {exp.comingSoon ? (
-                          <View style={s.soonBadge}><Text style={s.soonTxt}>Soon™</Text></View>
-                        ) : (
-                          <Switch
-                            value={!!ownedSets[exp.code]}
-                            onValueChange={v => setOwnedSets(prev => ({ ...prev, [exp.code]: v }))}
-                            trackColor={{ false: Colors.border, true: Colors.success }}
-                            thumbColor={ownedSets[exp.code] ? Colors.text : Colors.textMuted}
-                          />
-                        )}
-                      </View>
-                    ))}
                   </View>
                 );
               })}
@@ -165,24 +164,22 @@ const s = StyleSheet.create({
   statCard: { flex:1, borderWidth:1, borderColor:Colors.border, borderRadius:Radius.lg, padding:Spacing.md, backgroundColor:Colors.surface, alignItems:'center', gap:4 },
   statNum: { fontSize:26, fontWeight:'700', color:Colors.text },
   statLabel: { fontSize:12, color:Colors.textMuted },
-
   groupCard: { borderWidth:1, borderColor:Colors.border, borderRadius:Radius.lg, backgroundColor:Colors.surface, overflow:'hidden' },
   groupHeader: { flexDirection:'row', alignItems:'center', padding:Spacing.md, gap:10, backgroundColor:Colors.surface2 },
-  groupCheck: { width:22, height:22, borderRadius:6, borderWidth:2, borderColor:Colors.borderStrong, justifyContent:'center', alignItems:'center' },
+  groupCheck: { width:22, height:22, borderRadius:6, borderWidth:2, borderColor:Colors.borderStrong, justifyContent:'center', alignItems:'center', flexShrink:0 },
   groupCheckDone: { backgroundColor:Colors.success, borderColor:Colors.success },
   groupCheckPartial: { borderColor:Colors.warning },
   checkMark: { color:'#0f0f0d', fontSize:13, fontWeight:'700' },
-  checkMarkPartial: { color:Colors.warning, fontSize:14, fontWeight:'700' },
-  groupLabel: { flex:1, fontSize:14, fontWeight:'700', color:Colors.text },
-  groupCount: { fontSize:12, color:Colors.textMuted },
-
-  cycleSubLabel: { fontSize:11, color:Colors.textMuted, fontWeight:'600', paddingHorizontal:Spacing.md, paddingTop:Spacing.sm, textTransform:'uppercase', letterSpacing:0.5 },
-
+  checkMarkP: { color:Colors.warning, fontSize:14, fontWeight:'700' },
+  groupLabel: { flex:1, fontSize:13, fontWeight:'700', color:Colors.text },
+  groupCount: { fontSize:12, color:Colors.textMuted, flexShrink:0 },
   setRow: { flexDirection:'row', alignItems:'center', padding:Spacing.sm, paddingHorizontal:Spacing.md, gap:8, borderTopWidth:1, borderTopColor:Colors.border },
+  setRowBox: { backgroundColor:'#141412' },
   setIcon: { fontSize:16 },
   setInfo: { flex:1 },
-  setName: { fontSize:13, color:Colors.text, fontWeight:'500' },
+  setName: { fontSize:13, color:Colors.text },
   setNameOff: { color:Colors.textMuted },
+  setNameBox: { fontWeight:'600' },
   setSub: { fontSize:11, color:Colors.textMuted, marginTop:1 },
   soonBadge: { borderWidth:1, borderColor:Colors.info+'66', borderRadius:4, paddingHorizontal:6, paddingVertical:3, backgroundColor:'#0d1220' },
   soonTxt: { fontSize:10, color:Colors.info, fontWeight:'600' },
