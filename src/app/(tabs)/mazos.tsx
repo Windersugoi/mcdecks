@@ -66,9 +66,14 @@ export default function MazosScreen() {
       const importedCards: Record<string, number> = {};
       const missing: string[] = [];
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
-        const ourId = codeToId[code]; // code = "01058" → directo
+        const ourId = codeToId[code];
         if (ourId) {
-          importedCards[ourId] = qty as number;
+          // Excluir cartas de identidad (Hero/Alter-Ego) — no van al mazo
+          const allCards = [...ASPECT_CARDS, ...Object.values(HERO_CARDS).flat()];
+          const card = allCards.find(c => c.id === ourId);
+          if (!card?.isIdentity) {
+            importedCards[ourId] = qty as number;
+          }
         } else {
           missing.push(code);
         }
