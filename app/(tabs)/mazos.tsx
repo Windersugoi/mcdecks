@@ -74,24 +74,36 @@ export default function MazosScreen() {
         }
       }
 
-      // ── Detectar héroe por investigator_code ─────────────────────────────
-      const invCode = mcdbDeck.investigator_code ?? '';
+      // ── Detectar héroe ──────────────────────────────────────────────────
       let matchedHero: string | null = null;
 
-      // Buscar en HERO_CARDS la carta de identidad con ese código
-      for (const [heroName, heroCards] of Object.entries(HERO_CARDS)) {
-        const identity = heroCards.find(c => c.isIdentity && c.imgsrc);
-        if (identity?.imgsrc) {
-          const m = identity.imgsrc.match(/\/(\d{5})[a-z]?\.png$/i);
-          if (m && m[1] === invCode) { matchedHero = heroName; break; }
+      // 1. Por investigator_code: comparar sin sufijo (01001a → 01001)
+      const invCode = (mcdbDeck.investigator_code ?? '').replace(/[a-z]$/i, '');
+      if (invCode) {
+        for (const [heroName, heroCards] of Object.entries(HERO_CARDS)) {
+          const identity = heroCards.find(c => c.isIdentity && c.imgsrc);
+          if (identity?.imgsrc) {
+            const m = identity.imgsrc.match(/\/(\d{5})[a-z]?\.png$/i);
+            if (m && m[1] === invCode) { matchedHero = heroName; break; }
+          }
         }
       }
-      // Fallback: buscar por nombre
+
+      // 2. Por investigator_name: "Logan / Wolverine" → probar cada parte
       if (!matchedHero && mcdbDeck.investigator_name) {
-        const heroName = mcdbDeck.investigator_name.toLowerCase();
-        matchedHero = Object.keys(HERO_CARDS).find(
-          h => h.toLowerCase() === heroName || heroName.includes(h.toLowerCase())
-        ) ?? null;
+        const parts = mcdbDeck.investigator_name
+          .split(/[\/,]/)
+          .map((p: string) => p.trim().toLowerCase())
+          .filter(Boolean);
+        const heroKeys = Object.keys(HERO_CARDS);
+        for (const part of parts) {
+          const found = heroKeys.find(h =>
+            h.toLowerCase() === part ||
+            h.toLowerCase().includes(part) ||
+            part.includes(h.toLowerCase())
+          );
+          if (found) { matchedHero = found; break; }
+        }
       }
 
       // ── Detectar aspecto de las cartas importadas ────────────────────────
