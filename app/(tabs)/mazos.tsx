@@ -4,13 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { DeckEditor } from '@/components/DeckEditor';
 import { HERO_CARDS, ASPECT_CARDS, SET_CATALOG } from '@/data/cards';
-import { getMcdbCodeToImgsrc, preloadAllCards } from '@/utils/cardImageService';
 import { deckTitleColor } from '@/utils/deckUtils';
 import { displayAspect, HERO_TO_SET } from '@/data/constants';
 import { Colors, Radius, Spacing } from '@/styles/theme';
 
 export default function MazosScreen() {
-  const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets } = useApp();
+  const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets, setOwnedSets, makeDeckTracking } = useApp();
   const [openDeckId, setOpenDeckId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [importUrl, setImportUrl] = useState('');
