@@ -118,13 +118,8 @@ export default function MazosScreen() {
 
       setImportUrl('');
       setOpenDeckId(newId);
-      const msg = missing.length > 0
-        ? `✓ Imported (${Object.keys(importedCards).length} cards, ${missing.length} not found)`
-        : `✓ Imported: ${Object.keys(importedCards).length} cards`;
-      setImportMsg(msg);
-      setOpenDeckId(id);
       setImportMsg(missing.length > 0
-        ? `✓ Imported (${missing.length} cards not in our DB)`
+        ? `✓ Imported (${Object.keys(importedCards).length} cards, ${missing.length} not mapped)`
         : `✓ Imported: ${Object.keys(importedCards).length} cards`
       );
     } catch (err: any) {
