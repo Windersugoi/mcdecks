@@ -41,25 +41,15 @@ export default function MazosScreen() {
       if (!resp.ok) throw new Error(`Deck not found (${resp.status}). Make sure it is public.`);
       const mcdbDeck = await resp.json();
 
-      // ── Mapeo DIRECTO: código marvelcdb (5 dígitos) → nuestro cardId ──────
-      // Nuestras cartas usan imgsrc numérico: ".../01058.png"
-      // El código marvelcdb en los slots es: "01058"
-      // Coincidencia: extraer los 5 dígitos numéricos del imgsrc y comparar
+      // ── Mapeo: solo ASPECT_CARDS (Aspect + Basic) ─────────────────────────
+      // Las cartas del héroe (HERO_CARDS) NO se mapean — se añaden
+      // automáticamente al seleccionar el héroe en DeckEditor.
+      // Si las incluimos aquí + DeckEditor las añade = duplicado → 53 cartas.
       const codeToId: Record<string, string> = {};
-
-      // Aspect + Basic cards
       for (const c of ASPECT_CARDS) {
         if (!c.imgsrc) continue;
         const m = c.imgsrc.match(/\/(\d{5})[a-z]?\.png$/i);
         if (m && !codeToId[m[1]]) codeToId[m[1]] = c.id;
-      }
-      // Hero deck cards (excluir identidad)
-      for (const heroCards of Object.values(HERO_CARDS)) {
-        for (const c of heroCards) {
-          if (!c.imgsrc || c.isIdentity) continue;
-          const m = c.imgsrc.match(/\/(\d{5})[a-z]?\.png$/i);
-          if (m && !codeToId[m[1]]) codeToId[m[1]] = c.id;
-        }
       }
 
       // ── Mapear slots del mazo ────────────────────────────────────────────
@@ -68,46 +58,26 @@ export default function MazosScreen() {
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
         const ourId = codeToId[code];
         if (ourId) {
-          // Excluir cartas de identidad (Hero/Alter-Ego) — no van al mazo
-          const allCards = [...ASPECT_CARDS, ...Object.values(HERO_CARDS).flat()];
-          const card = allCards.find(c => c.id === ourId);
-          if (!card?.isIdentity) {
-            importedCards[ourId] = qty as number;
-          }
+          importedCards[ourId] = qty as number;
         } else {
           missing.push(code);
         }
       }
 
-      // ── Detectar héroe ──────────────────────────────────────────────────
+      // ── Detectar héroe por nombre (más fiable que código numérico) ─────
       let matchedHero: string | null = null;
-
-      // 1. Por investigator_code: comparar sin sufijo (01001a → 01001)
-      const invCode = (mcdbDeck.investigator_code ?? '').replace(/[a-z]$/i, '');
-      if (invCode) {
-        for (const [heroName, heroCards] of Object.entries(HERO_CARDS)) {
-          const identity = heroCards.find(c => c.isIdentity && c.imgsrc);
-          if (identity?.imgsrc) {
-            const m = identity.imgsrc.match(/\/(\d{5})[a-z]?\.png$/i);
-            if (m && m[1] === invCode) { matchedHero = heroName; break; }
-          }
+      const invName = (mcdbDeck.investigator_name ?? '').toLowerCase().trim();
+      const heroKeys = Object.keys(HERO_CARDS);
+      if (invName) {
+        // 1. Coincidencia exacta
+        matchedHero = heroKeys.find(h => h.toLowerCase() === invName) ?? null;
+        // 2. El nombre del mazo contiene el héroe ("Logan / Wolverine" → "Wolverine")
+        if (!matchedHero) {
+          matchedHero = heroKeys.find(h => invName.includes(h.toLowerCase())) ?? null;
         }
-      }
-
-      // 2. Por investigator_name: "Logan / Wolverine" → probar cada parte
-      if (!matchedHero && mcdbDeck.investigator_name) {
-        const parts = mcdbDeck.investigator_name
-          .split(/[\/,]/)
-          .map((p: string) => p.trim().toLowerCase())
-          .filter(Boolean);
-        const heroKeys = Object.keys(HERO_CARDS);
-        for (const part of parts) {
-          const found = heroKeys.find(h =>
-            h.toLowerCase() === part ||
-            h.toLowerCase().includes(part) ||
-            part.includes(h.toLowerCase())
-          );
-          if (found) { matchedHero = found; break; }
+        // 3. El héroe contiene el nombre
+        if (!matchedHero) {
+          matchedHero = heroKeys.find(h => h.toLowerCase().includes(invName)) ?? null;
         }
       }
 
