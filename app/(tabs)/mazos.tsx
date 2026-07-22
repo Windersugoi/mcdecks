@@ -30,58 +30,84 @@ export default function MazosScreen() {
     setImporting(true);
     setImportMsg(null);
     try {
-      // Extraer ID de la URL o número
+      // ── 1. Extraer ID ─────────────────────────────────────────────────────
       const urlMatch = importUrl.match(/\/view\/(\d+)/) ||
                        importUrl.match(/\/(\d{3,})/) ||
                        importUrl.match(/^(\d+)$/);
       if (!urlMatch) throw new Error('Enter a valid deck URL or ID');
       const deckId = urlMatch[1];
 
-      const resp = await fetch(`https://marvelcdb.com/api/public/decklist/${deckId}`);
-      if (!resp.ok) throw new Error(`Deck not found (${resp.status}). Make sure it is public.`);
-      const mcdbDeck = await resp.json();
+      // ── 2. Obtener el mazo de marvelcdb ───────────────────────────────────
+      const deckResp = await fetch(`https://marvelcdb.com/api/public/decklist/${deckId}`);
+      if (!deckResp.ok) throw new Error(`Deck not found (${deckResp.status}). Make sure it is public.`);
+      const mcdbDeck = await deckResp.json();
 
-      // ── Mapeo: solo ASPECT_CARDS (Aspect + Basic) ─────────────────────────
-      // Las cartas del héroe (HERO_CARDS) NO se mapean — se añaden
-      // automáticamente al seleccionar el héroe en DeckEditor.
-      // Si las incluimos aquí + DeckEditor las añade = duplicado → 53 cartas.
-      const codeToId: Record<string, string> = {};
-      for (const c of ASPECT_CARDS) {
-        if (!c.imgsrc) continue;
-        const m = c.imgsrc.match(/\/(\d{5})[a-z]?\.png$/i);
-        if (m && !codeToId[m[1]]) codeToId[m[1]] = c.id;
+      // ── 3. Obtener lista completa de cartas de marvelcdb ──────────────────
+      // Esto da los nombres reales de cada carta por su código
+      const cardsResp = await fetch('https://marvelcdb.com/api/public/cards/');
+      const mcdbAllCards: any[] = cardsResp.ok ? await cardsResp.json() : [];
+
+      // Mapa: código marvelcdb → nombre de carta
+      const codeToName: Record<string, string> = {};
+      for (const card of mcdbAllCards) {
+        if (card.code && card.name) codeToName[card.code] = card.name;
       }
 
-      // ── Mapear slots del mazo ────────────────────────────────────────────
+      // ── 4. Mapa: nombre → nuestro cardId (solo ASPECT_CARDS) ─────────────
+      // Las cartas del héroe se añaden automáticamente al seleccionar el héroe
+      const nameToOurId: Record<string, string> = {};
+      for (const c of ASPECT_CARDS) {
+        const key = c.name.toLowerCase();
+        if (!nameToOurId[key]) nameToOurId[key] = c.id;
+      }
+
+      // ── 5. Mapear slots ───────────────────────────────────────────────────
       const importedCards: Record<string, number> = {};
       const missing: string[] = [];
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
-        const ourId = codeToId[code];
-        if (ourId) {
-          importedCards[ourId] = qty as number;
+        const cardName = codeToName[code];
+        if (cardName) {
+          const ourId = nameToOurId[cardName.toLowerCase()];
+          if (ourId) {
+            importedCards[ourId] = qty as number;
+          } else {
+            missing.push(cardName); // tenemos nombre pero no la carta
+          }
         } else {
-          missing.push(code);
+          missing.push(code); // sin nombre (carta de héroe no en API)
         }
       }
 
-      // ── Detectar héroe por nombre (más fiable que código numérico) ─────
+      // ── 6. Detectar héroe ─────────────────────────────────────────────────
       let matchedHero: string | null = null;
-      const invName = (mcdbDeck.investigator_name ?? '').toLowerCase().trim();
       const heroKeys = Object.keys(HERO_CARDS);
+
+      // a) Por investigator_name directo
+      const invName = (mcdbDeck.investigator_name ?? '').toLowerCase().trim();
       if (invName) {
-        // 1. Coincidencia exacta
-        matchedHero = heroKeys.find(h => h.toLowerCase() === invName) ?? null;
-        // 2. El nombre del mazo contiene el héroe ("Logan / Wolverine" → "Wolverine")
-        if (!matchedHero) {
-          matchedHero = heroKeys.find(h => invName.includes(h.toLowerCase())) ?? null;
-        }
-        // 3. El héroe contiene el nombre
-        if (!matchedHero) {
-          matchedHero = heroKeys.find(h => h.toLowerCase().includes(invName)) ?? null;
+        matchedHero = heroKeys.find(h => h.toLowerCase() === invName) ??
+                      heroKeys.find(h => invName.includes(h.toLowerCase())) ??
+                      heroKeys.find(h => h.toLowerCase().includes(invName)) ??
+                      null;
+      }
+
+      // b) Por nombre del investigador en el mapa de cartas
+      if (!matchedHero && mcdbDeck.investigator_code) {
+        const invCardName = (codeToName[mcdbDeck.investigator_code] ?? '').toLowerCase();
+        if (invCardName) {
+          matchedHero = heroKeys.find(h => invCardName.includes(h.toLowerCase())) ??
+                        heroKeys.find(h => h.toLowerCase().includes(invCardName)) ??
+                        null;
         }
       }
 
-      // ── Detectar aspecto de las cartas importadas ────────────────────────
+      // c) Por nombre del mazo (ej: "50ish Shades of Grey Gamora")
+      if (!matchedHero && mcdbDeck.name) {
+        const deckName = mcdbDeck.name.toLowerCase();
+        matchedHero = heroKeys.find(h => deckName.includes(h.toLowerCase())) ?? null;
+      }
+
+      // ── 7. Detectar aspecto de las cartas importadas ──────────────────────
       const aspectsFound = new Set<string>();
       for (const cardId of Object.keys(importedCards)) {
         const card = ASPECT_CARDS.find(c => c.id === cardId);
@@ -91,7 +117,7 @@ export default function MazosScreen() {
       }
       const importedAspects = [...aspectsFound].slice(0, 2);
 
-      // ── Crear mazo con todos los datos de una vez (sin race condition) ───
+      // ── 8. Crear mazo ─────────────────────────────────────────────────────
       const newId = 'd' + Date.now();
       setDecks(prev => [...prev, {
         id: newId,
@@ -103,11 +129,19 @@ export default function MazosScreen() {
       }]);
 
       setImportUrl('');
-      setOpenDeckId(newId);
-      setImportMsg(missing.length > 0
-        ? `✓ Imported (${Object.keys(importedCards).length} cards, ${missing.length} not mapped)`
-        : `✓ Imported: ${Object.keys(importedCards).length} cards`
+      // DEBUG TEMPORAL: ver exactamente qué devuelve la API
+      const debugHero = `inv_name="${mcdbDeck.investigator_name}" inv_code="${mcdbDeck.investigator_code}" matched="${matchedHero}"`;
+      setImportMsg(
+        `${matchedHero ? '✓' : '⚠'} ${debugHero} | ` +
+        `${Object.keys(importedCards).length} cards mapped, ${missing.length} not`
       );
+
+      // Solo abrir el editor si se detectó el héroe
+      if (matchedHero) {
+        setOpenDeckId(newId);
+      }
+      // Si no hay héroe, el mazo aparece en la lista para que el usuario lo seleccione
+
     } catch (err: any) {
       setImportMsg('✗ ' + (err.message ?? 'Import failed'));
     } finally {

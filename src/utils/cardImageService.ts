@@ -14,6 +14,8 @@ const ALL_CARDS_URL = `${MCDB_BASE}/api/public/cards/`;
 
 // name → full image URL (player cards)
 const imageCache: Record<string, string> = {};
+// marvelcdb card code → card name (para import de mazos)
+const codeToNameCache: Record<string, string> = {};
 
 // villain/encounter name → full image URL
 const villainImageCache: Record<string, string> = {};
@@ -135,7 +137,10 @@ async function fetchAllCards(): Promise<void> {
           imageCache[card.name] = url;
           if (cleanName && !imageCache[cleanName]) imageCache[cleanName] = url;
         }
-        if (card.code) imageCache['code:' + card.code] = url;
+        if (card.code) {
+          imageCache['code:' + card.code] = url;
+          codeToNameCache[card.code] = card.name; // para import
+        }
       }
       allCardsFetched = true;
     } catch (err) {
@@ -216,6 +221,18 @@ export async function getVillainImage(villainName: string): Promise<string | nul
   // 7. Try constructing URL from known pattern
   // Most villains appear after player cards in their set
   return null;
+}
+
+/** Obtiene el nombre de una carta por su código marvelcdb (para import de mazos) */
+export async function getCardNameByMcdbCode(code: string): Promise<string | null> {
+  if (codeToNameCache[code]) return codeToNameCache[code];
+  await fetchAllCards();
+  return codeToNameCache[code] ?? null;
+}
+
+/** Verifica si las cartas de marvelcdb ya están cargadas */
+export function areMcdbCardsLoaded(): boolean {
+  return allCardsFetched;
 }
 
 /** Returns map of marvelcdb card code → full imgsrc URL (for deck import) */
