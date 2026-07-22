@@ -129,12 +129,11 @@ export default function MazosScreen() {
       }]);
 
       setImportUrl('');
-      // DEBUG TEMPORAL: ver exactamente qué devuelve la API
-      const debugHero = `inv_name="${mcdbDeck.investigator_name}" inv_code="${mcdbDeck.investigator_code}" matched="${matchedHero}"`;
-      setImportMsg(
-        `${matchedHero ? '✓' : '⚠'} ${debugHero} | ` +
-        `${Object.keys(importedCards).length} cards mapped, ${missing.length} not`
-      );
+      // DEBUG: mostrar TODAS las claves del objeto deck para identificar campo del héroe
+      const allKeys = Object.keys(mcdbDeck).join(', ');
+      const heroValue = mcdbDeck.hero ?? mcdbDeck.hero_code ?? mcdbDeck.hero_name ?? 
+                        mcdbDeck.investigator ?? mcdbDeck.character ?? 'NOT FOUND';
+      setImportMsg(`KEYS: ${allKeys.substring(0, 200)} | hero_field="${heroValue}"`);
 
       // Solo abrir el editor si se detectó el héroe
       if (matchedHero) {
