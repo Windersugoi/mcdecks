@@ -5,7 +5,6 @@ import { Colors, Radius, Spacing } from '@/styles/theme';
 
 interface Props { card: Card | null; onClose: () => void; }
 
-// Headers para evitar bloqueos de marvelcdb en Android
 const IMG_HEADERS = Platform.OS !== 'web' ? {
   'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36',
   'Referer': 'https://marvelcdb.com/',
@@ -13,37 +12,71 @@ const IMG_HEADERS = Platform.OS !== 'web' ? {
 } : undefined;
 
 export function CardPreviewModal({ card, onClose }: Props) {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [fallbackTried, setFallbackTried] = useState(false);
 
-  useEffect(() => { setError(false); }, [card?.id]);
+  useEffect(() => {
+    if (!card) return;
+    setError(false);
+    setFallbackTried(false);
+    setLoading(false);
+    setImageUrl(card.imgsrc ?? null);
+  }, [card?.id]);
 
-  // Usar siempre card.imgsrc — es la URL específica para esa carta exacta.
-  // Evita conflictos de nombres: Daredevil Core ≠ Daredevil SP//dr,
-  // Spider-Woman aliada ≠ Spider-Woman héroe, etc.
-  const imageUrl = card?.imgsrc ?? null;
+  // Si falla la imagen principal → buscar por nombre en la API de marvelcdb
+  async function tryFallback() {
+    if (fallbackTried || !card) return;
+    setFallbackTried(true);
+    setLoading(true);
+    try {
+      const resp = await fetch(
+        `https://marvelcdb.com/api/public/cards/?name=${encodeURIComponent(card.name)}`
+      );
+      if (!resp.ok) return;
+      const cards: any[] = await resp.json();
+      // Buscar la carta con el aspecto más similar
+      const match = cards.find(c =>
+        c.name.toLowerCase() === card.name.toLowerCase() &&
+        c.pack_code !== undefined
+      );
+      if (match?.imagesrc) {
+        const url = match.imagesrc.startsWith('http')
+          ? match.imagesrc
+          : `https://marvelcdb.com${match.imagesrc}`;
+        setImageUrl(url);
+        setError(false);
+      }
+    } catch {}
+    finally { setLoading(false); }
+  }
 
   return (
     <Modal visible={!!card} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={s.overlay} onPress={onClose}>
         <Pressable style={s.inner} onPress={() => {}}>
-
           <View style={s.imgContainer}>
-            {imageUrl && !error ? (
+            {loading && (
+              <ActivityIndicator style={StyleSheet.absoluteFill} size="large" color={Colors.info} />
+            )}
+            {imageUrl && !error && (
               <Image
                 source={{ uri: imageUrl, headers: IMG_HEADERS } as any}
                 style={StyleSheet.absoluteFill}
                 resizeMode="contain"
-                onError={() => setError(true)}
+                onError={() => {
+                  setError(true);
+                  if (!fallbackTried) tryFallback();
+                }}
               />
-            ) : (
+            )}
+            {((!imageUrl || error) && !loading) && (
               <View style={s.noImg}>
                 <Text style={s.noImgName}>{card?.name}</Text>
                 <Text style={s.noImgSub}>
-                  {!imageUrl ? 'No image URL' : 'Could not load image'}
+                  {error ? 'Image not available' : 'No image URL'}
                 </Text>
-                {imageUrl && (
-                  <Text style={s.noImgUrl} numberOfLines={2}>{imageUrl}</Text>
-                )}
               </View>
             )}
           </View>
@@ -76,7 +109,6 @@ const s = StyleSheet.create({
   noImg: { flex:1, justifyContent:'center', alignItems:'center', gap:6, padding:16 },
   noImgName: { color:Colors.text, fontSize:16, fontWeight:'700', textAlign:'center' },
   noImgSub: { color:Colors.textMuted, fontSize:12 },
-  noImgUrl: { color:Colors.borderStrong, fontSize:9, textAlign:'center' },
   name: { color:Colors.text, fontSize:15, fontWeight:'600', textAlign:'center' },
   type: { color:Colors.textMuted, fontSize:12 },
   closeBtn: { marginTop:4, paddingVertical:8, paddingHorizontal:24, borderWidth:1, borderColor:Colors.borderStrong, borderRadius:Radius.md },

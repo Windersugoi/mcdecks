@@ -54,27 +54,46 @@ export default function MazosScreen() {
       }
 
       // ── 4. Mapa: nombre → nuestro cardId (solo ASPECT_CARDS) ─────────────
-      // Las cartas del héroe se añaden automáticamente al seleccionar el héroe
-      const nameToOurId: Record<string, string> = {};
-      for (const c of ASPECT_CARDS) {
-        const key = c.name.toLowerCase();
-        if (!nameToOurId[key]) nameToOurId[key] = c.id;
-      }
+      // Normalizar: quitar puntuación y espacios extra para matching flexible
+      const normalize = (s: string) => s.toLowerCase()
+        .replace(/['".,!?;:()\/\[\]{}-]/g, ' ')
+        .replace(/\s+/g, ' ').trim();
 
-      // ── 5. Mapear slots ───────────────────────────────────────────────────
+      const nameToOurId: Record<string, string> = {};
+      const normToOurId: Record<string, string> = {};
+      for (const c of ASPECT_CARDS) {
+        const exact = c.name.toLowerCase();
+        const norm  = normalize(c.name);
+        if (!nameToOurId[exact]) nameToOurId[exact] = c.id;
+        if (!normToOurId[norm])  normToOurId[norm]  = c.id;
+      }
+      // Añadir aliados únicos de packs de héroe (Ghost-Spider, Hope Summers, etc.)
+      // que otros héroes pueden usar via Make the Call u otros efectos
+      for (const heroCards of Object.values(HERO_CARDS)) {
+        for (const c of heroCards) {
+          if (c.isIdentity) continue;
+          const exact = c.name.toLowerCase();
+          const norm  = normalize(c.name);
+          if (!nameToOurId[exact]) nameToOurId[exact] = c.id;
+          if (!normToOurId[norm])  normToOurId[norm]  = c.id;
+        }
+      }───────────────────────────
       const importedCards: Record<string, number> = {};
       const missing: string[] = [];
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
         const cardName = codeToName[code];
         if (cardName) {
-          const ourId = nameToOurId[cardName.toLowerCase()];
+          // Buscar: exacto → normalizado → no encontrado
+          const ourId = nameToOurId[cardName.toLowerCase()]
+                     ?? normToOurId[normalize(cardName)]
+                     ?? null;
           if (ourId) {
             importedCards[ourId] = qty as number;
           } else {
-            missing.push(cardName); // tenemos nombre pero no la carta
+            missing.push(cardName);
           }
         } else {
-          missing.push(code); // sin nombre (carta de héroe no en API)
+          missing.push(code);
         }
       }
 
@@ -117,7 +136,15 @@ export default function MazosScreen() {
       }
       const importedAspects = [...aspectsFound].slice(0, 2);
 
-      // ── 8. Crear mazo ─────────────────────────────────────────────────────
+      // ── 8. Eliminar cartas del propio héroe (se auto-añaden en DeckEditor) ──
+      if (matchedHero && HERO_CARDS[matchedHero]) {
+        const heroCardIds = new Set(HERO_CARDS[matchedHero].map(c => c.id));
+        for (const id of Object.keys(importedCards)) {
+          if (heroCardIds.has(id)) delete importedCards[id];
+        }
+      }
+
+      // ── 9. Crear mazo ─────────────────────────────────────────────────────
       const newId = 'd' + Date.now();
       setDecks(prev => [...prev, {
         id: newId,
