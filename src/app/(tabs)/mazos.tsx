@@ -83,7 +83,7 @@ export default function MazosScreen() {
       const heroKeys = Object.keys(HERO_CARDS);
 
       // a) Por investigator_name directo
-      const invName = (mcdbDeck.investigator_name ?? '').toLowerCase().trim();
+      const invName = (mcdbDeck.hero_name ?? '').toLowerCase().trim();
       if (invName) {
         matchedHero = heroKeys.find(h => h.toLowerCase() === invName) ??
                       heroKeys.find(h => invName.includes(h.toLowerCase())) ??
@@ -92,8 +92,8 @@ export default function MazosScreen() {
       }
 
       // b) Por nombre del investigador en el mapa de cartas
-      if (!matchedHero && mcdbDeck.investigator_code) {
-        const invCardName = (codeToName[mcdbDeck.investigator_code] ?? '').toLowerCase();
+      if (!matchedHero && mcdbDeck.hero_code) {
+        const invCardName = (codeToName[mcdbDeck.hero_code] ?? '').toLowerCase();
         if (invCardName) {
           matchedHero = heroKeys.find(h => invCardName.includes(h.toLowerCase())) ??
                         heroKeys.find(h => h.toLowerCase().includes(invCardName)) ??
@@ -129,17 +129,18 @@ export default function MazosScreen() {
       }]);
 
       setImportUrl('');
-      // DEBUG: mostrar TODAS las claves del objeto deck para identificar campo del héroe
-      const allKeys = Object.keys(mcdbDeck).join(', ');
-      const heroValue = mcdbDeck.hero ?? mcdbDeck.hero_code ?? mcdbDeck.hero_name ?? 
-                        mcdbDeck.investigator ?? mcdbDeck.character ?? 'NOT FOUND';
-      setImportMsg(`KEYS: ${allKeys.substring(0, 200)} | hero_field="${heroValue}"`);
+      setImportMsg(
+        `✓ ${matchedHero ?? 'Unknown hero'} · ` +
+        `${Object.keys(importedCards).length} aspect cards imported` +
+        (missing.length > 0 ? ` (${missing.length} hero cards auto-added)` : '')
+      );
 
-      // Solo abrir el editor si se detectó el héroe
+      // Abrir editor si se detectó el héroe
       if (matchedHero) {
         setOpenDeckId(newId);
       }
-      // Si no hay héroe, el mazo aparece en la lista para que el usuario lo seleccione
+
+
 
     } catch (err: any) {
       setImportMsg('✗ ' + (err.message ?? 'Import failed'));
