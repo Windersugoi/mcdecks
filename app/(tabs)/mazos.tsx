@@ -79,9 +79,16 @@ export default function MazosScreen() {
         }
       }
 
+      // Packs conocidos en nuestra BD: hasta el 60 (Fear No Evil)
+      const MAX_KNOWN_PACK = 60;
       const importedCards: Record<string, number> = {};
       const missing: string[] = [];
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
+        const packNum = parseInt(code.replace(/[a-z]/gi, '').substring(0, 2), 10);
+        if (!isNaN(packNum) && packNum > MAX_KNOWN_PACK) {
+          missing.push(code);
+          continue;
+        }
         const cardName = codeToName[code];
         if (cardName) {
           // Buscar: exacto → normalizado → no encontrado
@@ -128,14 +135,23 @@ export default function MazosScreen() {
       }
 
       // - 7. Detectar aspecto de las cartas importadas -
-      const aspectsFound = new Set<string>();
-      for (const cardId of Object.keys(importedCards)) {
+      // ── 6. Detectar aspecto dominante (por copias, no por cartas únicas) ─
+      // Evita que aliados sueltos de otro aspecto (ej: Ronin Leadership en
+      // un mazo Agresión) causen detección incorrecta de múltiples aspectos.
+      const aspectCount: Record<string, number> = {};
+      for (const [cardId, qty] of Object.entries(importedCards)) {
         const card = ASPECT_CARDS.find(c => c.id === cardId);
         if (card?.aspect && card.aspect !== 'Basic' && card.aspect !== 'Hero') {
-          aspectsFound.add(card.aspect);
+          aspectCount[card.aspect] = (aspectCount[card.aspect] ?? 0) + (qty as number);
         }
       }
-      const importedAspects = [...aspectsFound].slice(0, 2);
+      const sortedAspects = Object.entries(aspectCount)
+        .sort(([,a],[,b]) => (b as number) - (a as number));
+      // Incluir 2º aspecto solo si tiene ≥3 cartas (para Spider-Woman dual aspect)
+      const importedAspects = sortedAspects
+        .filter(([,count], i) => i === 0 || (count as number) >= 3)
+        .map(([aspect]) => aspect)
+        .slice(0, 2);
 
       // - 8. Eliminar cartas del propio héroe (se auto-añaden en DeckEditor) -
       if (matchedHero && HERO_CARDS[matchedHero]) {

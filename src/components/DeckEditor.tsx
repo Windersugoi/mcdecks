@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
-import { ASPECT_LIST, MULTI_ASPECT_HEROES, displayAspect, DECK_MIN, DECK_MAX, HERO_SETS_BY_CYCLE, HERO_TO_SET } from '@/data/constants';
+import { ASPECT_LIST, MULTI_ASPECT_HEROES, displayAspect, DECK_MIN, DECK_MAX, HERO_SETS_BY_CYCLE, HERO_TO_SET, COMING_SOON_HEROES } from '@/data/constants';
 import { aspectColor, deckTitleColor, usedElsewhere } from '@/utils/deckUtils';
 import { Colors, Radius, Spacing } from '@/styles/theme';
 import { Pill } from './Pill';
@@ -191,14 +191,18 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
             <Text style={s.cycleLabel}>{cycle}</Text>
             {heroes.map(h => {
               const hCode = HERO_TO_SET[h];
-              const owned = localShowAll || !hCode || !!ownedSets[hCode];
+              const owned = localShowAll || !hCode || !!ownedSets[hCode] || COMING_SOON_HEROES.has(h);
               const setName = hCode ? (SET_CATALOG.find(x => x.code === hCode)?.name ?? hCode) : null;
+              const isSoon = COMING_SOON_HEROES.has(h);
               return (
                 <Pressable key={h} onPress={() => { update({ hero: h }); setNameDraft(h); }}
-                  style={[s.heroRow, !owned && s.heroRowMissing]}>
+                  style={[s.heroRow, !owned && !isSoon && s.heroRowMissing, isSoon && s.heroRowSoon]}>
                   <View style={{ flex: 1 }}>
-                    <Text style={[s.heroName, !owned && { color: Colors.textMuted }]}>{h}</Text>
-                    {!owned && setName && <Text style={s.missingSet}>⚠ Missing: {setName}</Text>}
+                    <Text style={[s.heroName, !owned && !isSoon && { color: Colors.textMuted }]}>{h}</Text>
+                    {isSoon
+                      ? <Text style={s.soonLabel}>★ Coming Soon — cards not yet on marvelcdb</Text>
+                      : (!owned && setName && <Text style={s.missingSet}>⚠ Missing: {setName}</Text>)
+                    }
                   </View>
                   {MULTI_ASPECT_HEROES[h] && <Text style={s.specialBadge}>Special</Text>}
                   <Text style={{ color: Colors.textMuted, marginLeft: 8 }}>→</Text>
@@ -411,6 +415,8 @@ const s = StyleSheet.create({
   heroName:{fontSize:14,fontWeight:'600',color:Colors.text},
   cycleLabel:{fontSize:11,color:Colors.textMuted,fontWeight:'700',marginBottom:4,marginTop:8,textTransform:'uppercase',letterSpacing:0.5},
   specialBadge:{fontSize:10,color:Colors.warning,borderWidth:1,borderColor:Colors.warning,borderRadius:4,paddingHorizontal:5,paddingVertical:2},
+  heroRowSoon:{borderColor:Colors.info+'44',backgroundColor:'#0d1220'},
+  soonLabel:{fontSize:11,color:Colors.info,marginTop:1},
   missingSet:{fontSize:11,color:Colors.warning},
   summaryCard:{borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:Colors.surface,gap:4},
   summaryRow:{flexDirection:'row',justifyContent:'space-between'},

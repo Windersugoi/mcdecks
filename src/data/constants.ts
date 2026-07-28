@@ -29,3 +29,10 @@ export const MODULAR_LIST = [
 export const DECK_MIN = 40;
 export const DECK_MAX = 50;
 export const COMING_SOON_CYCLES = ['Fear No Evil'];
+
+// Héroes cuyas cartas aún no están disponibles en marvelcdb
+// Aparecen en el selector con badge "★ Soon" — funcionales cuando salgan
+export const COMING_SOON_HEROES = new Set([
+  'Daredevil', 'Jessica Jones', 'Luke Cage',
+  'Shadowland', 'Elektra', 'Iron Fist',
+]);
