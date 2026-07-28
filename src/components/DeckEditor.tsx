@@ -134,28 +134,22 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const countColor = deckFull ? Colors.danger : deckReady ? Colors.success : Colors.warning;
 
   const poolCards = useMemo(() => {
-    return ASPECT_CARDS.filter(c => {
+    const filtered = ASPECT_CARDS.filter(c => {
       if (deck.cards[c.id]) return false;
       // Collection filter
       const inCollection = c.setCode ? !!ownedSets[c.setCode] : true;
       if (!localShowAll && !inCollection) return false;
-      // Aspect filter:
-      // - Sin selección → mostrar todo
-      // - Basic seleccionado solo → solo básicas
-      // - Aspecto principal (Justice, etc.) → ese aspecto + Basic siempre visible
-      // - Aspecto + Basic seleccionados → mismo resultado
-      if (deck.aspects.length > 0) {
-        const mainAspects = deck.aspects.filter(a => a !== 'Basic');
-        const basicSelected = deck.aspects.includes('Basic');
-        if (mainAspects.length > 0) {
-          // Aspecto principal: mostrar ese aspecto + Basic siempre
-          if (c.aspect !== 'Basic' && !mainAspects.includes(c.aspect ?? '')) return false;
-        } else if (basicSelected) {
-          // Solo Basic seleccionado: mostrar solo básicas
-          if (c.aspect !== 'Basic') return false;
-        }
+      // Aspect filter: usa activeAspect que tiene en cuenta las cartas del mazo
+      // (si deseleccionas un aspecto pero tienes cartas de ese aspecto, sigue filtrando)
+      const basicOnly = deck.aspects.includes('Basic') && !activeAspect;
+      if (basicOnly) {
+        // Solo Basic seleccionado explícitamente sin ningún otro aspecto activo
+        if (c.aspect !== 'Basic') return false;
+      } else if (activeAspect) {
+        // Hay un aspecto activo: mostrar solo ese aspecto + Basic siempre
+        if (c.aspect !== 'Basic' && c.aspect !== activeAspect) return false;
       }
-      // Sin selección = mostrar todo
+      // Sin aspecto activo y sin Basic solo = mostrar todo
       const q = search.toLowerCase();
       if (q && !c.name.toLowerCase().includes(q)) return false;
       if (typeFilter !== 'All' && c.type !== typeFilter) return false;
