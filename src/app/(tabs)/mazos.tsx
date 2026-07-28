@@ -30,19 +30,19 @@ export default function MazosScreen() {
     setImporting(true);
     setImportMsg(null);
     try {
-      // ── 1. Extraer ID ─────────────────────────────────────────────────────
+      // - 1. Extraer ID -
       const urlMatch = importUrl.match(/\/view\/(\d+)/) ||
                        importUrl.match(/\/(\d{3,})/) ||
                        importUrl.match(/^(\d+)$/);
       if (!urlMatch) throw new Error('Enter a valid deck URL or ID');
       const deckId = urlMatch[1];
 
-      // ── 2. Obtener el mazo de marvelcdb ───────────────────────────────────
+      // - 2. Obtener el mazo de marvelcdb -
       const deckResp = await fetch(`https://marvelcdb.com/api/public/decklist/${deckId}`);
       if (!deckResp.ok) throw new Error(`Deck not found (${deckResp.status}). Make sure it is public.`);
       const mcdbDeck = await deckResp.json();
 
-      // ── 3. Obtener lista completa de cartas de marvelcdb ──────────────────
+      // - 3. Obtener lista completa de cartas de marvelcdb -
       // Esto da los nombres reales de cada carta por su código
       const cardsResp = await fetch('https://marvelcdb.com/api/public/cards/');
       const mcdbAllCards: any[] = cardsResp.ok ? await cardsResp.json() : [];
@@ -53,7 +53,7 @@ export default function MazosScreen() {
         if (card.code && card.name) codeToName[card.code] = card.name;
       }
 
-      // ── 4. Mapa: nombre → nuestro cardId (solo ASPECT_CARDS) ─────────────
+      // - 4. Mapa: nombre → nuestro cardId (solo ASPECT_CARDS) -
       // Normalizar: quitar puntuación y espacios extra para matching flexible
       const normalize = (s: string) => s.toLowerCase()
         .replace(/['".,!?;:()\/\[\]{}-]/g, ' ')
@@ -77,7 +77,8 @@ export default function MazosScreen() {
           if (!nameToOurId[exact]) nameToOurId[exact] = c.id;
           if (!normToOurId[norm])  normToOurId[norm]  = c.id;
         }
-      }───────────────────────────
+      }
+
       const importedCards: Record<string, number> = {};
       const missing: string[] = [];
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
@@ -97,7 +98,7 @@ export default function MazosScreen() {
         }
       }
 
-      // ── 6. Detectar héroe ─────────────────────────────────────────────────
+      // - 6. Detectar héroe -
       let matchedHero: string | null = null;
       const heroKeys = Object.keys(HERO_CARDS);
 
@@ -126,7 +127,7 @@ export default function MazosScreen() {
         matchedHero = heroKeys.find(h => deckName.includes(h.toLowerCase())) ?? null;
       }
 
-      // ── 7. Detectar aspecto de las cartas importadas ──────────────────────
+      // - 7. Detectar aspecto de las cartas importadas -
       const aspectsFound = new Set<string>();
       for (const cardId of Object.keys(importedCards)) {
         const card = ASPECT_CARDS.find(c => c.id === cardId);
@@ -136,7 +137,7 @@ export default function MazosScreen() {
       }
       const importedAspects = [...aspectsFound].slice(0, 2);
 
-      // ── 8. Eliminar cartas del propio héroe (se auto-añaden en DeckEditor) ──
+      // - 8. Eliminar cartas del propio héroe (se auto-añaden en DeckEditor) -
       if (matchedHero && HERO_CARDS[matchedHero]) {
         const heroCardIds = new Set(HERO_CARDS[matchedHero].map(c => c.id));
         for (const id of Object.keys(importedCards)) {
@@ -144,7 +145,7 @@ export default function MazosScreen() {
         }
       }
 
-      // ── 9. Crear mazo ─────────────────────────────────────────────────────
+      // - 9. Crear mazo -
       const newId = 'd' + Date.now();
       setDecks(prev => [...prev, {
         id: newId,
