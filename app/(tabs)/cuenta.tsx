@@ -18,7 +18,8 @@ const CYCLE_GROUPS: { label: string; codes: string[] }[] = [
   { label: 'The Age of Apocalypse — Cycle 8',       codes: ['X:AoA','X:I','X:J','X:N','X:M'] },
   { label: 'Agents of S.H.I.E.L.D. — Cycle 9',     codes: ['S:AoS','BP','W:Si','S:F','S:WS','TT2'] },
   { label: 'Civil War — Cycle 10',                  codes: ['CW','SS','A:WMn','A:He'] },
-  { label: 'Fear No Evil — Cycle 11 ★ Coming Soon', codes: ['D:FNE','D:JJ','D:LC','D:SH','D:EL','D:IF'] },
+  { label: 'Fear No Evil — Cycle 11',              codes: ['D:FNE','D:JJ','D:LC'] },
+  { label: 'Cycle 11 (Coming Soon)',                 codes: ['D:SH','D:EL','D:IF'] },
   { label: 'Modules',                               codes: ['R'] },
 ];
 

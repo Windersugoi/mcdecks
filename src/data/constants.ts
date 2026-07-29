@@ -32,7 +32,7 @@ export const COMING_SOON_CYCLES = ['Fear No Evil'];
 
 // Héroes cuyas cartas aún no están disponibles en marvelcdb
 // Aparecen en el selector con badge "★ Soon" — funcionales cuando salgan
+// Héroes cuyas cartas aún no están disponibles en marvelcdb
 export const COMING_SOON_HEROES = new Set([
-  'Daredevil', 'Jessica Jones', 'Luke Cage',
   'Shadowland', 'Elektra', 'Iron Fist',
 ]);

@@ -2683,9 +2683,9 @@ export const SET_CATALOG: SetInfo[] = [
   { code: 'SS', name: 'Synthezoid Smackdown', nameEs: 'Synthezoid Smackdown', cycle: 'Cycle 10', type: 'scenario', totalCards: 8, },
   { code: 'A:WMn', name: 'Wonder Man', nameEs: 'Wonder Man', cycle: 'Cycle 10', type: 'hero', totalCards: 35, },
   { code: 'A:He', name: 'Hercules', nameEs: 'Hércules', cycle: 'Cycle 10', type: 'hero', totalCards: 41, },
-  { code: 'D:FNE', name: 'Fear No Evil ★ Coming Soon', nameEs: 'Fear No Evil ★ Próximamente', cycle: 'Fear No Evil', type: 'campaign', totalCards: 68, comingSoon: true, },
-  { code: 'D:JJ', name: 'Jessica Jones', nameEs: 'Jessica Jones', cycle: 'Cycle 11', type: 'hero', totalCards: 32, comingSoon: true, },
-  { code: 'D:LC', name: 'Luke Cage', nameEs: 'Luke Cage', cycle: 'Cycle 11', type: 'hero', totalCards: 21, comingSoon: true, },
+  { code: 'D:FNE', name: 'Fear No Evil ★ Coming Soon', nameEs: 'Fear No Evil ★ Próximamente', cycle: 'Fear No Evil', type: 'campaign', totalCards: 68, },
+  { code: 'D:JJ', name: 'Jessica Jones', nameEs: 'Jessica Jones', cycle: 'Cycle 11', type: 'hero', totalCards: 32, },
+  { code: 'D:LC', name: 'Luke Cage', nameEs: 'Luke Cage', cycle: 'Cycle 11', type: 'hero', totalCards: 21, },
 ];
 
 export const HERO_SETS_BY_CYCLE: Record<string, string[]> = {
