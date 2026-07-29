@@ -256,6 +256,15 @@ export default function MazosScreen() {
                 </View>
                 {!valid && <View style={s.badge}><Text style={s.badgeTxt}>Incomplete</Text></View>}
               </Pressable>
+              {/* 📌 Reclamar cartas */}
+              <Pressable
+                onPress={() => setDecks(prev => prev.map(d =>
+                  d.id === deck.id ? { ...d, physical: !d.physical } : d
+                ))}
+                style={[s.claimBtn, deck.physical && s.claimBtnActive]}
+                hitSlop={8}>
+                <Text style={s.claimIcon}>{deck.physical ? '📌' : '📎'}</Text>
+              </Pressable>
               {/* 🗑 Borrar */}
               <Pressable onPress={() => confirmDelete(deck.id, deck.name)} style={s.trashBtn} hitSlop={8}>
                 <Text style={s.trashIcon}>🗑</Text>
@@ -318,8 +327,14 @@ const s = StyleSheet.create({
   badgeTxt:{fontSize:11,color:Colors.danger},
   trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:Colors.border},
   trashIcon:{fontSize:18,opacity:0.5},
+  claimBtn:{width:40,justifyContent:'center',alignItems:'center'},
+  claimBtnActive:{backgroundColor:Colors.warning+'22'},
+  claimIcon:{fontSize:16,opacity:0.7},
   newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:Colors.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
   newBtnTxt:{fontSize:14,color:Colors.textSub},
+  claimBtn:{padding:8,borderRadius:Radius.sm,borderWidth:1,borderColor:'transparent'},
+  claimBtnActive:{borderColor:Colors.warning+'88',backgroundColor:Colors.warning+'22'},
+  claimBtnTxt:{fontSize:16},
   importSection:{borderWidth:2,borderColor:Colors.info,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:'#0d1a2d',gap:10},
   importTitle:{fontSize:14,fontWeight:'700',color:Colors.info},
   importRow2:{flexDirection:'row',gap:8,alignItems:'center'},

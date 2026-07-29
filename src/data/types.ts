@@ -11,12 +11,14 @@ export interface Card {
   isIdentity?: boolean;
   imgsrc?: string;
 }
+
 export interface DeckCards { [cardId: string]: number; }
 export interface VillainProgress { defeated: boolean; modular: string[]; }
 export interface CampaignProgress { completed: boolean; entriesCompleted: { [villain: string]: boolean }; }
 export interface Deck {
   id: string; name: string; hero: string | null; aspects: string[];
   cards: DeckCards;
+  physical?: boolean; // true = estas cartas están físicamente en este mazo
   villains: { [villain: string]: VillainProgress };
   campaigns: { [campaignId: string]: CampaignProgress };
 }

@@ -60,19 +60,23 @@ const VILLAIN_URLS: Record<string, string> = {
   'Hobgoblin':         MCDB + '27096.png',
   'Scorpion':          MCDB + '27098.png',
   'Vulture':           MCDB + '27099.png',
+  'Venom Goblin':      MCDB + '27113.png',
   // Mutant Genesis (pack 32)
   'Sabretooth':        MCDB + '32060.png',
+  'Sentinel':          MCDB + '32084.png',
   'Master Mold':       MCDB + '32109.png',
   'Magneto (V)':       MCDB + '32138.png',
   // Mojo (pack 39)
   'Mojo':              MCDB + '39022.png',
-  // Nexus Event (pack 40)
+  // NeXt Evolution (pack 40)
   'Juggernaut':        MCDB + '40118.png',
+  'Mister Sinister':   MCDB + '40136.png',
+  'Stryfe':            MCDB + '40163.png',
   // Age of Apocalypse (pack 45)
   'Unus':              MCDB + '45059.png',
   'Four Horsemen':     MCDB + '45085.png',
   'Dark Beast':        MCDB + '45118.png',
-  'Apocalypse':        MCDB + '45103a.png',
+  'Apocalypse':        MCDB + '45101a.png',
   // Agents of SHIELD (pack 50)
   'Black Widow (V)':   MCDB + '50064.png',
   // Civil War (pack 56)
