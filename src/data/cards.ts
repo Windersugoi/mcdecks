@@ -1,5 +1,5 @@
-// MCDecks - Full Card Database (v12 - D:FNE = pack 60)
-// Ronin (P) = 60053.png, Fear No Evil cartas con imgsrc
+// MCDecks - Full Card Database (v13 - Tigra/Hulkling separated)
+// CW_HERO_RANGES: Tigra=1-9, Hulkling=29-40
 import { Card, SetInfo } from './types';
 
 export const HERO_CARDS: Record<string, Card[]> = {
@@ -844,31 +844,6 @@ export const HERO_CARDS: Record<string, Card[]> = {
     { id: 'S:WS_10_2120', name: 'Winter Mask', type: 'SoldierUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/54010.png' },
     { id: 'S:WS_11_2121', name: 'Winter Rifle', type: 'SoldierUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/54011.png' },
   ],
-  "Hulkling": [
-    { id: 'CW_1A_2144', name: 'Tigra', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56001a.png' },
-    { id: 'CW_1B_2145', name: 'Greer Nelson', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56001b.png' },
-    { id: 'CW_2_2146', name: 'Moon Knight / Marc Spector (H)', type: 'TigraAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56002.png' },
-    { id: 'CW_3_2147', name: 'Precinct HQ', type: 'TigraSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56003.png' },
-    { id: 'CW_4_2148', name: "Cat's Head Amulet", type: 'TigraUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56004.png' },
-    { id: 'CW_5_2149', name: 'Sharp Claws', type: 'TigraUpgrade', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56005.png' },
-    { id: 'CW_6_2150', name: 'Cat-Like Reflexes', type: 'TigraUpgrade', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56006.png' },
-    { id: 'CW_7_2151', name: 'Hunted (H)', type: 'TigraUpgrade', cost: null, qty: 3, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56007.png' },
-    { id: 'CW_8_2152', name: 'Tooth and Claw', type: 'TigraEvent', cost: null, qty: 3, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56008.png' },
-    { id: 'CW_9_2153', name: 'Feline Senses', type: 'TigraEvent', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56009.png' },
-    { id: 'CW_29A_2173', name: 'Teddy Altman', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029a.png' },
-    { id: 'CW_29B_2174', name: 'Hulkling', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029b.png' },
-    { id: 'CW_30_2175', name: 'Wiccan / William Kaplan (H)', type: 'HulklingAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56030.png' },
-    { id: 'CW_31_2176', name: 'Altman Residence', type: 'HulklingSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56031.png' },
-    { id: 'CW_32_2177', name: 'Winged Shape', type: 'HulklingUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56032.png' },
-    { id: 'CW_33_2178', name: 'Hulk Shape', type: 'HulklingUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56033.png' },
-    { id: 'CW_34_2179', name: 'Armored Shape', type: 'HulklingUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56034.png' },
-    { id: 'CW_35_2180', name: 'Imitation Shape', type: 'HulklingUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56035.png' },
-    { id: 'CW_36_2181', name: 'Alien Physiology', type: 'HulklingUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56036.png' },
-    { id: 'CW_37_2182', name: 'Shapeshifter Strike', type: 'HulklingEvent', cost: null, qty: 3, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56037.png' },
-    { id: 'CW_38_2183', name: 'Armored Defense', type: 'HulklingEvent', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56038.png' },
-    { id: 'CW_39_2184', name: 'Impersonation', type: 'HulklingEvent', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56039.png' },
-    { id: 'CW_40_2185', name: 'Shapeshifter', type: 'HulklingEvent', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56040.png' },
-  ],
   "Tigra": [
     { id: 'CW_1A_2144', name: 'Tigra', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56001a.png' },
     { id: 'CW_1B_2145', name: 'Greer Nelson', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56001b.png' },
@@ -880,6 +855,8 @@ export const HERO_CARDS: Record<string, Card[]> = {
     { id: 'CW_7_2151', name: 'Hunted (H)', type: 'TigraUpgrade', cost: null, qty: 3, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56007.png' },
     { id: 'CW_8_2152', name: 'Tooth and Claw', type: 'TigraEvent', cost: null, qty: 3, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56008.png' },
     { id: 'CW_9_2153', name: 'Feline Senses', type: 'TigraEvent', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56009.png' },
+  ],
+  "Hulkling": [
     { id: 'CW_29A_2173', name: 'Teddy Altman', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029a.png' },
     { id: 'CW_29B_2174', name: 'Hulkling', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029b.png' },
     { id: 'CW_30_2175', name: 'Wiccan / William Kaplan (H)', type: 'HulklingAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56030.png' },
@@ -2565,7 +2542,7 @@ export const NEMESIS_CARDS: Record<string, Card[]> = {
     { id: 'S:WS_30_2140', name: 'High-Tech Armament', type: '(S)', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/54030.png' },
     { id: 'S:WS_31_2141', name: 'Hydra Mercenary', type: 'SoldierMinion', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/54031.png' },
   ],
-  "Hulkling": [
+  "Tigra": [
     { id: 'CW_23_2167', name: 'In Too Deep', type: 'TigraObligation', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56023.png' },
     { id: 'CW_24_2168', name: 'The Hood', type: '(S)', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56024.png' },
     { id: 'CW_25_2169', name: 'Criminal Underworld', type: '(S)', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56025.png' },
@@ -2578,7 +2555,7 @@ export const NEMESIS_CARDS: Record<string, Card[]> = {
     { id: 'CW_57_2202', name: 'Fantastic Powers', type: '(S)', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56057.png' },
     { id: 'CW_58_2203', name: "You're Coming with Me!", type: '(S)', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56058.png' },
   ],
-  "Tigra": [
+  "Hulkling": [
     { id: 'CW_23_2167', name: 'In Too Deep', type: 'TigraObligation', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56023.png' },
     { id: 'CW_24_2168', name: 'The Hood', type: '(S)', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56024.png' },
     { id: 'CW_25_2169', name: 'Criminal Underworld', type: '(S)', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56025.png' },
@@ -2684,8 +2661,8 @@ export const SET_CATALOG: SetInfo[] = [
   { code: 'A:WMn', name: 'Wonder Man', nameEs: 'Wonder Man', cycle: 'Cycle 10', type: 'hero', totalCards: 35, },
   { code: 'A:He', name: 'Hercules', nameEs: 'Hércules', cycle: 'Cycle 10', type: 'hero', totalCards: 41, },
   { code: 'D:FNE', name: 'Fear No Evil ★ Coming Soon', nameEs: 'Fear No Evil ★ Próximamente', cycle: 'Fear No Evil', type: 'campaign', totalCards: 68, },
-  { code: 'D:JJ', name: 'Jessica Jones', nameEs: 'Jessica Jones', cycle: 'Cycle 11', type: 'hero', totalCards: 32, },
-  { code: 'D:LC', name: 'Luke Cage', nameEs: 'Luke Cage', cycle: 'Cycle 11', type: 'hero', totalCards: 21, },
+  { code: 'D:JJ', name: 'Jessica Jones', nameEs: 'Jessica Jones', cycle: 'Cycle 11', type: 'hero', totalCards: 32, comingSoon: true, },
+  { code: 'D:LC', name: 'Luke Cage', nameEs: 'Luke Cage', cycle: 'Cycle 11', type: 'hero', totalCards: 21, comingSoon: true, },
 ];
 
 export const HERO_SETS_BY_CYCLE: Record<string, string[]> = {
@@ -2707,7 +2684,7 @@ export const HERO_SETS_BY_CYCLE: Record<string, string[]> = {
   "Cycle 8": ["Iceman", "Jubilee", "Nightcrawler", "Magneto"],
   "Agents of S.H.I.E.L.D.": ["Maria Hill"],
   "Cycle 9": ["Shuri", "Silk", "Falcon", "Winter Soldier"],
-  "Civil War": ["Hulkling", "Tigra"],
+  "Civil War": ["Tigra", "Hulkling"],
   "Cycle 10": ["Wonder Man", "Hercules"],
   "Fear No Evil": ["Daredevil"],
   "Cycle 11": ["Jessica Jones", "Luke Cage"],
@@ -2798,11 +2775,8 @@ export const HERO_TO_SET: Record<string, string> = {
   "She-Hulk": 'Core',
   "Iron Man": 'Core',
   "Black Panther": 'Core',
-  "Spider-Man": 'Core',
-  "Captain Marvel": 'Core',
-  "Iron Man": 'Core',
-  "She-Hulk": 'Core',
-  "Black Panther": 'Core',
+  "Tigra": 'CW',
+  "Hulkling": 'CW',
   "Captain America": 'A:CA',
   "Ms. Marvel": 'C:MM',
   "Thor": 'A:T',
@@ -2853,8 +2827,6 @@ export const HERO_TO_SET: Record<string, string> = {
   "Shuri": 'BP',
   "Falcon": 'S:F',
   "Winter Soldier": 'S:WS',
-  "Hulkling": 'CW',
-  "Tigra": 'CW',
   "Daredevil": 'D:FNE',
   "Jessica Jones": 'D:JJ',
   "Luke Cage": 'D:LC',

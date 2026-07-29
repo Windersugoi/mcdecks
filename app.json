@@ -9,11 +9,7 @@
     "icon": "./assets/icon.png",
     "android": {
       "package": "com.mcdecks.app",
-      "icon": "./assets/icon.png",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f0f0d"
-      }
+      "icon": "./assets/icon.png"
     },
     "plugins": [
       "expo-router"
