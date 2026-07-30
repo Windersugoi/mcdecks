@@ -60,24 +60,4 @@ export const Radius = {
 };
 
 // ── Modo claro ────────────────────────────────────────────────────────────────
-export const LightColors = {
-  bg:           '#f4f4f2',
-  surface:      '#ffffff',
-  surface2:     '#ebebea',
-  text:         '#111110',
-  textSub:      '#444440',
-  textMuted:    '#888880',
-  border:       '#d8d8d6',
-  borderStrong: '#bbbbba',
-  info:         '#1e6fba',
-  success:      '#1d8a4a',
-  warning:      '#b85a00',
-  danger:       '#c0392b',
-  warningBg:    '#fff7ed',
-  aspects: {
-    Aggression: '#c0392b', Justice: '#27ae60',
-    Leadership: '#2980b9', Protection: '#8e44ad',
-    Basic: '#636e72', Pool: '#9b2d8a',
-  },
-};
 export const DarkColors = Colors;
