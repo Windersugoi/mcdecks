@@ -1,4 +1,3 @@
-// Paleta oscura (por defecto)
 export const DarkColors = {
   bg:           '#0f0f0d',
   surface:      '#1a1a17',
@@ -15,15 +14,14 @@ export const DarkColors = {
   info:         '#378ADD',
   aspects: {
     Aggression:  '#D94F4F',
-    Justice:     '#4F9BD9',
-    Leadership:  '#4FC87A',
-    Protection:  '#B07FD4',
+    Justice:     '#D4A820',
+    Leadership:  '#378ADD',
+    Protection:  '#4DC87A',
     Basic:       '#888880',
     Pool:        '#CC6699',
   },
 };
 
-// Paleta clara
 export const LightColors = {
   bg:           '#f5f5f0',
   surface:      '#ffffff',
@@ -40,15 +38,14 @@ export const LightColors = {
   info:         '#1a5fb5',
   aspects: {
     Aggression:  '#c03030',
-    Justice:     '#1a6aaa',
-    Leadership:  '#1a8040',
-    Protection:  '#7040aa',
+    Justice:     '#b08a10',
+    Leadership:  '#1a5fb5',
+    Protection:  '#1a8040',
     Basic:       '#555550',
     Pool:        '#aa3377',
   },
 };
 
-// Colors = dark por defecto (compatibilidad con componentes existentes)
 export const Colors = DarkColors;
 
 export const Spacing = {

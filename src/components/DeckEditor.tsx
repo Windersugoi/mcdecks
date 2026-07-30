@@ -150,14 +150,17 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       const inCollection = c.setCode ? !!ownedSets[c.setCode] : true;
       if (!localShowAll && !inCollection) return false;
       // Aspect filter: usa activeAspect que tiene en cuenta las cartas del mazo
-      // (si deseleccionas un aspecto pero tienes cartas de ese aspecto, sigue filtrando)
-      const basicOnly = deck.aspects.includes('Basic') && !activeAspect;
+      const basicSelected = deck.aspects.includes('Basic');
+      const basicOnly = basicSelected && !activeAspect;
       if (basicOnly) {
-        // Solo Basic seleccionado explícitamente sin ningún otro aspecto activo
         if (c.aspect !== 'Basic') return false;
       } else if (activeAspect) {
-        // Hay un aspecto activo: mostrar solo ese aspecto + Basic siempre
-        if (c.aspect !== 'Basic' && c.aspect !== activeAspect) return false;
+        // Solo mostrar el aspecto activo; Basic solo si está seleccionado explícitamente
+        if (c.aspect === 'Basic') {
+          if (!basicSelected) return false;
+        } else if (c.aspect !== activeAspect) {
+          return false;
+        }
       }
       // Sin aspecto activo y sin Basic solo = mostrar todo
       const q = search.toLowerCase();
