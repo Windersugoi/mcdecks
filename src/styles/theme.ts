@@ -27,7 +27,7 @@ export const DarkColors = {
 export const LightColors = {
   bg:           '#f5f5f0',
   surface:      '#ffffff',
-  surface2:     '#ebebе6',
+  surface2:     '#ebebea',
   text:         '#18180f',
   textSub:      '#3a3a30',
   textMuted:    '#7a7a70',
@@ -48,7 +48,7 @@ export const LightColors = {
   },
 };
 
-// Por defecto exportamos dark para compatibilidad
+// Colors = dark por defecto (compatibilidad con componentes existentes)
 export const Colors = DarkColors;
 
 export const Spacing = {
@@ -58,6 +58,3 @@ export const Spacing = {
 export const Radius = {
   sm: 6, md: 10, lg: 16, xl: 24,
 };
-
-// ── Modo claro ────────────────────────────────────────────────────────────────
-export const DarkColors = Colors;
