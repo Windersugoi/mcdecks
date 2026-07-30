@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Switch, Pressable } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { SET_CATALOG } from '@/data/cards';
-import { Colors, Radius, Spacing } from '@/styles/theme';
+import { DarkColors, LightColors, Radius, Spacing } from '@/styles/theme';
 
 // Cada grupo = caja del ciclo (primera) + hero packs del ciclo
 // La caja es la primera entrada y va destacada
@@ -28,11 +28,13 @@ const TYPE_ICON: Record<string,string> = {
 };
 
 export default function CuentaScreen() {
-  const { ownedSets, setOwnedSets } = useApp();
+  const { ownedSets, setOwnedSets, lightMode, setLightMode } = useApp();
 
   // Índice de sets por código para acceso rápido
   const setByCode: Record<string, typeof SET_CATALOG[0]> = {};
   for (const s of SET_CATALOG) setByCode[s.code] = s;
+
+  const Colors = lightMode ? LightColors : DarkColors;
 
   const totalOwned = SET_CATALOG.filter(s => ownedSets[s.code]).length;
   const totalCards = SET_CATALOG.filter(s => ownedSets[s.code]).reduce((a,s) => a + s.totalCards, 0);
@@ -66,9 +68,20 @@ export default function CuentaScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.container}>
-        <Text style={s.title}>Mi Colección</Text>
+        <View style={{ flexDirection:'row', justifyContent:'space-between', alignItems:'center' }}>
+          <Text style={[s.title, { color: Colors.text }]}>Mi Colección</Text>
+          <View style={{ flexDirection:'row', alignItems:'center', gap:8 }}>
+            <Text style={{ fontSize:12, color: Colors.textMuted }}>{lightMode ? '☀️' : '🌙'}</Text>
+            <Switch
+              value={lightMode}
+              onValueChange={setLightMode}
+              trackColor={{ false: Colors.border, true: '#f0c040' }}
+              thumbColor={lightMode ? '#f0a000' : Colors.text}
+            />
+          </View>
+        </View>
 
-        <View style={s.statsRow}>
+        <View style={[s.statsRow, { backgroundColor: 'transparent' }]}>
           <View style={s.statCard}>
             <Text style={s.statNum}>{totalOwned}</Text>
             <Text style={s.statLabel}>Sets</Text>
@@ -158,7 +171,7 @@ export default function CuentaScreen() {
 }
 
 const s = StyleSheet.create({
-  safe: { flex:1, backgroundColor:Colors.bg },
+  safe: { flex:1 },
   container: { padding:Spacing.lg, gap:10, paddingBottom:40 },
   title: { fontSize:22, fontWeight:'700', color:Colors.text },
   statsRow: { flexDirection:'row', gap:10 },

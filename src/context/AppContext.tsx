@@ -40,6 +40,10 @@ interface AppCtx {
   dismissTutorial: (dontShowAgain?: boolean) => void;
   officialCampaigns: import('@/data/types').Campaign[];
   isLoading: boolean;
+  lightMode: boolean;
+  setLightMode: (v: boolean) => void;
+  lightMode: boolean;
+  setLightMode: (v: boolean) => void;
 }
 
 const AppContext = createContext<AppCtx | null>(null);
@@ -50,6 +54,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [ownedSets, setOwnedSets] = useState<OwnedSets>({ Core: true });
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [lightMode, setLightModeState] = useState(false);
+  const [lightMode, setLightModeState] = useState(false);
   const initialized = useRef(false);
 
   const activeDeck = decks.find(d => d.id === activeDeckId) ?? null;
@@ -58,11 +64,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadData() {
       try {
-        const [savedDecks, savedOwned, savedActive, tutorialSeen] = await Promise.all([
+        const [savedDecks, savedOwned, savedActive, tutorialSeen, savedLight] = await Promise.all([
           AsyncStorage.getItem(STORAGE_DECKS),
           AsyncStorage.getItem(STORAGE_OWNED),
           AsyncStorage.getItem(STORAGE_ACTIVE),
           AsyncStorage.getItem(STORAGE_TUTORIAL),
+          AsyncStorage.getItem('mcdecks_v1_lightmode'),
         ]);
 
         if (savedDecks) {
@@ -74,6 +81,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (savedOwned)  setOwnedSets(JSON.parse(savedOwned));
         if (savedActive) setActiveDeckId(savedActive);
         setShowTutorial(tutorialSeen !== 'true');
+        const savedLight = await AsyncStorage.getItem('mcdecks_v1_lightmode');
+        if (savedLight === 'true') setLightModeState(true);
+        if (savedLight === 'true') setLightModeState(true);
       } catch {
         setDecks(makeDefaultDecks());
         setShowTutorial(true);
@@ -128,6 +138,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       decks, setDecks, activeDeckId, setActiveDeckId, activeDeck,
       ownedSets, setOwnedSets, createDeck, makeDeckTracking,
       showTutorial, dismissTutorial, officialCampaigns, isLoading,
+      lightMode, setLightMode,
+      lightMode,
+      setLightMode: (v: boolean) => { setLightModeState(v); AsyncStorage.setItem('mcdecks_v1_lightmode', v ? 'true' : 'false').catch(()=>{}); },
     }}>
       {children}
     </AppContext.Provider>

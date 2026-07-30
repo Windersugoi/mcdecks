@@ -857,8 +857,8 @@ export const HERO_CARDS: Record<string, Card[]> = {
     { id: 'CW_9_2153', name: 'Feline Senses', type: 'TigraEvent', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56009.png' },
   ],
   "Hulkling": [
-    { id: 'CW_29A_2173', name: 'Teddy Altman', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029a.png' },
-    { id: 'CW_29B_2174', name: 'Hulkling', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029b.png' },
+    { id: 'CW_29A_2173', name: 'Teddy Altman', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029b.png' },
+    { id: 'CW_29B_2174', name: 'Hulkling', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/56029a.png' },
     { id: 'CW_30_2175', name: 'Wiccan / William Kaplan (H)', type: 'HulklingAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56030.png' },
     { id: 'CW_31_2176', name: 'Altman Residence', type: 'HulklingSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56031.png' },
     { id: 'CW_32_2177', name: 'Winged Shape', type: 'HulklingUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/56032.png' },
