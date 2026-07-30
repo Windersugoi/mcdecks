@@ -28,7 +28,7 @@ const TYPE_ICON: Record<string,string> = {
 };
 
 export default function CuentaScreen() {
-  const { ownedSets, setOwnedSets } = useApp();
+  const { ownedSets, setOwnedSets, lightMode, setLightMode } = useApp();
 
   // Índice de sets por código para acceso rápido
   const setByCode: Record<string, typeof SET_CATALOG[0]> = {};
@@ -66,7 +66,18 @@ export default function CuentaScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.container}>
-        <Text style={s.title}>Mi Colección</Text>
+        <View style={{ flexDirection:'row', justifyContent:'space-between', alignItems:'center' }}>
+          <Text style={s.title}>Mi Colección</Text>
+          <View style={{ flexDirection:'row', alignItems:'center', gap:6 }}>
+            <Text style={{ fontSize:11, color:Colors.textMuted }}>{lightMode ? 'Claro' : 'Oscuro'}</Text>
+            <Switch
+              value={lightMode}
+              onValueChange={setLightMode}
+              trackColor={{ false: Colors.border, true: Colors.warning }}
+              thumbColor={Colors.text}
+            />
+          </View>
+        </View>
 
         <View style={s.statsRow}>
           <View style={s.statCard}>

@@ -40,6 +40,7 @@ interface AppCtx {
   dismissTutorial: (dontShowAgain?: boolean) => void;
   officialCampaigns: import('@/data/types').Campaign[];
   isLoading: boolean;
+  lightMode: boolean;
   setLightMode: (v: boolean) => void;
 }
 
@@ -51,6 +52,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [ownedSets, setOwnedSets] = useState<OwnedSets>({ Core: true });
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [lightMode, setLightModeRaw] = useState(false);
   const initialized = useRef(false);
 
   const activeDeck = decks.find(d => d.id === activeDeckId) ?? null;
@@ -76,7 +78,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (savedOwned)  setOwnedSets(JSON.parse(savedOwned));
         if (savedActive) setActiveDeckId(savedActive);
         setShowTutorial(tutorialSeen !== 'true');
-        if (savedLight === 'true') setLightModeState(true);
+        const savedLight = await AsyncStorage.getItem('mcdecks_v1_lightmode');
+        if (savedLight === 'true') setLightModeRaw(true);
       } catch {
         setDecks(makeDefaultDecks());
         setShowTutorial(true);
@@ -115,6 +118,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return id;
   }
 
+  function setLightMode(v: boolean) {
+    setLightModeRaw(v);
+    AsyncStorage.setItem('mcdecks_v1_lightmode', v ? 'true' : 'false').catch(() => {});
+  }
+
   function dismissTutorial(dontShowAgain = false) {
     setShowTutorial(false);
     if (dontShowAgain) {
@@ -131,7 +139,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       decks, setDecks, activeDeckId, setActiveDeckId, activeDeck,
       ownedSets, setOwnedSets, createDeck, makeDeckTracking,
       showTutorial, dismissTutorial, officialCampaigns, isLoading,
-      setLightMode: (v: boolean) => { setLightModeState(v); AsyncStorage.setItem('mcdecks_v1_lightmode', v ? 'true' : 'false').catch(()=>{}); },
+      lightMode, setLightMode,
     }}>
       {children}
     </AppContext.Provider>
