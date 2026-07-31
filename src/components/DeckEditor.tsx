@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useMemo } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
 import { ASPECT_LIST, MULTI_ASPECT_HEROES, displayAspect, DECK_MIN, DECK_MAX, HERO_SETS_BY_CYCLE, HERO_TO_SET, COMING_SOON_HEROES } from '@/data/constants';
 import { aspectColor, deckTitleColor, usedElsewhere } from '@/utils/deckUtils';
 import { Colors, Radius, Spacing } from '@/styles/theme';
+import { useColors } from '@/hooks/useColors';
 import { Pill } from './Pill';
 import { DeckCardRow } from './DeckCardRow';
 import { PoolCardRow } from './PoolCardRow';
@@ -416,47 +417,48 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   );
 }
 
-const s = StyleSheet.create({
-  scroll:{flex:1,backgroundColor:Colors.bg},
+function getStyles(C: typeof import("@/styles/theme").DarkColors) {
+  return StyleSheet.create({
+  scroll:{flex:1,backgroundColor:C.bg},
   container:{padding:Spacing.lg,gap:14,paddingBottom:40},
-  backBtn:{alignSelf:'flex-start'},backTxt:{color:Colors.textSub,fontSize:13},
+  backBtn:{alignSelf:'flex-start'},backTxt:{color:C.textSub,fontSize:13},
   deckTitle:{fontSize:19,fontWeight:'700',borderBottomWidth:2},
-  heroTitle:{fontSize:18,fontWeight:'600',color:Colors.text},
-  sub:{fontSize:12,color:Colors.textMuted},
-  heroRow:{flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:Colors.border,borderRadius:Radius.md,padding:10,backgroundColor:Colors.surface,marginBottom:5},
-  heroRowMissing:{borderColor:Colors.warning+'44',backgroundColor:'#1a1500'},
-  heroName:{fontSize:14,fontWeight:'600',color:Colors.text},
-  cycleLabel:{fontSize:11,color:Colors.textMuted,fontWeight:'700',marginBottom:4,marginTop:8,textTransform:'uppercase',letterSpacing:0.5},
-  specialBadge:{fontSize:10,color:Colors.warning,borderWidth:1,borderColor:Colors.warning,borderRadius:4,paddingHorizontal:5,paddingVertical:2},
-  heroRowSoon:{borderColor:Colors.info+'44',backgroundColor:'#0d1220'},
-  soonLabel:{fontSize:11,color:Colors.info,marginTop:1},
-  missingSet:{fontSize:11,color:Colors.warning},
-  summaryCard:{borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:Colors.surface,gap:4},
+  heroTitle:{fontSize:18,fontWeight:'600',color:C.text},
+  sub:{fontSize:12,color:C.textMuted},
+  heroRow:{flexDirection:'row',alignItems:'center',borderWidth:1,borderColor:C.border,borderRadius:Radius.md,padding:10,backgroundColor:C.surface,marginBottom:5},
+  heroRowMissing:{borderColor:C.warning+'44',backgroundColor:'#1a1500'},
+  heroName:{fontSize:14,fontWeight:'600',color:C.text},
+  cycleLabel:{fontSize:11,color:C.textMuted,fontWeight:'700',marginBottom:4,marginTop:8,textTransform:'uppercase',letterSpacing:0.5},
+  specialBadge:{fontSize:10,color:C.warning,borderWidth:1,borderColor:C.warning,borderRadius:4,paddingHorizontal:5,paddingVertical:2},
+  heroRowSoon:{borderColor:C.info+'44',backgroundColor:'#0d1220'},
+  soonLabel:{fontSize:11,color:C.info,marginTop:1},
+  missingSet:{fontSize:11,color:C.warning},
+  summaryCard:{borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:C.surface,gap:4},
   summaryRow:{flexDirection:'row',justifyContent:'space-between'},
-  summaryLabel:{fontSize:13,fontWeight:'600',color:Colors.text},
+  summaryLabel:{fontSize:13,fontWeight:'600',color:C.text},
   summaryCount:{fontSize:14,fontWeight:'700'},
-  summaryDetail:{fontSize:11,color:Colors.textMuted},
-  sectionTitle:{fontSize:14,fontWeight:'600',color:Colors.text,marginBottom:6},
+  summaryDetail:{fontSize:11,color:C.textMuted},
+  sectionTitle:{fontSize:14,fontWeight:'600',color:C.text,marginBottom:6},
   sectionRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'baseline',marginBottom:6},
   counter:{fontSize:12},
-  row:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',borderWidth:1,borderColor:Colors.border,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:Colors.surface,marginBottom:6},
-  cardName:{fontSize:13,color:Colors.text},cardSub:{fontSize:11,color:Colors.textMuted},
-  lockedBadge:{borderWidth:1,borderColor:Colors.borderStrong,borderRadius:4,paddingHorizontal:6,paddingVertical:2},
-  lockedTxt:{fontSize:10,color:Colors.textMuted},
-  emptyHint:{fontSize:12,color:Colors.textMuted},
-  aspectSelector:{borderWidth:1,borderColor:Colors.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:Colors.surface,gap:8},
+  row:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',borderWidth:1,borderColor:C.border,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:C.surface,marginBottom:6},
+  cardName:{fontSize:13,color:C.text},cardSub:{fontSize:11,color:C.textMuted},
+  lockedBadge:{borderWidth:1,borderColor:C.borderStrong,borderRadius:4,paddingHorizontal:6,paddingVertical:2},
+  lockedTxt:{fontSize:10,color:C.textMuted},
+  emptyHint:{fontSize:12,color:C.textMuted},
+  aspectSelector:{borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:C.surface,gap:8},
   aspectSelectorHeader:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
-  aspectLocked:{fontSize:10,color:Colors.warning,flex:1,textAlign:'right'},
-  specialNote:{backgroundColor:Colors.warningBg,borderWidth:1,borderColor:Colors.warning+'44',borderRadius:Radius.sm,padding:Spacing.sm},
-  specialNoteTxt:{fontSize:11,color:Colors.warning},
+  aspectLocked:{fontSize:10,color:C.warning,flex:1,textAlign:'right'},
+  specialNote:{backgroundColor:C.warningBg,borderWidth:1,borderColor:C.warning+'44',borderRadius:Radius.sm,padding:Spacing.sm},
+  specialNoteTxt:{fontSize:11,color:C.warning},
   pillRow:{flexDirection:'row',flexWrap:'wrap',gap:6},
-  searchInput:{backgroundColor:Colors.surface,borderWidth:1,borderColor:Colors.border,borderRadius:Radius.sm,color:Colors.text,fontSize:13,paddingVertical:7,paddingHorizontal:10,marginBottom:6},
-  chip:{paddingVertical:4,paddingHorizontal:10,borderRadius:999,borderWidth:1,borderColor:Colors.border},
-  chipActive:{backgroundColor:Colors.surface2,borderColor:Colors.text},
-  chipTxt:{fontSize:12,color:Colors.textMuted},chipTxtActive:{color:Colors.text},
-  poolHint:{fontSize:11,color:Colors.textMuted,marginBottom:6},
-  smallBtn:{paddingVertical:7,paddingHorizontal:14,borderRadius:Radius.md,borderWidth:1,borderColor:Colors.borderStrong,backgroundColor:Colors.surface,alignSelf:'flex-start'},
-  smallBtnTxt:{fontSize:12,color:Colors.text},
-  exportBtn:{borderWidth:1,borderColor:Colors.borderStrong,borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:Colors.surface,marginTop:8},
-  exportTxt:{fontSize:13,color:Colors.text},
+  searchInput:{backgroundColor:C.surface,borderWidth:1,borderColor:C.border,borderRadius:Radius.sm,color:C.text,fontSize:13,paddingVertical:7,paddingHorizontal:10,marginBottom:6},
+  chip:{paddingVertical:4,paddingHorizontal:10,borderRadius:999,borderWidth:1,borderColor:C.border},
+  chipActive:{backgroundColor:C.surface2,borderColor:C.text},
+  chipTxt:{fontSize:12,color:C.textMuted},chipTxtActive:{color:C.text},
+  poolHint:{fontSize:11,color:C.textMuted,marginBottom:6},
+  smallBtn:{paddingVertical:7,paddingHorizontal:14,borderRadius:Radius.md,borderWidth:1,borderColor:C.borderStrong,backgroundColor:C.surface,alignSelf:'flex-start'},
+  smallBtnTxt:{fontSize:12,color:C.text},
+  exportBtn:{borderWidth:1,borderColor:C.borderStrong,borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.surface,marginTop:8},
+  exportTxt:{fontSize:13,color:C.text},
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, Switch, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
@@ -168,31 +168,32 @@ export default function CuentaScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  safe: { flex:1, backgroundColor:Colors.bg },
+function getStyles(C: typeof import("@/styles/theme").DarkColors) {
+  return StyleSheet.create({
+  safe: { flex:1, backgroundColor:C.bg },
   container: { padding:Spacing.lg, gap:10, paddingBottom:40 },
-  title: { fontSize:22, fontWeight:'700', color:Colors.text },
+  title: { fontSize:22, fontWeight:'700', color:C.text },
   statsRow: { flexDirection:'row', gap:10 },
-  statCard: { flex:1, borderWidth:1, borderColor:Colors.border, borderRadius:Radius.lg, padding:Spacing.md, backgroundColor:Colors.surface, alignItems:'center', gap:4 },
-  statNum: { fontSize:26, fontWeight:'700', color:Colors.text },
-  statLabel: { fontSize:12, color:Colors.textMuted },
-  groupCard: { borderWidth:1, borderColor:Colors.border, borderRadius:Radius.lg, backgroundColor:Colors.surface, overflow:'hidden' },
-  groupHeader: { flexDirection:'row', alignItems:'center', padding:Spacing.md, gap:10, backgroundColor:Colors.surface2 },
-  groupCheck: { width:22, height:22, borderRadius:6, borderWidth:2, borderColor:Colors.borderStrong, justifyContent:'center', alignItems:'center', flexShrink:0 },
-  groupCheckDone: { backgroundColor:Colors.success, borderColor:Colors.success },
-  groupCheckPartial: { borderColor:Colors.warning },
+  statCard: { flex:1, borderWidth:1, borderColor:C.border, borderRadius:Radius.lg, padding:Spacing.md, backgroundColor:C.surface, alignItems:'center', gap:4 },
+  statNum: { fontSize:26, fontWeight:'700', color:C.text },
+  statLabel: { fontSize:12, color:C.textMuted },
+  groupCard: { borderWidth:1, borderColor:C.border, borderRadius:Radius.lg, backgroundColor:C.surface, overflow:'hidden' },
+  groupHeader: { flexDirection:'row', alignItems:'center', padding:Spacing.md, gap:10, backgroundColor:C.surface2 },
+  groupCheck: { width:22, height:22, borderRadius:6, borderWidth:2, borderColor:C.borderStrong, justifyContent:'center', alignItems:'center', flexShrink:0 },
+  groupCheckDone: { backgroundColor:C.success, borderColor:C.success },
+  groupCheckPartial: { borderColor:C.warning },
   checkMark: { color:'#0f0f0d', fontSize:13, fontWeight:'700' },
-  checkMarkP: { color:Colors.warning, fontSize:14, fontWeight:'700' },
-  groupLabel: { flex:1, fontSize:13, fontWeight:'700', color:Colors.text },
-  groupCount: { fontSize:12, color:Colors.textMuted, flexShrink:0 },
-  setRow: { flexDirection:'row', alignItems:'center', padding:Spacing.sm, paddingHorizontal:Spacing.md, gap:8, borderTopWidth:1, borderTopColor:Colors.border },
+  checkMarkP: { color:C.warning, fontSize:14, fontWeight:'700' },
+  groupLabel: { flex:1, fontSize:13, fontWeight:'700', color:C.text },
+  groupCount: { fontSize:12, color:C.textMuted, flexShrink:0 },
+  setRow: { flexDirection:'row', alignItems:'center', padding:Spacing.sm, paddingHorizontal:Spacing.md, gap:8, borderTopWidth:1, borderTopColor:C.border },
   setRowBox: { backgroundColor:'#141412' },
   setIcon: { fontSize:16 },
   setInfo: { flex:1 },
-  setName: { fontSize:13, color:Colors.text },
-  setNameOff: { color:Colors.textMuted },
+  setName: { fontSize:13, color:C.text },
+  setNameOff: { color:C.textMuted },
   setNameBox: { fontWeight:'600' },
-  setSub: { fontSize:11, color:Colors.textMuted, marginTop:1 },
-  soonBadge: { borderWidth:1, borderColor:Colors.info+'66', borderRadius:4, paddingHorizontal:6, paddingVertical:3, backgroundColor:'#0d1220' },
-  soonTxt: { fontSize:10, color:Colors.info, fontWeight:'600' },
+  setSub: { fontSize:11, color:C.textMuted, marginTop:1 },
+  soonBadge: { borderWidth:1, borderColor:C.info+'66', borderRadius:4, paddingHorizontal:6, paddingVertical:3, backgroundColor:'#0d1220' },
+  soonTxt: { fontSize:10, color:C.info, fontWeight:'600' },
 });

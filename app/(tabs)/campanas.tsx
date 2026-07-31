@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
@@ -10,8 +10,11 @@ import { Campaign } from '@/data/types';
 import { DEFAULT_CAMPAIGNS_NORMAL, DEFAULT_CAMPAIGNS_EXPERT, COMMUNITY_CAMPAIGNS } from '@/data/campaigns';
 import { VILLAIN_LIST, MODULAR_LIST } from '@/data/constants';
 import { Colors, Radius, Spacing } from '@/styles/theme';
+import { useColors } from '@/hooks/useColors';
 
 export default function CampanasScreen() {
+  const C = useColors();
+  const s = useMemo(() => getStyles(C), [C]);
   const { decks, setDecks, activeDeck, officialCampaigns } = useApp();
   const [section, setSection] = useState<'oficiales'|'crear'|'aleatoria'|'comunidad'>('oficiales');
   const [expertMode, setExpertMode] = useState(false);
@@ -176,24 +179,25 @@ export default function CampanasScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  safe:{flex:1,backgroundColor:Colors.bg},container:{padding:Spacing.lg,gap:12,paddingBottom:30},
-  screenTitle:{fontSize:22,fontWeight:'700',color:Colors.text},
+function getStyles(C: typeof import("@/styles/theme").DarkColors) {
+  return StyleSheet.create({
+  safe:{flex:1,backgroundColor:C.bg},container:{padding:Spacing.lg,gap:12,paddingBottom:30},
+  screenTitle:{fontSize:22,fontWeight:'700',color:C.text},
   tabRow:{flexDirection:'row',gap:6,marginBottom:4},
-  tabChip:{paddingVertical:6,paddingHorizontal:14,borderRadius:999,borderWidth:1,borderColor:Colors.border},
-  tabChipActive:{backgroundColor:Colors.info,borderColor:Colors.info},
-  tabTxt:{fontSize:13,color:Colors.textMuted},tabTxtActive:{color:'#fff',fontWeight:'600'},
-  diffCard:{flexDirection:'row',alignItems:'center',gap:8,borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:Colors.surface},
-  diffLabel:{fontSize:13,fontWeight:'600',color:Colors.text},diffValue:{fontSize:13,fontWeight:'600',flex:1},
+  tabChip:{paddingVertical:6,paddingHorizontal:14,borderRadius:999,borderWidth:1,borderColor:C.border},
+  tabChipActive:{backgroundColor:C.info,borderColor:C.info},
+  tabTxt:{fontSize:13,color:C.textMuted},tabTxtActive:{color:'#fff',fontWeight:'600'},
+  diffCard:{flexDirection:'row',alignItems:'center',gap:8,borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:C.surface},
+  diffLabel:{fontSize:13,fontWeight:'600',color:C.text},diffValue:{fontSize:13,fontWeight:'600',flex:1},
   toggle:{width:40,height:22,borderRadius:11,position:'relative'},
-  toggleThumb:{position:'absolute',top:3,width:16,height:16,borderRadius:8,backgroundColor:Colors.text},
-  groupLabel:{fontSize:12,color:Colors.textMuted,fontWeight:'600'},
-  input:{backgroundColor:Colors.surface,borderWidth:1,borderColor:Colors.border,borderRadius:Radius.sm,color:Colors.text,fontSize:14,padding:Spacing.sm},
-  entryRow:{flexDirection:'row',alignItems:'center',borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:Colors.surface},
-  builderCard:{borderWidth:1,borderColor:Colors.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:Colors.surface,gap:6},
-  builderLabel:{fontSize:12,color:Colors.textMuted,fontWeight:'600'},
-  addBtn:{borderWidth:1,borderColor:Colors.borderStrong,borderRadius:Radius.md,padding:10,alignItems:'center',backgroundColor:Colors.surface2},
-  addBtnTxt:{fontSize:13,color:Colors.text},
-  commCard:{borderWidth:1,borderColor:Colors.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:Colors.surface,gap:4},
-  sub:{fontSize:12,color:Colors.textMuted},
+  toggleThumb:{position:'absolute',top:3,width:16,height:16,borderRadius:8,backgroundColor:C.text},
+  groupLabel:{fontSize:12,color:C.textMuted,fontWeight:'600'},
+  input:{backgroundColor:C.surface,borderWidth:1,borderColor:C.border,borderRadius:Radius.sm,color:C.text,fontSize:14,padding:Spacing.sm},
+  entryRow:{flexDirection:'row',alignItems:'center',borderWidth:1,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:C.surface},
+  builderCard:{borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:C.surface,gap:6},
+  builderLabel:{fontSize:12,color:C.textMuted,fontWeight:'600'},
+  addBtn:{borderWidth:1,borderColor:C.borderStrong,borderRadius:Radius.md,padding:10,alignItems:'center',backgroundColor:C.surface2},
+  addBtnTxt:{fontSize:13,color:C.text},
+  commCard:{borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:C.surface,gap:4},
+  sub:{fontSize:12,color:C.textMuted},
 });

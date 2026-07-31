@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Switch, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
@@ -7,6 +7,7 @@ import { deckTitleColor } from '@/utils/deckUtils';
 import { VILLAIN_SETS_BY_CYCLE, VILLAIN_TO_SET } from '@/data/constants';
 import { SET_CATALOG } from '@/data/cards';
 import { Colors, Radius, Spacing } from '@/styles/theme';
+import { useColors } from '@/hooks/useColors';
 
 // ── Imágenes locales (require estático — Metro las analiza en build time) ──────
 // Añade aquí cualquier imagen JPG que tengas en assets/villanos/
@@ -127,6 +128,8 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
 }
 
 export default function VillanosScreen() {
+  const C = useColors();
+  const s = useMemo(() => getStyles(C), [C]);
   const { decks, setDecks, activeDeck, ownedSets } = useApp();
   const [open, setOpen] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -262,41 +265,42 @@ export default function VillanosScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  safe:{flex:1,backgroundColor:Colors.bg},
+function getStyles(C: typeof import("@/styles/theme").DarkColors) {
+  return StyleSheet.create({
+  safe:{flex:1,backgroundColor:C.bg},
   container:{padding:Spacing.lg,gap:12,paddingBottom:30},
-  screenTitle:{fontSize:22,fontWeight:'700',color:Colors.text},
+  screenTitle:{fontSize:22,fontWeight:'700',color:C.text},
   headerRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
   toggleRow:{flexDirection:'row',alignItems:'center',gap:8},
-  toggleLabel:{fontSize:12,color:Colors.textMuted},
-  cycleLabel:{fontSize:11,color:Colors.textMuted,fontWeight:'700',marginBottom:6,marginTop:4,letterSpacing:0.5,textTransform:'uppercase'},
+  toggleLabel:{fontSize:12,color:C.textMuted},
+  cycleLabel:{fontSize:11,color:C.textMuted,fontWeight:'700',marginBottom:6,marginTop:4,letterSpacing:0.5,textTransform:'uppercase'},
   grid:{flexDirection:'row',flexWrap:'wrap',gap:8},
-  vCard:{width:'47%',borderWidth:1,borderColor:Colors.border,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:Colors.surface},
-  vCardDone:{borderColor:Colors.success+'66',backgroundColor:'#0d1a11'},
+  vCard:{width:'47%',borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
+  vCardDone:{borderColor:C.success+'66',backgroundColor:'#0d1a11'},
   vInfo:{padding:8,gap:2},
-  vName:{fontSize:12,fontWeight:'600',color:Colors.text},
+  vName:{fontSize:12,fontWeight:'600',color:C.text},
   vStatus:{fontSize:11},
-  badge:{position:'absolute',top:4,right:4,width:22,height:22,borderRadius:11,backgroundColor:Colors.success,justifyContent:'center',alignItems:'center'},
+  badge:{position:'absolute',top:4,right:4,width:22,height:22,borderRadius:11,backgroundColor:C.success,justifyContent:'center',alignItems:'center'},
   badgeTxt:{color:'#0f0f0d',fontSize:12,fontWeight:'700'},
   backBtn:{alignSelf:'flex-start',marginBottom:8},
-  backTxt:{fontSize:13,color:Colors.textSub},
-  detailImg:{borderWidth:2,borderColor:Colors.borderStrong,borderRadius:Radius.lg,overflow:'hidden',height:220,position:'relative'},
+  backTxt:{fontSize:13,color:C.textSub},
+  detailImg:{borderWidth:2,borderColor:C.borderStrong,borderRadius:Radius.lg,overflow:'hidden',height:220,position:'relative'},
   defeatedOverlay:{position:'absolute',bottom:0,left:0,right:0,backgroundColor:'rgba(93,202,165,0.85)',paddingVertical:6,alignItems:'center'},
   defeatedTxt:{color:'#0f0f0d',fontWeight:'700',fontSize:14,letterSpacing:1},
-  villainTitle:{fontSize:22,fontWeight:'700',color:Colors.text},
-  missingBanner:{borderWidth:1,borderColor:Colors.warning+'55',backgroundColor:'#1a1500',borderRadius:Radius.md,padding:Spacing.sm},
-  missingTxt:{fontSize:12,color:Colors.warning},
-  card:{borderWidth:1,borderRadius:Radius.md,padding:Spacing.md,backgroundColor:Colors.surface},
+  villainTitle:{fontSize:22,fontWeight:'700',color:C.text},
+  missingBanner:{borderWidth:1,borderColor:C.warning+'55',backgroundColor:'#1a1500',borderRadius:Radius.md,padding:Spacing.sm},
+  missingTxt:{fontSize:12,color:C.warning},
+  card:{borderWidth:1,borderRadius:Radius.md,padding:Spacing.md,backgroundColor:C.surface},
   checkRow:{flexDirection:'row',alignItems:'center',gap:12},
-  cb:{width:22,height:22,borderRadius:5,borderWidth:1.5,borderColor:Colors.borderStrong,justifyContent:'center',alignItems:'center'},
-  cbDone:{backgroundColor:Colors.success,borderColor:Colors.success},
+  cb:{width:22,height:22,borderRadius:5,borderWidth:1.5,borderColor:C.borderStrong,justifyContent:'center',alignItems:'center'},
+  cbDone:{backgroundColor:C.success,borderColor:C.success},
   check:{color:'#0f0f0d',fontSize:13,fontWeight:'700'},
-  checkLabel:{fontSize:14,color:Colors.text,fontWeight:'500'},
-  sectionTitle:{fontSize:14,fontWeight:'600',color:Colors.text},
-  empty:{fontSize:13,color:Colors.textMuted},
-  emptyState:{borderWidth:1,borderColor:Colors.border,borderRadius:Radius.lg,padding:Spacing.lg,alignItems:'center',gap:8},
-  emptyTitle:{fontSize:15,fontWeight:'600',color:Colors.text},
-  histRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',borderWidth:1,borderColor:Colors.border,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:Colors.surface},
+  checkLabel:{fontSize:14,color:C.text,fontWeight:'500'},
+  sectionTitle:{fontSize:14,fontWeight:'600',color:C.text},
+  empty:{fontSize:13,color:C.textMuted},
+  emptyState:{borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,padding:Spacing.lg,alignItems:'center',gap:8},
+  emptyTitle:{fontSize:15,fontWeight:'600',color:C.text},
+  histRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',borderWidth:1,borderColor:C.border,borderRadius:Radius.md,padding:Spacing.sm,backgroundColor:C.surface},
   histDeck:{fontSize:13,fontWeight:'600'},
-  histHero:{fontSize:11,color:Colors.textMuted},
+  histHero:{fontSize:11,color:C.textMuted},
 });

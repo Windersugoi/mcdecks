@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Switch, Alert, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
@@ -7,8 +7,11 @@ import { HERO_CARDS, ASPECT_CARDS, SET_CATALOG } from '@/data/cards';
 import { deckTitleColor } from '@/utils/deckUtils';
 import { displayAspect, HERO_TO_SET } from '@/data/constants';
 import { Colors, Radius, Spacing } from '@/styles/theme';
+import { useColors } from '@/hooks/useColors';
 
 export default function MazosScreen() {
+  const C = useColors();
+  const s = useMemo(() => getStyles(C), [C]);
   const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets, setOwnedSets, makeDeckTracking } = useApp();
   const [openDeckId, setOpenDeckId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -304,42 +307,43 @@ export default function MazosScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  safe:{flex:1,backgroundColor:Colors.bg},
+function getStyles(C: typeof import("@/styles/theme").DarkColors) {
+  return StyleSheet.create({
+  safe:{flex:1,backgroundColor:C.bg},
   header:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',padding:Spacing.lg,paddingBottom:8},
-  appTitle:{fontSize:20,fontWeight:'700',color:Colors.text,letterSpacing:-0.5},
+  appTitle:{fontSize:20,fontWeight:'700',color:C.text,letterSpacing:-0.5},
   toggleRow:{flexDirection:'row',alignItems:'center',gap:8},
-  toggleLabel:{fontSize:12,color:Colors.textMuted},
+  toggleLabel:{fontSize:12,color:C.textMuted},
   activeBanner:{paddingHorizontal:Spacing.lg,paddingBottom:8},
   activeBannerDeck:{fontSize:12,fontWeight:'600'},
   list:{padding:Spacing.lg,paddingTop:4,gap:10,paddingBottom:30},
-  empty:{fontSize:13,color:Colors.textMuted},
-  deckCard:{flexDirection:'row',borderWidth:1,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:Colors.surface},
-  starBtn:{width:44,justifyContent:'center',alignItems:'center',borderRightWidth:1,borderRightColor:Colors.border},
+  empty:{fontSize:13,color:C.textMuted},
+  deckCard:{flexDirection:'row',borderWidth:1,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
+  starBtn:{width:44,justifyContent:'center',alignItems:'center',borderRightWidth:1,borderRightColor:C.border},
   star:{fontSize:20},
   deckBody:{flex:1,flexDirection:'row',justifyContent:'space-between',alignItems:'center',padding:12},
   deckInfo:{flex:1,gap:2},
   deckName:{fontSize:15,fontWeight:'600'},
-  deckMeta:{fontSize:12,color:Colors.textMuted},
-  missingHero:{fontSize:11,color:Colors.warning,marginTop:2},
+  deckMeta:{fontSize:12,color:C.textMuted},
+  missingHero:{fontSize:11,color:C.warning,marginTop:2},
   activeTag:{fontSize:11,fontWeight:'600'},
   badge:{backgroundColor:'rgba(226,75,74,0.15)',borderRadius:6,paddingHorizontal:8,paddingVertical:2},
-  badgeTxt:{fontSize:11,color:Colors.danger},
-  trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:Colors.border},
+  badgeTxt:{fontSize:11,color:C.danger},
+  trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:C.border},
   trashIcon:{fontSize:18,opacity:0.5},
   claimBtn:{width:40,justifyContent:'center',alignItems:'center'},
-  claimBtnActive:{backgroundColor:Colors.warning+'22'},
+  claimBtnActive:{backgroundColor:C.warning+'22'},
   claimIcon:{fontSize:16,opacity:0.7},
-  newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:Colors.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
-  newBtnTxt:{fontSize:14,color:Colors.textSub},
+  newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:C.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
+  newBtnTxt:{fontSize:14,color:C.textSub},
   claimBtn:{padding:8,borderRadius:Radius.sm,borderWidth:1,borderColor:'transparent'},
-  claimBtnActive:{borderColor:Colors.warning+'88',backgroundColor:Colors.warning+'22'},
+  claimBtnActive:{borderColor:C.warning+'88',backgroundColor:C.warning+'22'},
   claimBtnTxt:{fontSize:16},
-  importSection:{borderWidth:2,borderColor:Colors.info,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:'#0d1a2d',gap:10},
-  importTitle:{fontSize:14,fontWeight:'700',color:Colors.info},
+  importSection:{borderWidth:2,borderColor:C.info,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:'#0d1a2d',gap:10},
+  importTitle:{fontSize:14,fontWeight:'700',color:C.info},
   importRow2:{flexDirection:'row',gap:8,alignItems:'center'},
-  importInput:{flex:1,backgroundColor:'#1a2a3d',borderWidth:1,borderColor:Colors.info,borderRadius:Radius.sm,color:'#ffffff',fontSize:13,paddingVertical:9,paddingHorizontal:12},
-  importBtn:{paddingVertical:9,paddingHorizontal:16,borderRadius:Radius.md,backgroundColor:Colors.info,justifyContent:'center'},
+  importInput:{flex:1,backgroundColor:'#1a2a3d',borderWidth:1,borderColor:C.info,borderRadius:Radius.sm,color:'#ffffff',fontSize:13,paddingVertical:9,paddingHorizontal:12},
+  importBtn:{paddingVertical:9,paddingHorizontal:16,borderRadius:Radius.md,backgroundColor:C.info,justifyContent:'center'},
   importBtnTxt:{fontSize:13,color:'#ffffff',fontWeight:'700'},
   importMsg:{fontSize:12},
 });
