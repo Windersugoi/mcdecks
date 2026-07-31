@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
@@ -462,3 +462,4 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   exportBtn:{borderWidth:1,borderColor:C.borderStrong,borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.surface,marginTop:8},
   exportTxt:{fontSize:13,color:C.text},
 });
+}

@@ -1,4 +1,4 @@
-import React, { useMemo, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, Switch, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
@@ -197,3 +197,4 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   soonBadge: { borderWidth:1, borderColor:C.info+'66', borderRadius:4, paddingHorizontal:6, paddingVertical:3, backgroundColor:'#0d1220' },
   soonTxt: { fontSize:10, color:C.info, fontWeight:'600' },
 });
+}
