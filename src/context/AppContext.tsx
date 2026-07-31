@@ -78,7 +78,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (savedOwned)  setOwnedSets(JSON.parse(savedOwned));
         if (savedActive) setActiveDeckId(savedActive);
         setShowTutorial(tutorialSeen !== 'true');
-        const savedLight = await AsyncStorage.getItem('mcdecks_v1_lightmode');
         if (savedLight === 'true') setLightModeRaw(true);
       } catch {
         setDecks(makeDefaultDecks());
