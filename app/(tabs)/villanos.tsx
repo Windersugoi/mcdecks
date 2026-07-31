@@ -304,3 +304,4 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   histDeck:{fontSize:13,fontWeight:'600'},
   histHero:{fontSize:11,color:C.textMuted},
 });
+}

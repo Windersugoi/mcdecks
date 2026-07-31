@@ -201,3 +201,5 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   commCard:{borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:C.surface,gap:4},
   sub:{fontSize:12,color:C.textMuted},
 });
+
+}

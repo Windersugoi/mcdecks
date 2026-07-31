@@ -347,3 +347,4 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   importBtnTxt:{fontSize:13,color:'#ffffff',fontWeight:'700'},
   importMsg:{fontSize:12},
 });
+}
