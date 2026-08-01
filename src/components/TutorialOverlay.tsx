@@ -20,9 +20,9 @@ const STEPS = [
 
 interface Props { visible: boolean; onDone: (dontShow: boolean) => void; }
 
-export function TutorialOverlay({
+export function TutorialOverlay({ visible, onDone }: Props) {
   const C = useColors();
-  const s = useMemo(() => getStyles(C), [C]); visible, onDone }: Props) {
+  const s = useMemo(() => getStyles(C), [C]);
   const [step, setStep] = useState(0);
   const [dontShow, setDontShow] = useState(false);
   const current = STEPS[step];
@@ -43,10 +43,9 @@ export function TutorialOverlay({
           </View>
           <Text style={s.body}>{current.body}</Text>
           <View style={s.dotsRow}>
-            {STEPS.map((_,i) => <View key={i} style={[s.dot, i===step && s.dotActive]} />)}
+            {STEPS.map((_, i) => <View key={i} style={[s.dot, i === step && s.dotActive]} />)}
           </View>
-          {/* Don't show again */}
-          <Pressable style={s.checkRow} onPress={() => setDontShow(v=>!v)}>
+          <Pressable style={s.checkRow} onPress={() => setDontShow(v => !v)}>
             <View style={[s.checkbox, dontShow && s.checkboxOn]}>
               {dontShow && <Text style={s.checkMark}>✓</Text>}
             </View>
@@ -56,7 +55,7 @@ export function TutorialOverlay({
             <Pressable onPress={handleDone} style={s.skipBtn}>
               <Text style={s.skipTxt}>Skip</Text>
             </Pressable>
-            <Pressable onPress={isLast ? handleDone : () => setStep(s=>s+1)} style={s.nextBtn}>
+            <Pressable onPress={isLast ? handleDone : () => setStep(n => n + 1)} style={s.nextBtn}>
               <Text style={s.nextTxt}>{isLast ? 'Get started' : 'Next →'}</Text>
             </Pressable>
           </View>
@@ -68,26 +67,26 @@ export function TutorialOverlay({
 
 function getStyles(C: typeof DarkColors) {
   return StyleSheet.create({
-  overlay:{ flex:1, backgroundColor:'rgba(0,0,0,0.88)', justifyContent:'center', alignItems:'center', padding:Spacing.xl },
-  card:{ backgroundColor:C.surface, borderRadius:Radius.lg, borderWidth:1, borderColor:C.borderStrong, width:Math.min(width-48,360), padding:Spacing.lg, gap:Spacing.md },
-  header:{ flexDirection:'row', alignItems:'center', gap:14 },
-  icon:{ fontSize:38 },
-  headerText:{ flex:1, gap:2 },
-  tabLabel:{ fontSize:11, color:C.info, fontWeight:'700', letterSpacing:0.5, textTransform:'uppercase' },
-  title:{ fontSize:19, fontWeight:'700', color:C.text },
-  body:{ fontSize:14, color:C.textSub, lineHeight:22 },
-  dotsRow:{ flexDirection:'row', justifyContent:'center', gap:8, paddingVertical:4 },
-  dot:{ width:8, height:8, borderRadius:4, backgroundColor:C.borderStrong },
-  dotActive:{ backgroundColor:C.info, width:20 },
-  checkRow:{ flexDirection:'row', alignItems:'center', gap:10 },
-  checkbox:{ width:20, height:20, borderRadius:4, borderWidth:1.5, borderColor:C.borderStrong, justifyContent:'center', alignItems:'center' },
-  checkboxOn:{ backgroundColor:C.info, borderColor:C.info },
-  checkMark:{ color:'#fff', fontSize:12, fontWeight:'700' },
-  checkLabel:{ fontSize:13, color:C.textMuted },
-  btnRow:{ flexDirection:'row', justifyContent:'space-between', alignItems:'center' },
-  skipBtn:{ padding:Spacing.sm },
-  skipTxt:{ fontSize:13, color:C.textMuted },
-  nextBtn:{ backgroundColor:C.info, borderRadius:Radius.md, paddingVertical:10, paddingHorizontal:24 },
-  nextTxt:{ fontSize:14, fontWeight:'700', color:'#fff' },
-});
+    overlay:    { flex:1, backgroundColor:'rgba(0,0,0,0.88)', justifyContent:'center', alignItems:'center', padding:Spacing.xl },
+    card:       { backgroundColor:C.surface, borderRadius:Radius.lg, borderWidth:1, borderColor:C.borderStrong, width:Math.min(width-48,360), padding:Spacing.lg, gap:Spacing.md },
+    header:     { flexDirection:'row', alignItems:'center', gap:14 },
+    icon:       { fontSize:38 },
+    headerText: { flex:1, gap:2 },
+    tabLabel:   { fontSize:11, color:C.info, fontWeight:'700', letterSpacing:0.5, textTransform:'uppercase' },
+    title:      { fontSize:19, fontWeight:'700', color:C.text },
+    body:       { fontSize:14, color:C.textSub, lineHeight:22 },
+    dotsRow:    { flexDirection:'row', justifyContent:'center', gap:8, paddingVertical:4 },
+    dot:        { width:8, height:8, borderRadius:4, backgroundColor:C.borderStrong },
+    dotActive:  { backgroundColor:C.info, width:20 },
+    checkRow:   { flexDirection:'row', alignItems:'center', gap:10 },
+    checkbox:   { width:20, height:20, borderRadius:4, borderWidth:1.5, borderColor:C.borderStrong, justifyContent:'center', alignItems:'center' },
+    checkboxOn: { backgroundColor:C.info, borderColor:C.info },
+    checkMark:  { color:'#fff', fontSize:12, fontWeight:'700' },
+    checkLabel: { fontSize:13, color:C.textMuted },
+    btnRow:     { flexDirection:'row', justifyContent:'space-between', alignItems:'center' },
+    skipBtn:    { padding:Spacing.sm },
+    skipTxt:    { fontSize:13, color:C.textMuted },
+    nextBtn:    { backgroundColor:C.info, borderRadius:Radius.md, paddingVertical:10, paddingHorizontal:24 },
+    nextTxt:    { fontSize:14, fontWeight:'700', color:'#fff' },
+  });
 }

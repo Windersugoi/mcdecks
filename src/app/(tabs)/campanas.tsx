@@ -85,12 +85,12 @@ export default function CampanasScreen() {
           <>
             {/* Toggle Normal/Expert */}
             <Pressable onPress={()=>setExpertMode(v=>!v)}
-              style={[s.diffCard,{borderColor:(expertMode?Colors.danger:Colors.success)+'55'}]}>
+              style={[s.diffCard,{borderColor:(expertMode?C.danger:C.success)+'55'}]}>
               <Text style={s.diffLabel}>Difficulty: </Text>
-              <Text style={[s.diffValue,{color:expertMode?Colors.danger:Colors.success}]}>
+              <Text style={[s.diffValue,{color:expertMode?C.danger:C.success}]}>
                 {expertMode?'Expert':'Normal'}
               </Text>
-              <View style={[s.toggle,{backgroundColor:expertMode?Colors.danger:Colors.borderStrong}]}>
+              <View style={[s.toggle,{backgroundColor:expertMode?C.danger:C.borderStrong}]}>
                 <View style={[s.toggleThumb,{left:expertMode?20:2}]}/>
               </View>
             </Pressable>
@@ -113,16 +113,16 @@ export default function CampanasScreen() {
 
         {section==='crear' && (
           <>
-            <TextInput placeholder="Campaign name" placeholderTextColor={Colors.textMuted}
+            <TextInput placeholder="Campaign name" placeholderTextColor={C.textMuted}
               value={campName} onChangeText={setCampName} style={s.input}/>
             {campEntries.map((e,i)=>(
-              <View key={i} style={[s.entryRow,{borderColor:Colors.danger+'55'}]}>
+              <View key={i} style={[s.entryRow,{borderColor:C.danger+'55'}]}>
                 <View style={{flex:1}}>
                   <Text style={{color:'#D4537E',fontWeight:'600'}}>{e.villain}</Text>
                   {e.modular.length>0&&<Text style={s.sub}>{e.modular.join(', ')}</Text>}
                 </View>
                 <Pressable onPress={()=>setCampEntries(p=>p.filter((_,j)=>j!==i))}>
-                  <Text style={{color:Colors.danger,fontSize:18}}>✕</Text>
+                  <Text style={{color:C.danger,fontSize:18}}>✕</Text>
                 </Pressable>
               </View>
             ))}
@@ -138,17 +138,17 @@ export default function CampanasScreen() {
               <Text style={[s.builderLabel,{marginTop:10}]}>Modular sets</Text>
               <View style={{flexDirection:'row',flexWrap:'wrap',gap:6}}>
                 {MODULAR_LIST.map(m=>(
-                  <Pill key={m} color={Colors.warning} active={draftModular.includes(m)} onPress={()=>toggleModular(m)}>{m}</Pill>
+                  <Pill key={m} color={C.warning} active={draftModular.includes(m)} onPress={()=>toggleModular(m)}>{m}</Pill>
                 ))}
               </View>
-              {draftModular.length>3&&<Text style={{fontSize:11,color:Colors.danger,marginTop:4}}>Recommended: max 3 modulars.</Text>}
+              {draftModular.length>3&&<Text style={{fontSize:11,color:C.danger,marginTop:4}}>Recommended: max 3 modulars.</Text>}
               <Pressable onPress={addEntry} style={[s.addBtn,{marginTop:10}]}>
                 <Text style={s.addBtnTxt}>+ Add {draftVillain}</Text>
               </Pressable>
             </View>
             <Pressable onPress={saveCampaign}
-              style={[s.addBtn,{borderColor:(campName&&campEntries.length)?Colors.success:Colors.borderStrong}]}>
-              <Text style={{color:(campName&&campEntries.length)?Colors.success:Colors.textMuted,fontSize:13}}>
+              style={[s.addBtn,{borderColor:(campName&&campEntries.length)?C.success:C.borderStrong}]}>
+              <Text style={{color:(campName&&campEntries.length)?C.success:C.textMuted,fontSize:13}}>
                 Save to My campaigns
               </Text>
             </Pressable>
@@ -167,7 +167,7 @@ export default function CampanasScreen() {
         {section==='comunidad' && community.map(c=>(
           <View key={c.id} style={s.commCard}>
             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-              <Text style={{fontSize:14,fontWeight:'600',color:Colors.text,flex:1}}>{c.name}</Text>
+              <Text style={{fontSize:14,fontWeight:'600',color:C.text,flex:1}}>{c.name}</Text>
               <StarRating value={c.rating}/>
             </View>
             <Text style={s.sub}>by {c.author} · {c.votes} votes</Text>
