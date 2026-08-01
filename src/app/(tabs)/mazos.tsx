@@ -298,7 +298,7 @@ export default function MazosScreen() {
           </View>
           {importMsg && (
             <Text style={[s.importMsg, {
-              color: importMsg.startsWith('✓') ? Colors.success : Colors.danger
+              color: importMsg.startsWith('✓') ? C.success : C.danger
             }]}>{importMsg}</Text>
           )}
         </View>

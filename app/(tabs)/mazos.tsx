@@ -236,11 +236,11 @@ export default function MazosScreen() {
           const heroOwned = !heroSetCode || showAll || !!ownedSets[heroSetCode];
           const heroSetName = heroSetCode ? (SET_CATALOG.find(s=>s.code===heroSetCode)?.name ?? heroSetCode) : null;
           return (
-            <View key={deck.id} style={[s.deckCard, { borderColor: isActive ? color : valid ? Colors.border : Colors.danger }]}>
+            <View key={deck.id} style={[s.deckCard, { borderColor: isActive ? color : valid ? C.border : C.danger }]}>
               {/* ★ Activar */}
               <Pressable onPress={() => setActiveDeckId(isActive ? null : deck.id)}
                 style={[s.starBtn, isActive && { backgroundColor: color+'22', borderRightColor: color }]}>
-                <Text style={[s.star, { color: isActive ? color : Colors.borderStrong }]}>
+                <Text style={[s.star, { color: isActive ? color : C.borderStrong }]}>
                   {isActive ? '★' : '☆'}
                 </Text>
               </Pressable>
@@ -285,7 +285,7 @@ export default function MazosScreen() {
           <View style={s.importRow2}>
             <TextInput
               placeholder="Deck URL or ID (e.g. 12345)"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={C.textMuted}
               value={importUrl}
               onChangeText={v => { setImportUrl(v); setImportMsg(null); }}
               style={s.importInput}
@@ -298,7 +298,7 @@ export default function MazosScreen() {
           </View>
           {importMsg && (
             <Text style={[s.importMsg, {
-              color: importMsg.startsWith('✓') ? Colors.success : Colors.danger
+              color: importMsg.startsWith('✓') ? C.success : C.danger
             }]}>{importMsg}</Text>
           )}
         </View>

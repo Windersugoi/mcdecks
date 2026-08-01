@@ -11,6 +11,7 @@ export const DarkColors = {
   danger:       '#e05555',
   warning:      '#e0a030',
   warningBg:    '#1a1200',
+  dangerBg:     '#1a0505',
   info:         '#378ADD',
   aspects: {
     Aggression:  '#D94F4F',
@@ -35,6 +36,7 @@ export const LightColors = {
   danger:       '#cc2222',
   warning:      '#b07010',
   warningBg:    '#fff8e0',
+  dangerBg:     '#ffebeb',
   info:         '#1a5fb5',
   aspects: {
     Aggression:  '#c03030',

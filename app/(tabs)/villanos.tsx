@@ -120,7 +120,7 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
   // 3. Placeholder con nombre
   return (
     <View style={{ height: h, backgroundColor: '#101010', justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: size === 'large' ? 16 : 10, color: Colors.textMuted, textAlign: 'center', padding: 4 }}>
+      <Text style={{ fontSize: size === 'large' ? 16 : 10, color: C.textMuted, textAlign: 'center', padding: 4 }}>
         {name}
       </Text>
     </View>
@@ -162,7 +162,7 @@ export default function VillanosScreen() {
           <Pressable onPress={() => setOpen(null)} style={s.backBtn}>
             <Text style={s.backTxt}>← Villains</Text>
           </Pressable>
-          <View style={[s.detailImg, vData.defeated && { borderColor: Colors.success + '88' }]}>
+          <View style={[s.detailImg, vData.defeated && { borderColor: C.success + '88' }]}>
             <VillainImage name={open} size="large" />
             {vData.defeated && (
               <View style={s.defeatedOverlay}>
@@ -183,7 +183,7 @@ export default function VillanosScreen() {
                 <View style={[s.cb, vData.defeated && s.cbDone]}>
                   {vData.defeated && <Text style={s.check}>✓</Text>}
                 </View>
-                <Text style={[s.checkLabel, vData.defeated && { color: Colors.success }]}>
+                <Text style={[s.checkLabel, vData.defeated && { color: C.success }]}>
                   {vData.defeated ? '✓ Defeated with this deck' : 'Mark as defeated'}
                 </Text>
               </Pressable>
@@ -214,12 +214,12 @@ export default function VillanosScreen() {
         <View style={s.headerRow}>
           <Text style={s.screenTitle}>Villains</Text>
           <View style={s.toggleRow}>
-            <Text style={[s.toggleLabel, showAll && { color: Colors.warning }]}>
+            <Text style={[s.toggleLabel, showAll && { color: C.warning }]}>
               {showAll ? 'All' : 'My collection'}
             </Text>
             <Switch value={showAll} onValueChange={setShowAll}
-              trackColor={{ false: Colors.border, true: Colors.info }}
-              thumbColor={Colors.text} />
+              trackColor={{ false: C.border, true: C.info }}
+              thumbColor={C.text} />
           </View>
         </View>
         <ActiveDeckBanner activeDeck={activeDeck} />
@@ -249,7 +249,7 @@ export default function VillanosScreen() {
                     </View>
                     <View style={s.vInfo}>
                       <Text style={s.vName} numberOfLines={1}>{vName}</Text>
-                      <Text style={[s.vStatus, { color: defeated ? Colors.success : Colors.textMuted }]}>
+                      <Text style={[s.vStatus, { color: defeated ? C.success : C.textMuted }]}>
                         {defeated ? 'Defeated' : vName.endsWith('(L)') ? 'Leader' : 'Pending'}
                         {total > 1 ? ` · ${total} decks` : ''}
                       </Text>

@@ -4,32 +4,35 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator } from 'react-native';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { TutorialOverlay } from '@/components/TutorialOverlay';
-import { Colors } from '@/styles/theme';
+import { useColors } from '@/hooks/useColors';
 
+// StatusBar y colores viven aquí, dentro de AppProvider
 function RootWithTutorial() {
   const { showTutorial, dismissTutorial, isLoading } = useApp();
+  const C = useColors();
 
   if (isLoading) {
     return (
-      <View style={{ flex:1, backgroundColor: Colors.bg, justifyContent:'center', alignItems:'center' }}>
-        <ActivityIndicator size="large" color={Colors.info} />
+      <View style={{ flex:1, backgroundColor: C.bg, justifyContent:'center', alignItems:'center' }}>
+        <ActivityIndicator size="large" color={C.info} />
       </View>
     );
   }
 
   return (
     <>
+      <StatusBar style="light" backgroundColor={C.bg} />
       <Stack screenOptions={{ headerShown: false }} />
       <TutorialOverlay visible={showTutorial} onDone={(dontShow) => dismissTutorial(dontShow)} />
     </>
   );
 }
 
+// RootLayout solo provee contexto — no usa C
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <StatusBar style="light" backgroundColor={Colors.bg} />
         <RootWithTutorial />
       </AppProvider>
     </SafeAreaProvider>

@@ -6,6 +6,7 @@ import { AppProvider, useApp } from '@/context/AppContext';
 import { TutorialOverlay } from '@/components/TutorialOverlay';
 import { useColors } from '@/hooks/useColors';
 
+// StatusBar y colores viven aquí, dentro de AppProvider
 function RootWithTutorial() {
   const { showTutorial, dismissTutorial, isLoading } = useApp();
   const C = useColors();
@@ -20,17 +21,18 @@ function RootWithTutorial() {
 
   return (
     <>
+      <StatusBar style="light" backgroundColor={C.bg} />
       <Stack screenOptions={{ headerShown: false }} />
       <TutorialOverlay visible={showTutorial} onDone={(dontShow) => dismissTutorial(dontShow)} />
     </>
   );
 }
 
+// RootLayout solo provee contexto — no usa C
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <StatusBar style="light" backgroundColor={C.bg} />
         <RootWithTutorial />
       </AppProvider>
     </SafeAreaProvider>
