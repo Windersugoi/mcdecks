@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Modal, View, Text, Image, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native';
 import { Card } from '@/data/types';
-import { Colors, Radius, Spacing } from '@/styles/theme';
+import { DarkColors, Radius, Spacing } from '@/styles/theme';
+import { useColors } from '@/hooks/useColors';
 
 interface Props { card: Card | null; onClose: () => void; }
 
@@ -11,7 +12,9 @@ const IMG_HEADERS = Platform.OS !== 'web' ? {
   'Accept': 'image/png,image/jpeg,image/*',
 } : undefined;
 
-export function CardPreviewModal({ card, onClose }: Props) {
+export function CardPreviewModal({
+  const C = useColors();
+  const s = useMemo(() => getStyles(C), [C]); card, onClose }: Props) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -58,7 +61,7 @@ export function CardPreviewModal({ card, onClose }: Props) {
         <Pressable style={s.inner} onPress={() => {}}>
           <View style={s.imgContainer}>
             {loading && (
-              <ActivityIndicator style={StyleSheet.absoluteFill} size="large" color={Colors.info} />
+              <ActivityIndicator style={StyleSheet.absoluteFill} size="large" color={C.info} />
             )}
             {imageUrl && !error && (
               <Image
@@ -102,15 +105,17 @@ export function CardPreviewModal({ card, onClose }: Props) {
   );
 }
 
-const s = StyleSheet.create({
+function getStyles(C: typeof DarkColors) {
+  return StyleSheet.create({
   overlay: { flex:1, backgroundColor:'rgba(0,0,0,0.9)', justifyContent:'center', alignItems:'center', padding:Spacing.xl },
   inner: { alignItems:'center', gap:10, width:'100%', maxWidth:300 },
-  imgContainer: { width:260, height:374, borderRadius:Radius.lg, borderWidth:2, borderColor:Colors.borderStrong, overflow:'hidden', backgroundColor:Colors.surface2 },
+  imgContainer: { width:260, height:374, borderRadius:Radius.lg, borderWidth:2, borderColor:C.borderStrong, overflow:'hidden', backgroundColor:C.surface2 },
   noImg: { flex:1, justifyContent:'center', alignItems:'center', gap:6, padding:16 },
-  noImgName: { color:Colors.text, fontSize:16, fontWeight:'700', textAlign:'center' },
-  noImgSub: { color:Colors.textMuted, fontSize:12 },
-  name: { color:Colors.text, fontSize:15, fontWeight:'600', textAlign:'center' },
-  type: { color:Colors.textMuted, fontSize:12 },
-  closeBtn: { marginTop:4, paddingVertical:8, paddingHorizontal:24, borderWidth:1, borderColor:Colors.borderStrong, borderRadius:Radius.md },
-  closeTxt: { color:Colors.text, fontSize:13 },
+  noImgName: { color:C.text, fontSize:16, fontWeight:'700', textAlign:'center' },
+  noImgSub: { color:C.textMuted, fontSize:12 },
+  name: { color:C.text, fontSize:15, fontWeight:'600', textAlign:'center' },
+  type: { color:C.textMuted, fontSize:12 },
+  closeBtn: { marginTop:4, paddingVertical:8, paddingHorizontal:24, borderWidth:1, borderColor:C.borderStrong, borderRadius:Radius.md },
+  closeTxt: { color:C.text, fontSize:13 },
 });
+}
