@@ -90,6 +90,7 @@ const VILLAIN_URLS: Record<string, string> = {
 
 // ── Componente de imagen de villano ─────────────────────────────────────────
 function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' | 'large' }) {
+  const C = useColors();
   const [error, setError] = useState(false);
   const h = size === 'large' ? 220 : 80;
   const local = LOCAL[name];
