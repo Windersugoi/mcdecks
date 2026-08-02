@@ -94,9 +94,9 @@ function getStyles(C: typeof DarkColors) {
     noImg:        { flex:1, justifyContent:'center', alignItems:'center', gap:6, padding:16 },
     noImgName:    { color:C.text, fontSize:16, fontWeight:'700', textAlign:'center' },
     noImgSub:     { color:C.textMuted, fontSize:12 },
-    name:         { color:C.text, fontSize:15, fontWeight:'600', textAlign:'center' },
-    type:         { color:C.textMuted, fontSize:12 },
-    closeBtn:     { marginTop:4, paddingVertical:8, paddingHorizontal:24, borderWidth:1, borderColor:C.borderStrong, borderRadius:Radius.md },
-    closeTxt:     { color:C.text, fontSize:13 },
+    name:         { color:'#e8e8e0', fontSize:15, fontWeight:'600', textAlign:'center' },
+    type:         { color:'#8a8a80', fontSize:12 },
+    closeBtn:     { marginTop:4, paddingVertical:8, paddingHorizontal:24, borderWidth:1, borderColor:'rgba(255,255,255,0.35)', borderRadius:Radius.md },
+    closeTxt:     { color:'#e8e8e0', fontSize:13 },
   });
 }
