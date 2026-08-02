@@ -5,14 +5,27 @@
     "version": "1.0.0",
     "scheme": "mcdecks",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f0f0d"
+    },
     "android": {
       "package": "com.mcdecks.app",
       "icon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0f0f0d"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
