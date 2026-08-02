@@ -99,7 +99,7 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
   // 1. Imagen local (máxima prioridad)
   if (local) {
     return (
-      <View style={{ height: h, backgroundColor: '#0a0a08', overflow: 'hidden' }}>
+      <View style={{ height: h, backgroundColor: C.bg, overflow: 'hidden' }}>
         <Image source={local} style={{ width: '100%', height: '100%' }}
           resizeMode={size === 'large' ? 'contain' : 'cover'} />
       </View>
@@ -109,7 +109,7 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
   // 2. URL remota (marvelcdb)
   if (remoteUrl && !error) {
     return (
-      <View style={{ height: h, backgroundColor: '#0a0a08', overflow: 'hidden' }}>
+      <View style={{ height: h, backgroundColor: C.bg, overflow: 'hidden' }}>
         <Image source={{ uri: remoteUrl }}
           style={{ width: '100%', height: '100%' }}
           resizeMode={size === 'large' ? 'contain' : 'cover'}
@@ -120,7 +120,7 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
 
   // 3. Placeholder con nombre
   return (
-    <View style={{ height: h, backgroundColor: '#101010', justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ height: h, backgroundColor: C.surface2, justifyContent: 'center', alignItems: 'center' }}>
       <Text style={{ fontSize: size === 'large' ? 16 : 10, color: C.textMuted, textAlign: 'center', padding: 4 }}>
         {name}
       </Text>
@@ -277,7 +277,7 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   cycleLabel:{fontSize:11,color:C.textMuted,fontWeight:'700',marginBottom:6,marginTop:4,letterSpacing:0.5,textTransform:'uppercase'},
   grid:{flexDirection:'row',flexWrap:'wrap',gap:8},
   vCard:{width:'47%',borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
-  vCardDone:{borderColor:C.success+'66',backgroundColor:'#0d1a11'},
+  vCardDone:{borderColor:C.success+'66',backgroundColor:C.surface},
   vInfo:{padding:8,gap:2},
   vName:{fontSize:12,fontWeight:'600',color:C.text},
   vStatus:{fontSize:11},
@@ -289,7 +289,7 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   defeatedOverlay:{position:'absolute',bottom:0,left:0,right:0,backgroundColor:'rgba(93,202,165,0.85)',paddingVertical:6,alignItems:'center'},
   defeatedTxt:{color:'#0f0f0d',fontWeight:'700',fontSize:14,letterSpacing:1},
   villainTitle:{fontSize:22,fontWeight:'700',color:C.text},
-  missingBanner:{borderWidth:1,borderColor:C.warning+'55',backgroundColor:'#1a1500',borderRadius:Radius.md,padding:Spacing.sm},
+  missingBanner:{borderWidth:1,borderColor:C.warning+'55',backgroundColor:C.warningBg,borderRadius:Radius.md,padding:Spacing.sm},
   missingTxt:{fontSize:12,color:C.warning},
   card:{borderWidth:1,borderRadius:Radius.md,padding:Spacing.md,backgroundColor:C.surface},
   checkRow:{flexDirection:'row',alignItems:'center',gap:12},
