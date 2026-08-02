@@ -25,8 +25,8 @@ export function PoolCardRow({ card, decks, deckId, deckFull, onAdd, onPreview }:
       <Pressable style={s.info} onPress={() => onPreview(card)}>
         <Text style={s.name}>
           {card.name}
-          {card.aspect && card.aspect !== 'Basic'
-            ? <Text style={{ color: aspectColor(card.aspect), fontSize: 11 }}> ({displayAspect(card.aspect)})</Text>
+          {card.aspect
+            ? <Text style={{ color: card.aspect === 'Basic' ? C.textMuted : aspectColor(card.aspect), fontSize: 11 }}> ({displayAspect(card.aspect)})</Text>
             : null}
           <Text style={s.type}> · {card.type}</Text>
         </Text>
