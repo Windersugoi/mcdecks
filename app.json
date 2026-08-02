@@ -17,15 +17,7 @@
       "icon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/splash.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#0f0f0d"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
