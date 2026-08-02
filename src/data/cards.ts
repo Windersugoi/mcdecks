@@ -914,6 +914,8 @@ export const HERO_CARDS: Record<string, Card[]> = {
     { id: 'D:FNE_16_2320', name: 'Sister Maggie', type: 'DaredevilSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/60016.png' },
     { id: 'D:FNE_17_2321', name: "Daredevil's Billy Club", type: 'DaredevilUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/60017.png' },
     { id: 'D:FNE_18_2322', name: 'The Man Without Fear', type: 'DaredevilUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/60018.png' },
+  ],
+  "Echo": [
     { id: 'D:FNE_37A_2341', name: 'Echo', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/60037a.png' },
     { id: 'D:FNE_37B_2342', name: 'Maya Lopez', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/60037b.png' },
     { id: 'D:FNE_39_2344', name: 'Daredevil / Matt Murdock (H)', type: 'EchoAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/60039.png' },
