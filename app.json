@@ -23,7 +23,17 @@
         {
           "backgroundColor": "#0f0f0d",
           "image": "./assets/splash.png",
-          "resizeMode": "cover"
+          "resizeMode": "cover",
+          "android": {
+            "backgroundColor": "#0f0f0d",
+            "image": "./assets/splash.png",
+            "resizeMode": "cover"
+          },
+          "ios": {
+            "backgroundColor": "#0f0f0d",
+            "image": "./assets/splash.png",
+            "resizeMode": "cover"
+          }
         }
       ]
     ],
