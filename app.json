@@ -9,7 +9,7 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#0f0f0d"
     },
     "android": {
@@ -23,7 +23,7 @@
         {
           "backgroundColor": "#0f0f0d",
           "image": "./assets/splash.png",
-          "resizeMode": "contain"
+          "resizeMode": "cover"
         }
       ]
     ],

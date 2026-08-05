@@ -36,9 +36,10 @@ export default function CuentaScreen() {
   const totalOwned = SET_CATALOG.filter(x => ownedSets[x.code]).length;
   const totalCards = SET_CATALOG.filter(x => ownedSets[x.code]).reduce((a,x) => a + x.totalCards, 0);
 
-  const availableSets = SET_CATALOG.filter(x => !x.comingSoon);
+  const availableSets = SET_CATALOG;
   const allOwned = availableSets.length > 0 && availableSets.every(x => ownedSets[x.code]);
   const someOwned = availableSets.some(x => ownedSets[x.code]) && !allOwned;
+  const noneOwned = !allOwned && !someOwned;
 
   function toggleAll() {
     const val = !allOwned;
@@ -86,8 +87,8 @@ export default function CuentaScreen() {
         {/* Marcar todo */}
         <Pressable style={s.markAllRow} onPress={toggleAll}>
           <View style={[s.check, allOwned && s.checkDone, someOwned && s.checkPartial]}>
-            {allOwned  && <Text style={s.checkMark}>✓</Text>}
-            {someOwned && !allOwned && <Text style={s.checkDash}>–</Text>}
+            {allOwned   && <Text style={s.checkMark}>✓</Text>}
+            {someOwned  && <Text style={s.checkDash}>–</Text>}
           </View>
           <Text style={s.markAllLbl}>
             {allOwned ? 'Desmarcar todo' : 'Marcar todo'}
