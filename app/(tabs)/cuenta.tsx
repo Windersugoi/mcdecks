@@ -84,18 +84,6 @@ export default function CuentaScreen() {
           </View>
         </View>
 
-        {/* Marcar todo */}
-        <Pressable style={s.markAllRow} onPress={toggleAll}>
-          <View style={[s.check, allOwned && s.checkDone, someOwned && s.checkPartial]}>
-            {allOwned   && <Text style={s.checkMark}>✓</Text>}
-            {someOwned  && <Text style={s.checkDash}>–</Text>}
-          </View>
-          <Text style={s.markAllLbl}>
-            {allOwned ? 'Desmarcar todo' : 'Marcar todo'}
-          </Text>
-          <Text style={s.markAllSub}>{totalOwned}/{availableSets.length} sets</Text>
-        </Pressable>
-
         {/* Stats */}
         <View style={s.statsRow}>
           <View style={s.statCard}>
@@ -107,6 +95,18 @@ export default function CuentaScreen() {
             <Text style={s.statLbl}>Cartas</Text>
           </View>
         </View>
+
+        {/* Marcar todo */}
+        <Pressable style={s.markAllRow} onPress={toggleAll}>
+          <View style={[s.check, allOwned && s.checkDone, someOwned && s.checkPartial]}>
+            {allOwned  && <Text style={s.checkMark}>✓</Text>}
+            {someOwned && <Text style={s.checkDash}>–</Text>}
+          </View>
+          <Text style={s.markAllLbl}>
+            {allOwned ? 'Desmarcar todo' : 'Marcar todo'}
+          </Text>
+          <Text style={s.markAllSub}>{totalOwned}/{availableSets.length} sets</Text>
+        </Pressable>
 
         {/* Cycles */}
         {CYCLE_GROUPS.map(group => {

@@ -5,11 +5,23 @@ import { View, ActivityIndicator } from 'react-native';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { TutorialOverlay } from '@/components/TutorialOverlay';
 import { useColors } from '@/hooks/useColors';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+
+// Mantener el splash visible hasta que la app esté lista
+SplashScreen.preventAutoHideAsync();
 
 // StatusBar y colores viven aquí, dentro de AppProvider
 function RootWithTutorial() {
   const { showTutorial, dismissTutorial, isLoading } = useApp();
   const C = useColors();
+
+  // Ocultar el splash en cuanto termina de cargar
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return (
