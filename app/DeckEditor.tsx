@@ -210,8 +210,10 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
               const owned = localShowAll || !hCode || !!ownedSets[hCode] || COMING_SOON_HEROES.has(h);
               const setName = hCode ? (SET_CATALOG.find(x => x.code === hCode)?.name ?? hCode) : null;
               const isSoon = COMING_SOON_HEROES.has(h);
+              const canSelect = owned && !isSoon;
               return (
-                <Pressable key={h} onPress={() => { update({ hero: h }); setNameDraft(h); }}
+                <Pressable key={h}
+                  onPress={() => { if (!canSelect) return; update({ hero: h }); setNameDraft(h); }}
                   style={[s.heroRow, !owned && !isSoon && s.heroRowMissing, isSoon && s.heroRowSoon]}>
                   <View style={{ flex: 1 }}>
                     <Text style={[s.heroName, !owned && !isSoon && { color: C.textMuted }]}>{h}</Text>
@@ -221,7 +223,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
                     }
                   </View>
                   {MULTI_ASPECT_HEROES[h] && <Text style={s.specialBadge}>Special</Text>}
-                  <Text style={{ color: C.textMuted, marginLeft: 8 }}>→</Text>
+                  <Text style={{ color: C.textMuted, marginLeft: 8 }}>{canSelect ? '→' : '🔒'}</Text>
                 </Pressable>
               );
             })}
