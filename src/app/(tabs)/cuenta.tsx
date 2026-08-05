@@ -36,6 +36,19 @@ export default function CuentaScreen() {
   const totalOwned = SET_CATALOG.filter(x => ownedSets[x.code]).length;
   const totalCards = SET_CATALOG.filter(x => ownedSets[x.code]).reduce((a,x) => a + x.totalCards, 0);
 
+  const availableSets = SET_CATALOG.filter(x => !x.comingSoon);
+  const allOwned = availableSets.length > 0 && availableSets.every(x => ownedSets[x.code]);
+  const someOwned = availableSets.some(x => ownedSets[x.code]) && !allOwned;
+
+  function toggleAll() {
+    const val = !allOwned;
+    setOwnedSets(prev => {
+      const next = { ...prev };
+      for (const x of availableSets) next[x.code] = val;
+      return next;
+    });
+  }
+
   function getGroupSets(g: typeof CYCLE_GROUPS[0]) {
     return g.codes.map(c => setByCode[c]).filter(Boolean).filter(x => !x.comingSoon);
   }
@@ -69,6 +82,18 @@ export default function CuentaScreen() {
               thumbColor={C.text} />
           </View>
         </View>
+
+        {/* Marcar todo */}
+        <Pressable style={s.markAllRow} onPress={toggleAll}>
+          <View style={[s.check, allOwned && s.checkDone, someOwned && s.checkPartial]}>
+            {allOwned  && <Text style={s.checkMark}>✓</Text>}
+            {someOwned && !allOwned && <Text style={s.checkDash}>–</Text>}
+          </View>
+          <Text style={s.markAllLbl}>
+            {allOwned ? 'Desmarcar todo' : 'Marcar todo'}
+          </Text>
+          <Text style={s.markAllSub}>{totalOwned}/{availableSets.length} sets</Text>
+        </Pressable>
 
         {/* Stats */}
         <View style={s.statsRow}>
@@ -143,6 +168,11 @@ function getStyles(C: typeof DarkColors) {
     title:       { fontSize:22, fontWeight:'700', color:C.text },
     modeToggle:  { flexDirection:'row', alignItems:'center', gap:6 },
     modeLbl:     { fontSize:14 },
+    markAllRow:  { flexDirection:'row', alignItems:'center', gap:10,
+                   borderWidth:1, borderColor:C.border, borderRadius:Radius.lg,
+                   backgroundColor:C.surface2, padding:Spacing.md },
+    markAllLbl:  { flex:1, fontSize:14, fontWeight:'700', color:C.text },
+    markAllSub:  { fontSize:12, color:C.textMuted },
     statsRow:    { flexDirection:'row', gap:10 },
     statCard:    { flex:1, borderWidth:1, borderColor:C.border, borderRadius:Radius.lg,
                    padding:Spacing.md, backgroundColor:C.surface, alignItems:'center', gap:4 },
