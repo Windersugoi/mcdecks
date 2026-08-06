@@ -266,7 +266,7 @@ export default function MazosScreen() {
                 ))}
                 style={[s.claimBtn, deck.physical && s.claimBtnActive]}
                 hitSlop={8}>
-                <Text style={s.claimIcon}>{deck.physical ? '📌' : '📎'}</Text>
+                <Text style={[s.claimIcon, { opacity: deck.physical ? 1 : 0.4 }]}>📍</Text>
               </Pressable>
               {/* 🗑 Borrar */}
               <Pressable onPress={() => confirmDelete(deck.id, deck.name)} style={s.trashBtn} hitSlop={8}>
