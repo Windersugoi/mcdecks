@@ -195,13 +195,18 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         if (c.aspect === 'Pool') return false;
         if (c.aspect === 'Basic' && !basicSelected) return false;
       } else {
-        const basicOnly = basicSelected && !activeAspect;
+        // Para dual (ej: Spider-Woman): mostrar TODOS los aspectos seleccionados
+        // Para héroes normales: usar activeAspect (único aspecto o detectado de las cartas)
+        const mainAspects = heroRule?.rule === 'dual'
+          ? deck.aspects.filter(a => a !== 'Basic')
+          : (activeAspect ? [activeAspect] : []);
+        const basicOnly = basicSelected && mainAspects.length === 0;
         if (basicOnly) {
           if (c.aspect !== 'Basic') return false;
-        } else if (activeAspect) {
+        } else if (mainAspects.length > 0) {
           if (c.aspect === 'Basic') {
             if (!basicSelected) return false;
-          } else if (c.aspect !== activeAspect) {
+          } else if (!mainAspects.includes(c.aspect)) {
             return false;
           }
         }
