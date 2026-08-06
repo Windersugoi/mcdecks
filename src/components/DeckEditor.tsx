@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch } from 'react-native';
+import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch, Alert } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
 import { ASPECT_LIST, MULTI_ASPECT_HEROES, displayAspect, DECK_MIN, DECK_MAX, HERO_SETS_BY_CYCLE, HERO_TO_SET, COMING_SOON_HEROES } from '@/data/constants';
@@ -81,10 +81,45 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
     update({ aspects: keepBasic ? [aspect, 'Basic'] : [aspect] });
   }
 
+  const MAIN_ASPECTS = ['Aggression', 'Justice', 'Leadership', 'Protection'] as const;
+
+  // Cuenta cartas de cada aspecto principal en el mazo actual
+  const aspectBalance = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const asp of MAIN_ASPECTS) {
+      counts[asp] = Object.entries(deck.cards).reduce((sum, [cid, qty]) => {
+        const c = ASPECT_CARDS.find(x => x.id === cid);
+        return c?.aspect === asp ? sum + qty : sum;
+      }, 0);
+    }
+    return counts;
+  }, [deck.cards]);
+
   function changeQty(cardId: string, delta: number) {
     const current = deck.cards[cardId] ?? 0;
     const card = ASPECT_CARDS.find(c => c.id === cardId);
-    const hardMax = card?.maxPerDeck ?? 4;
+    // Adam Warlock: máximo 1 copia de cada carta
+    const hardMax = heroRule?.maxCopies ?? (card?.maxPerDeck ?? 4);
+
+    if (delta > 0 && heroRule?.rule === 'all4' && card?.aspect &&
+        MAIN_ASPECTS.includes(card.aspect as typeof MAIN_ASPECTS[number])) {
+      // Calcular balance DESPUÉS de añadir esta carta
+      const newCount = (aspectBalance[card.aspect] ?? 0) + 1;
+      const otherCounts = MAIN_ASPECTS
+        .filter(a => a !== card.aspect)
+        .map(a => aspectBalance[a] ?? 0);
+      const minOther = Math.min(...otherCounts);
+      // Solo permitir si este aspecto no va a quedar por encima de todos los demás
+      if (newCount > minOther + 1) {
+        const behind = MAIN_ASPECTS.filter(a => a !== card.aspect && (aspectBalance[a] ?? 0) < newCount - 1);
+        Alert.alert(
+          'Adam Warlock — Balance requerido',
+          `Los aspectos deben tener el mismo número de cartas.\nPrimero añade cartas de: ${behind.join(', ')}.`
+        );
+        return;
+      }
+    }
+
     const next = Math.min(hardMax, Math.max(0, current + delta));
     const cards = { ...deck.cards };
     if (next === 0) delete cards[cardId]; else cards[cardId] = next;
@@ -152,17 +187,22 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       // Collection filter
       const inCollection = c.setCode ? !!ownedSets[c.setCode] : true;
       if (!localShowAll && !inCollection) return false;
-      // Aspect filter: usa activeAspect que tiene en cuenta las cartas del mazo
+      // Aspect filter
       const basicSelected = deck.aspects.includes('Basic');
-      const basicOnly = basicSelected && !activeAspect;
-      if (basicOnly) {
-        if (c.aspect !== 'Basic') return false;
-      } else if (activeAspect) {
-        // Solo mostrar el aspecto activo; Basic solo si está seleccionado explícitamente
-        if (c.aspect === 'Basic') {
-          if (!basicSelected) return false;
-        } else if (c.aspect !== activeAspect) {
-          return false;
+      if (heroRule?.rule === 'all4') {
+        // Adam Warlock: los 4 aspectos siempre visibles; Basic si seleccionado; nunca Pool
+        if (c.aspect === 'Pool') return false;
+        if (c.aspect === 'Basic' && !basicSelected) return false;
+      } else {
+        const basicOnly = basicSelected && !activeAspect;
+        if (basicOnly) {
+          if (c.aspect !== 'Basic') return false;
+        } else if (activeAspect) {
+          if (c.aspect === 'Basic') {
+            if (!basicSelected) return false;
+          } else if (c.aspect !== activeAspect) {
+            return false;
+          }
         }
       }
       // Sin aspecto activo y sin Basic solo = mostrar todo
@@ -389,10 +429,28 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
             </Text>
           </Pressable>
         </View>
-        <Text style={s.poolHint}>
-          {activeAspect ? `${activeAspect} + Basic` : 'All aspects + Basic'}
-          {!localShowAll ? ' · My collection' : ''}
-        </Text>
+        {heroRule?.rule === 'all4' ? (
+          <View style={s.balanceRow}>
+            {MAIN_ASPECTS.map(a => {
+              const count = aspectBalance[a] ?? 0;
+              const counts = MAIN_ASPECTS.map(x => aspectBalance[x] ?? 0);
+              const maxCount = Math.max(...counts);
+              const ok = count === maxCount || count === maxCount - 1;
+              return (
+                <View key={a} style={[s.balanceChip, ok ? s.balanceOk : s.balanceBad]}>
+                  <Text style={[s.balanceTxt, !ok && { color: C.danger }]}>
+                    {a.slice(0,3)} {count}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        ) : (
+          <Text style={s.poolHint}>
+            {activeAspect ? `${activeAspect} + Basic` : 'All aspects + Basic'}
+            {!localShowAll ? ' · My collection' : ''}
+          </Text>
+        )}
         {poolCards.map(card => (
           <PoolCardRow key={card.id} card={{ ...card, owned: effectiveOwned(card) }}
             decks={decks} deckId={deckId} deckFull={deckFull}
@@ -455,6 +513,11 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   aspectLocked:{fontSize:10,color:C.warning,flex:1,textAlign:'right'},
   specialNote:{backgroundColor:C.warningBg,borderWidth:1,borderColor:C.warning+'44',borderRadius:Radius.sm,padding:Spacing.sm},
   specialNoteTxt:{fontSize:11,color:C.warning},
+  balanceRow:{flexDirection:'row',gap:6,marginBottom:6},
+  balanceChip:{flex:1,alignItems:'center',paddingVertical:4,borderRadius:Radius.sm,borderWidth:1,borderColor:C.border,backgroundColor:C.surface2},
+  balanceOk:{borderColor:C.success+'66'},
+  balanceBad:{borderColor:C.danger,backgroundColor:C.dangerBg},
+  balanceTxt:{fontSize:11,fontWeight:'600',color:C.text},
   pillRow:{flexDirection:'row',flexWrap:'wrap',gap:6},
   searchInput:{backgroundColor:C.surface,borderWidth:1,borderColor:C.border,borderRadius:Radius.sm,color:C.text,fontSize:13,paddingVertical:7,paddingHorizontal:10,marginBottom:6},
   chip:{paddingVertical:4,paddingHorizontal:10,borderRadius:999,borderWidth:1,borderColor:C.border},
