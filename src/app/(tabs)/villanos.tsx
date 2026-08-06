@@ -209,6 +209,14 @@ export default function VillanosScreen() {
     .map(([cycle, villains]) => ({ cycle, villains: villains.filter(v => isOwned(v)) }))
     .filter(({ villains }) => villains.length > 0);
 
+  // Barra de progreso: villanos de tu colección vs derrotados con mazo activo
+  const ownedVillains = filteredSets.flatMap(({ villains }) => villains);
+  const defeatedCount = activeDeck
+    ? ownedVillains.filter(v => activeDeck.villains?.[v]?.defeated).length
+    : 0;
+  const totalOwned = ownedVillains.length;
+  const pct = totalOwned > 0 ? defeatedCount / totalOwned : 0;
+
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.container}>
@@ -223,6 +231,26 @@ export default function VillanosScreen() {
               thumbColor={C.text} />
           </View>
         </View>
+
+        {/* Barra de progreso global */}
+        {totalOwned > 0 && (
+          <View style={s.progressCard}>
+            <View style={s.progressTopRow}>
+              <Text style={s.progressLabel}>
+                {activeDeck ? `${activeDeck.name}` : 'No active deck'}
+              </Text>
+              <Text style={s.progressPct}>{Math.round(pct * 100)}%</Text>
+            </View>
+            <View style={s.progressBg}>
+              <View style={[s.progressFill, {
+                width: `${Math.round(pct * 100)}%` as any,
+                backgroundColor: pct >= 1 ? C.success : C.info,
+              }]} />
+            </View>
+            <Text style={s.progressSub}>{defeatedCount}/{totalOwned} villains defeated</Text>
+          </View>
+        )}
+
         <ActiveDeckBanner activeDeck={activeDeck} />
         {filteredSets.length === 0 && (
           <View style={s.emptyState}>
@@ -238,24 +266,36 @@ export default function VillanosScreen() {
                 const defeated = activeDeck?.villains?.[vName]?.defeated ?? false;
                 const total = decks.filter(d => d.villains?.[vName]?.defeated).length;
                 return (
-                  <Pressable key={vName} onPress={() => setOpen(vName)}
-                    style={[s.vCard, defeated && s.vCardDone]}>
-                    <View style={{ position: 'relative' }}>
-                      <VillainImage name={vName} size="small" />
-                      {defeated && (
-                        <View style={s.badge}>
-                          <Text style={s.badgeTxt}>✓</Text>
-                        </View>
-                      )}
-                    </View>
-                    <View style={s.vInfo}>
-                      <Text style={s.vName} numberOfLines={1}>{vName}</Text>
-                      <Text style={[s.vStatus, { color: defeated ? C.success : C.textMuted }]}>
-                        {defeated ? 'Defeated' : vName.endsWith('(L)') ? 'Leader' : 'Pending'}
-                        {total > 1 ? ` · ${total} decks` : ''}
-                      </Text>
-                    </View>
-                  </Pressable>
+                  <View key={vName} style={[s.vCard, defeated && s.vCardDone]}>
+                    <Pressable style={s.vCardMain} onPress={() => setOpen(vName)}>
+                      <View style={{ position: 'relative' }}>
+                        <VillainImage name={vName} size="small" />
+                        {defeated && (
+                          <View style={s.badge}>
+                            <Text style={s.badgeTxt}>✓</Text>
+                          </View>
+                        )}
+                      </View>
+                      <View style={s.vInfo}>
+                        <Text style={s.vName} numberOfLines={1}>{vName}</Text>
+                        <Text style={[s.vStatus, { color: defeated ? C.success : C.textMuted }]}>
+                          {defeated ? 'Defeated' : vName.endsWith('(L)') ? 'Leader' : 'Pending'}
+                          {total > 1 ? ` · ${total} decks` : ''}
+                        </Text>
+                      </View>
+                    </Pressable>
+                    {/* Quick-defeat button */}
+                    {activeDeck && (
+                      <Pressable
+                        style={[s.quickBtn, defeated && s.quickBtnDone]}
+                        onPress={() => toggleDefeated(vName)}
+                        hitSlop={4}>
+                        <Text style={[s.quickTxt, defeated && { color: C.success }]}>
+                          {defeated ? '✓' : '○'}
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
                 );
               })}
             </View>
@@ -276,7 +316,18 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   toggleLabel:{fontSize:12,color:C.textMuted},
   cycleLabel:{fontSize:11,color:C.textMuted,fontWeight:'700',marginBottom:6,marginTop:4,letterSpacing:0.5,textTransform:'uppercase'},
   grid:{flexDirection:'row',flexWrap:'wrap',gap:8},
+  progressCard:  { backgroundColor:C.surface, borderRadius:Radius.lg, borderWidth:1, borderColor:C.border, padding:Spacing.md, gap:4 },
+  progressTopRow:{ flexDirection:'row', justifyContent:'space-between', alignItems:'center' },
+  progressLabel: { fontSize:12, color:C.text, fontWeight:'600', flex:1 },
+  progressPct:   { fontSize:14, fontWeight:'800', color:C.info },
+  progressBg:    { height:6, backgroundColor:C.border, borderRadius:3, overflow:'hidden' },
+  progressFill:  { height:6, borderRadius:3 },
+  progressSub:   { fontSize:11, color:C.textMuted },
   vCard:{width:'47%',borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
+  vCardMain:{ flex:1 },
+  quickBtn:{ borderTopWidth:1, borderTopColor:C.border, paddingVertical:6, alignItems:'center' },
+  quickBtnDone:{ borderTopColor:C.success+'44', backgroundColor:C.success+'11' },
+  quickTxt:{ fontSize:16, color:C.textMuted },
   vCardDone:{borderColor:C.success+'66',backgroundColor:C.surface},
   vInfo:{padding:8,gap:2},
   vName:{fontSize:12,fontWeight:'600',color:C.text},

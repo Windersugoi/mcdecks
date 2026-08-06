@@ -27,7 +27,9 @@ export default function CampanasScreen() {
   // Campañas oficiales = las de los sets que el usuario posee
   // Siempre incluye Core Set. Se añaden automáticamente al activar un set.
   const baseCampaigns = expertMode ? DEFAULT_CAMPAIGNS_EXPERT : DEFAULT_CAMPAIGNS_NORMAL;
-  const official = officialCampaigns.length > 0 ? officialCampaigns : baseCampaigns;
+  const allOfficial = officialCampaigns.length > 0 ? officialCampaigns : baseCampaigns;
+  // Filtrar: mostrar campañas sin modo siempre; con modo solo si coincide con el toggle
+  const official = allOfficial.filter(c => !c.mode || c.mode === (expertMode ? 'expert' : 'normal'));
   const community = [...COMMUNITY_CAMPAIGNS].sort((a,b)=>(b.rating??0)-(a.rating??0));
 
   function toggleModular(m: string) {
