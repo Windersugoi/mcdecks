@@ -28,28 +28,20 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Create keystore
+      - name: Restore keystore from secret
         run: |
-          keytool -genkey -v \
-            -keystore android/app/release.keystore \
-            -alias mcdecks \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=MCDecks,O=MCDecks,C=ES" \
-            -storepass mcdecks123 \
-            -keypass mcdecks123
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
 
       - name: Configure signing
         run: |
-          cat >> android/app/build.gradle << 'GRADLE'
+          cat >> android/app/build.gradle << GRADLE
 
           android.signingConfigs {
             release {
               storeFile file("release.keystore")
-              storePassword "mcdecks123"
-              keyAlias "mcdecks"
-              keyPassword "mcdecks123"
+              storePassword "${{ secrets.KEYSTORE_PASSWORD }}"
+              keyAlias "${{ secrets.KEY_ALIAS }}"
+              keyPassword "${{ secrets.KEY_PASSWORD }}"
             }
           }
           android.buildTypes.release.signingConfig = android.signingConfigs.release
