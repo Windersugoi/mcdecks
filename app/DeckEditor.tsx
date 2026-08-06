@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch, Alert, Share } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
 import { ASPECT_LIST, MULTI_ASPECT_HEROES, displayAspect, DECK_MIN, DECK_MAX, HERO_SETS_BY_CYCLE, HERO_TO_SET, COMING_SOON_HEROES } from '@/data/constants';
@@ -26,6 +26,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(deck?.name ?? '');
   const [showNemesis, setShowNemesis] = useState(false);
+  const [heroSearch, setHeroSearch] = useState('');
   const [previewCard, setPreviewCard] = useState<Card | null>(null);
   const [importUrl, setImportUrl] = useState('');
   const C = useColors();
@@ -237,38 +238,50 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
 
   // ── Hero selector ─────────────────────────────────────────────────────────
   if (!deck.hero) {
+    const hq = heroSearch.toLowerCase();
     return (
       <ScrollView style={s.scroll} contentContainerStyle={s.container}>
         <Pressable onPress={onBack} style={s.backBtn}><Text style={s.backTxt}>← Decks</Text></Pressable>
         <Text style={s.heroTitle}>Choose your hero</Text>
         <Text style={s.sub}>Hero cards and nemesis set are added automatically.</Text>
-        {Object.entries(HERO_SETS_BY_CYCLE).map(([cycle, heroes]) => (
-          <View key={cycle}>
-            <Text style={s.cycleLabel}>{cycle}</Text>
-            {heroes.map(h => {
-              const hCode = HERO_TO_SET[h];
-              const owned = localShowAll || !hCode || !!ownedSets[hCode] || COMING_SOON_HEROES.has(h);
-              const setName = hCode ? (SET_CATALOG.find(x => x.code === hCode)?.name ?? hCode) : null;
-              const isSoon = COMING_SOON_HEROES.has(h);
-              const canSelect = owned && !isSoon;
-              return (
-                <Pressable key={h}
-                  onPress={() => { if (!canSelect) return; update({ hero: h }); setNameDraft(h); }}
-                  style={[s.heroRow, !owned && !isSoon && s.heroRowMissing, isSoon && s.heroRowSoon]}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[s.heroName, !owned && !isSoon && { color: C.textMuted }]}>{h}</Text>
-                    {isSoon
-                      ? <Text style={s.soonLabel}>★ Coming Soon — cards not yet on marvelcdb</Text>
-                      : (!owned && setName && <Text style={s.missingSet}>⚠ Missing: {setName}</Text>)
-                    }
-                  </View>
-                  {MULTI_ASPECT_HEROES[h] && <Text style={s.specialBadge}>Special</Text>}
-                  <Text style={{ color: C.textMuted, marginLeft: 8 }}>{canSelect ? '→' : '🔒'}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
+        <TextInput
+          placeholder="Search hero..."
+          placeholderTextColor={C.textMuted}
+          value={heroSearch}
+          onChangeText={setHeroSearch}
+          style={s.heroSearchInput}
+        />
+        {Object.entries(HERO_SETS_BY_CYCLE).map(([cycle, heroes]) => {
+          const filtered = heroes.filter(h => !hq || h.toLowerCase().includes(hq));
+          if (filtered.length === 0) return null;
+          return (
+            <View key={cycle}>
+              <Text style={s.cycleLabel}>{cycle}</Text>
+              {filtered.map(h => {
+                const hCode = HERO_TO_SET[h];
+                const owned = localShowAll || !hCode || !!ownedSets[hCode] || COMING_SOON_HEROES.has(h);
+                const setName = hCode ? (SET_CATALOG.find(x => x.code === hCode)?.name ?? hCode) : null;
+                const isSoon = COMING_SOON_HEROES.has(h);
+                const canSelect = owned && !isSoon;
+                return (
+                  <Pressable key={h}
+                    onPress={() => { if (!canSelect) return; update({ hero: h }); setNameDraft(h); }}
+                    style={[s.heroRow, !owned && !isSoon && s.heroRowMissing, isSoon && s.heroRowSoon]}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[s.heroName, !owned && !isSoon && { color: C.textMuted }]}>{h}</Text>
+                      {isSoon
+                        ? <Text style={s.soonLabel}>★ Coming Soon — cards not yet on marvelcdb</Text>
+                        : (!owned && setName && <Text style={s.missingSet}>⚠ Missing: {setName}</Text>)
+                      }
+                    </View>
+                    {MULTI_ASPECT_HEROES[h] && <Text style={s.specialBadge}>Special</Text>}
+                    <Text style={{ color: C.textMuted, marginLeft: 8 }}>{canSelect ? '→' : '🔒'}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          );
+        })}
       </ScrollView>
     );
   }
@@ -475,6 +488,33 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       ))}
 
       <Pressable style={s.exportBtn}><Text style={s.exportTxt}>⤒ Export to marvelcdb</Text></Pressable>
+
+      <Pressable style={s.shareBtn} onPress={() => {
+        if (!deck.hero) return;
+        const heroCards = (HERO_CARDS[deck.hero] ?? [])
+          .filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego')
+          .map(c => `  · ${c.qty ?? 1}× ${c.name}`).join('\n');
+        const aspectCards = Object.entries(deck.cards)
+          .map(([id, qty]) => {
+            const card = ASPECT_CARDS.find(c => c.id === id);
+            return card ? `  · ${qty}× ${card.name}` : null;
+          }).filter(Boolean).join('\n');
+        const aspects = deck.aspects.filter(a => a !== 'Basic').join(' + ');
+        const text = [
+          `🃏 MCDecks — ${deck.hero} (${aspects || 'No aspect'})`,
+          `${'─'.repeat(40)}`,
+          `HERO (${mandCount} cards)`,
+          heroCards,
+          ``,
+          `DECK (${optCount} cards)`,
+          aspectCards || '  (empty)',
+          ``,
+          `Total: ${total}/${DECK_MAX} cards`,
+        ].join('\n');
+        Share.share({ message: text, title: deck.name });
+      }}>
+        <Text style={s.shareTxt}>⇪ Share deck list</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -528,5 +568,8 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   smallBtnTxt:{fontSize:12,color:C.text},
   exportBtn:{borderWidth:1,borderColor:C.borderStrong,borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.surface,marginTop:8},
   exportTxt:{fontSize:13,color:C.text},
+  shareBtn:{borderWidth:1,borderColor:C.info+'66',borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.info+'11',marginTop:6},
+  shareTxt:{fontSize:13,color:C.info,fontWeight:'600'},
+  heroSearchInput:{backgroundColor:C.surface,borderWidth:1,borderColor:C.border,borderRadius:Radius.md,color:C.text,fontSize:14,paddingVertical:9,paddingHorizontal:12,marginBottom:6},
 });
 }

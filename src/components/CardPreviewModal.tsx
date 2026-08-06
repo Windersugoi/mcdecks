@@ -60,7 +60,9 @@ export function CardPreviewModal({ card, onClose }: Props) {
   }, [card?.id]);
 
   async function tryFallback() {
-    if (fallbackTried || !card) return;
+    // Solo buscar alternativa si la carta NO tiene URL propia
+    // Si tiene imgsrc pero falla → mostrar placeholder directamente
+    if (fallbackTried || !card || card.imgsrc) return;
     setFallbackTried(true);
     setLoading(true);
     try {
