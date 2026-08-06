@@ -17,7 +17,7 @@ const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
 ];
 
 export default function AjustesScreen() {
-  const { lightMode, setLightMode, lang, setLang, dismissTutorial } = useApp();
+  const { lightMode, setLightMode, lang, setLang, replayTutorial } = useApp();
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
 
@@ -74,7 +74,7 @@ export default function AjustesScreen() {
         <View style={[s.row, s.rowBorder]}>
           <Text style={s.rowLabel}>{t(lang, 'aboutHero')}</Text>
         </View>
-        <Pressable style={[s.row, s.rowBorder]} onPress={() => dismissTutorial(false)}>
+        <Pressable style={[s.row, s.rowBorder]} onPress={() => replayTutorial()}>
           <Text style={[s.rowLabel, { color: C.info }]}>{t(lang, 'tutorial')}</Text>
           <Text style={{ color: C.info }}>{'\u2192'}</Text>
         </Pressable>

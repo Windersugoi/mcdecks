@@ -40,6 +40,7 @@ interface AppCtx {
   makeDeckTracking: typeof makeDeckTracking;
   showTutorial: boolean;
   dismissTutorial: (dontShowAgain?: boolean) => void;
+  replayTutorial: () => void;
   officialCampaigns: import('@/data/types').Campaign[];
   isLoading: boolean;
   lightMode: boolean;
@@ -134,6 +135,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem('mcdecks_v1_lightmode', v ? 'true' : 'false').catch(() => {});
   }
 
+  function replayTutorial() {
+    setShowTutorial(true);
+  }
+
   function dismissTutorial(dontShowAgain = false) {
     setShowTutorial(false);
     if (dontShowAgain) {
@@ -149,7 +154,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider value={{
       decks, setDecks, activeDeckId, setActiveDeckId, activeDeck,
       ownedSets, setOwnedSets, createDeck, makeDeckTracking,
-      showTutorial, dismissTutorial, officialCampaigns, isLoading,
+      showTutorial, dismissTutorial, replayTutorial, officialCampaigns, isLoading,
       lightMode, setLightMode,
       lang, setLang,
     }}>

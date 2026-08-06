@@ -1,32 +1,36 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, ActivityIndicator } from 'react-native';
+import { View, Image, StyleSheet, Dimensions } from 'react-native';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { TutorialOverlay } from '@/components/TutorialOverlay';
 import { useColors } from '@/hooks/useColors';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
-// Mantener el splash visible hasta que la app esté lista
+// Ocultar el splash del sistema lo antes posible — usaremos el nuestro
 SplashScreen.preventAutoHideAsync();
 
-// StatusBar y colores viven aquí, dentro de AppProvider
+const { width, height } = Dimensions.get('screen');
+
 function RootWithTutorial() {
   const { showTutorial, dismissTutorial, isLoading } = useApp();
   const C = useColors();
 
-  // Ocultar el splash en cuanto termina de cargar
   useEffect(() => {
-    if (!isLoading) {
-      SplashScreen.hideAsync();
-    }
-  }, [isLoading]);
+    // Ocultar el splash del sistema en cuanto podamos
+    SplashScreen.hideAsync();
+  }, []);
 
+  // Mientras carga: mostrar nuestro propio splash a pantalla completa
   if (isLoading) {
     return (
-      <View style={{ flex:1, backgroundColor: C.bg, justifyContent:'center', alignItems:'center' }}>
-        <ActivityIndicator size="large" color={C.info} />
+      <View style={styles.splashContainer}>
+        <Image
+          source={require('../../assets/splash.png')}
+          style={styles.splashImage}
+          resizeMode="cover"
+        />
       </View>
     );
   }
@@ -40,7 +44,17 @@ function RootWithTutorial() {
   );
 }
 
-// RootLayout solo provee contexto — no usa C
+const styles = StyleSheet.create({
+  splashContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  splashImage: {
+    width,
+    height,
+  },
+});
+
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
