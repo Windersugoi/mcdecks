@@ -1,8 +1,11 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
+import { useApp } from "@/context/AppContext";
+import { t } from "@/i18n/strings";
 
 export default function TabsLayout() {
+  const { lang } = useApp();
   const C = useColors();
   const insets = useSafeAreaInsets();
   return (
@@ -21,10 +24,11 @@ export default function TabsLayout() {
       tabBarLabelStyle: { fontSize: 13, fontWeight: "600" },
       tabBarShowLabel: true,
     }}>
-      <Tabs.Screen name="mazos"    options={{ title: "Mazos",        tabBarIcon: () => null }} />
-      <Tabs.Screen name="villanos" options={{ title: "Villanos",     tabBarIcon: () => null }} />
-      <Tabs.Screen name="campanas" options={{ title: "Campañas",     tabBarIcon: () => null }} />
-      <Tabs.Screen name="cuenta"   options={{ title: "Mi Colección", tabBarIcon: () => null }} />
+      <Tabs.Screen name="mazos"    options={{ title: t(lang,"decks"),      tabBarIcon: () => null }} />
+      <Tabs.Screen name="villanos" options={{ title: t(lang,"villains"),   tabBarIcon: () => null }} />
+      <Tabs.Screen name="campanas" options={{ title: t(lang,"campaigns"),  tabBarIcon: () => null }} />
+      <Tabs.Screen name="cuenta"   options={{ title: t(lang,"collection"), tabBarIcon: () => null }} />
+      <Tabs.Screen name="ajustes"  options={{ title: t(lang,"settings"),   tabBarIcon: () => null }} />
     </Tabs>
   );
 }

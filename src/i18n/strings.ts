@@ -1,0 +1,61 @@
+export type Lang = 'en' | 'es';
+
+const strings = {
+  en: {
+    decks:'Decks', villains:'Villains', campaigns:'Campaigns',
+    collection:'My Collection', settings:'Settings',
+    settingsTitle:'Settings', appearance:'APPEARANCE', darkMode:'Dark mode',
+    language:'LANGUAGE', support:'SUPPORT MCDECKS',
+    supportDesc:"MCDecks is free and ad-free. If it saves you time at the table, a coffee goes a long way ☕",
+    supportBtn:'Support on Ko-fi', about:'ABOUT', aboutVersion:'Version',
+    aboutHero:'All sets up to Fear No Evil', tutorial:'Replay tutorial',
+    tut1Tab:'Decks', tut1Title:'Build your deck',
+    tut1Body:"Tap \"+ New Deck\", choose a hero and an aspect, then add cards from your collection. The builder only shows cards you own.",
+    tut2Tab:'Decks', tut2Title:'Set your active deck',
+    tut2Body:"Tap the ☆ star on any deck to make it Active. Villain defeats and campaign progress are tracked per active deck — swap it anytime to track each hero separately.",
+    tut3Tab:'Decks', tut3Title:'Pin cards during play',
+    tut3Body:"Inside a deck, tap the 📌 pin icon on any card to highlight it during a game. Pinned cards float to the top so you never lose track of key cards mid-fight.",
+    tut4Tab:'Villains', tut4Title:'Track your victories',
+    tut4Body:"Check off villains as you defeat them. Progress is tied to your Active Deck, so each hero keeps their own score. Tap a villain to see modular sets used.",
+    tut5Tab:'Campaigns', tut5Title:'Campaigns & custom runs',
+    tut5Body:"Follow official campaigns step by step, build a custom campaign from any scenario, or let the app pick a random encounter. Progress saves automatically.",
+    tut6Tab:'My Collection', tut6Title:'Mark what you own',
+    tut6Body:"Enable every set you have. The deck builder and hero selector will only show what is available to you. Use \"Mark all\" if you own everything.",
+    tut7Tab:'Settings', tut7Title:'Settings & support',
+    tut7Body:"Switch between dark and light mode, change the app language, or replay this tutorial. If MCDecks is useful to you, the Ko-fi link is the best way to keep it growing.",
+    dontShowAgain:"Don't show this again", skip:'Skip',
+    next:'Next \u2192', getStarted:'Get started',
+    markAll:'Mark all', unmarkAll:'Unmark all',
+  },
+  es: {
+    decks:'Mazos', villains:'Villanos', campaigns:'Campa\u00f1as',
+    collection:'Mi Colecci\u00f3n', settings:'Ajustes',
+    settingsTitle:'Ajustes', appearance:'APARIENCIA', darkMode:'Modo oscuro',
+    language:'IDIOMA', support:'APOYA MCDECKS',
+    supportDesc:'MCDecks es gratuita y sin anuncios. Si te ahorra tiempo en la mesa, un caf\u00e9 ayuda mucho \u2615',
+    supportBtn:'Apoyar en Ko-fi', about:'ACERCA DE', aboutVersion:'Versi\u00f3n',
+    aboutHero:'Todos los sets hasta Fear No Evil', tutorial:'Ver tutorial de nuevo',
+    tut1Tab:'Mazos', tut1Title:'Crea tu mazo',
+    tut1Body:'Pulsa "+ Nuevo Mazo", elige un h\u00e9roe y un aspecto, y a\u00f1ade cartas de tu colecci\u00f3n. El editor solo muestra las cartas que tienes.',
+    tut2Tab:'Mazos', tut2Title:'Elige tu mazo activo',
+    tut2Body:'Pulsa la estrella \u2606 en cualquier mazo para marcarlo como Activo. Las victorias contra villanos y el progreso de campa\u00f1a se guardan por mazo activo.',
+    tut3Tab:'Mazos', tut3Title:'Pinea cartas durante la partida',
+    tut3Body:'Dentro de un mazo, pulsa el icono \ud83d\udccc en cualquier carta para resaltarla. Las cartas pineadas suben arriba para que no pierdas de vista las m\u00e1s importantes.',
+    tut4Tab:'Villanos', tut4Title:'Registra tus victorias',
+    tut4Body:'Marca los villanos que vayas derrotando. El progreso est\u00e1 ligado a tu Mazo Activo, as\u00ed que cada h\u00e9roe lleva su propio registro.',
+    tut5Tab:'Campa\u00f1as', tut5Title:'Campa\u00f1as y partidas personalizadas',
+    tut5Body:'Sigue campa\u00f1as oficiales paso a paso, crea una personalizada o deja que la app elija un encuentro aleatorio. El progreso se guarda autom\u00e1ticamente.',
+    tut6Tab:'Mi Colecci\u00f3n', tut6Title:'Marca lo que tienes',
+    tut6Body:'Activa todos los sets y packs que poseas. El editor de mazos solo mostrar\u00e1 lo que tienes disponible. Usa "Marcar todo" si tienes toda la colecci\u00f3n.',
+    tut7Tab:'Ajustes', tut7Title:'Ajustes y apoyo',
+    tut7Body:'Cambia entre modo oscuro y claro, el idioma de la app, o vuelve a ver este tutorial. Si MCDecks te resulta \u00fatil, el enlace de Ko-fi es la mejor forma de que siga creciendo.',
+    dontShowAgain:'No mostrar de nuevo', skip:'Saltar',
+    next:'Siguiente \u2192', getStarted:'Empezar',
+    markAll:'Marcar todo', unmarkAll:'Desmarcar todo',
+  },
+};
+
+export type StringKey = keyof typeof strings.en;
+export function t(lang: Lang, key: StringKey): string {
+  return (strings[lang] as any)[key] ?? (strings.en as any)[key] ?? key;
+}

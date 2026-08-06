@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Deck, OwnedSets } from '@/data/types';
+import { Lang } from '@/i18n/strings';
 import { VILLAIN_LIST } from '@/data/constants';
 import { CORE_CAMPAIGN_NORMAL, CORE_CAMPAIGN_EXPERT, SET_TO_CAMPAIGN } from '@/data/campaigns';
 import { buildSpiderManJusticeDeck, buildCaptainMarvelLeadershipDeck } from '@/utils/defaultDecks';
@@ -9,6 +10,7 @@ const STORAGE_DECKS    = 'mcdecks_v1_decks';
 const STORAGE_OWNED    = 'mcdecks_v1_owned';
 const STORAGE_ACTIVE   = 'mcdecks_v1_active';
 const STORAGE_TUTORIAL = 'mcdecks_v1_tutorial';
+const STORAGE_LANG     = 'mcdecks_v1_lang';
 
 function makeDeckTracking() {
   return {
@@ -42,6 +44,8 @@ interface AppCtx {
   isLoading: boolean;
   lightMode: boolean;
   setLightMode: (v: boolean) => void;
+  lang: Lang;
+  setLang: (v: Lang) => void;
 }
 
 const AppContext = createContext<AppCtx | null>(null);
@@ -53,6 +57,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [lightMode, setLightModeRaw] = useState(false);
+  const [lang, setLangRaw] = useState<Lang>('es');
   const initialized = useRef(false);
 
   const activeDeck = decks.find(d => d.id === activeDeckId) ?? null;
@@ -79,6 +84,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (savedActive) setActiveDeckId(savedActive);
         setShowTutorial(tutorialSeen !== 'true');
         if (savedLight === 'true') setLightModeRaw(true);
+        const savedLang = await AsyncStorage.getItem(STORAGE_LANG);
+        if (savedLang === 'en' || savedLang === 'es') setLangRaw(savedLang);
       } catch {
         setDecks(makeDefaultDecks());
         setShowTutorial(true);
@@ -117,6 +124,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return id;
   }
 
+  function setLang(v: Lang) {
+    setLangRaw(v);
+    AsyncStorage.setItem(STORAGE_LANG, v).catch(() => {});
+  }
+
   function setLightMode(v: boolean) {
     setLightModeRaw(v);
     AsyncStorage.setItem('mcdecks_v1_lightmode', v ? 'true' : 'false').catch(() => {});
@@ -139,6 +151,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ownedSets, setOwnedSets, createDeck, makeDeckTracking,
       showTutorial, dismissTutorial, officialCampaigns, isLoading,
       lightMode, setLightMode,
+      lang, setLang,
     }}>
       {children}
     </AppContext.Provider>

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, Switch, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
+import { t } from '@/i18n/strings';
 import { SET_CATALOG } from '@/data/cards';
 import { DarkColors, LightColors, Radius, Spacing } from '@/styles/theme';
 
@@ -26,7 +27,7 @@ const TYPE_ICON: Record<string,string> = {
 };
 
 export default function CuentaScreen() {
-  const { ownedSets, setOwnedSets, lightMode, setLightMode } = useApp();
+  const { ownedSets, setOwnedSets, lightMode, lang } = useApp();
   const C = lightMode ? LightColors : DarkColors;
   const s = useMemo(() => getStyles(C), [C]);
 
@@ -76,12 +77,7 @@ export default function CuentaScreen() {
         {/* Header */}
         <View style={s.headerRow}>
           <Text style={s.title}>Mi Colección</Text>
-          <View style={s.modeToggle}>
-            <Text style={s.modeLbl}>{lightMode ? '☀️' : '🌙'}</Text>
-            <Switch value={lightMode} onValueChange={setLightMode}
-              trackColor={{ false: C.border, true: '#f0c040' }}
-              thumbColor={C.text} />
-          </View>
+
         </View>
 
         {/* Stats */}
@@ -103,7 +99,7 @@ export default function CuentaScreen() {
             {someOwned && <Text style={s.checkDash}>–</Text>}
           </View>
           <Text style={s.markAllLbl}>
-            {allOwned ? 'Desmarcar todo' : 'Marcar todo'}
+            {allOwned ? t(lang,'unmarkAll') : t(lang,'markAll')}
           </Text>
           <Text style={s.markAllSub}>{totalOwned}/{availableSets.length} sets</Text>
         </Pressable>
