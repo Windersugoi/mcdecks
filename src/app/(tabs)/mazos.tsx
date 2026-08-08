@@ -157,10 +157,17 @@ export default function MazosScreen() {
         .slice(0, 2);
 
       // - 8. Eliminar cartas del propio héroe (se auto-añaden en DeckEditor) -
+      // Usamos nameToOurId para encontrar el ID real con el que se importó cada carta,
+      // evitando el problema de entradas duplicadas con IDs distintos en HERO_CARDS.
       if (matchedHero && HERO_CARDS[matchedHero]) {
-        const heroCardIds = new Set(HERO_CARDS[matchedHero].map(c => c.id));
+        const heroImportedIds = new Set<string>();
+        for (const c of HERO_CARDS[matchedHero]) {
+          if (c.isIdentity) continue;
+          const mappedId = nameToOurId[c.name.toLowerCase()] ?? normToOurId[normalize(c.name)];
+          if (mappedId) heroImportedIds.add(mappedId);
+        }
         for (const id of Object.keys(importedCards)) {
-          if (heroCardIds.has(id)) delete importedCards[id];
+          if (heroImportedIds.has(id)) delete importedCards[id];
         }
       }
 
@@ -221,11 +228,9 @@ export default function MazosScreen() {
         {decks.map(deck => {
           const isActive = deck.id === activeDeckId;
           // Un mazo es "completo" si tiene héroe asignado
-          // La cuenta total incluye mandatory hero cards (identidad + pack) que ya están fijas
-          const heroEntry = deck.hero ? (HERO_CARDS[deck.hero] ?? []) : [];
-          const identityCount = heroEntry.filter(c => c.isIdentity || c.type === 'Hero' || c.type === 'Alter-Ego').length;
+          // La cuenta total incluye mandatory hero cards (pack de héroe, sin identidad)
           const mandCount = deck.hero
-            ? identityCount + heroEntry
+            ? (HERO_CARDS[deck.hero] ?? [])
                 .filter(c => !c.isIdentity && c.type !== 'Hero' && c.type !== 'Alter-Ego')
                 .reduce((a,c)=>a+(c.qty??1),0)
             : 0;
