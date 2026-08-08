@@ -175,7 +175,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const nemesis   = NEMESIS_CARDS[deck.hero ?? ''] ?? [];
   const identityCards = mandatory.filter(c => c.type === 'Hero' || c.type === 'Alter-Ego');
   const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego');
-  const mandCount = identityCards.length + deckMandatory.reduce((a, c) => a + (c.qty ?? 1), 0);
+  const mandCount = deckMandatory.reduce((a, c) => a + (c.qty ?? 1), 0);
   const optCount  = Object.values(deck.cards).reduce((a, q) => a + q, 0);
   const total     = mandCount + optCount;
   const deckFull  = total >= DECK_MAX;

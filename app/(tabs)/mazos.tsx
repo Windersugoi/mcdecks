@@ -159,10 +159,13 @@ export default function MazosScreen() {
       // - 8. Eliminar cartas del propio héroe (se auto-añaden en DeckEditor) -
       // Usamos nameToOurId para encontrar el ID real con el que se importó cada carta,
       // evitando el problema de entradas duplicadas con IDs distintos en HERO_CARDS.
+      // Se incluyen también las cartas de identidad: algunos héroes (Adam Warlock,
+      // Maria Hill, Hercules...) comparten nombre con un aliado genérico de otro
+      // aspecto, y marvelcdb siempre incluye la identidad en el mazo — sin esto,
+      // esa carta ajena se colaría por error en el mazo importado.
       if (matchedHero && HERO_CARDS[matchedHero]) {
         const heroImportedIds = new Set<string>();
         for (const c of HERO_CARDS[matchedHero]) {
-          if (c.isIdentity) continue;
           const mappedId = nameToOurId[c.name.toLowerCase()] ?? normToOurId[normalize(c.name)];
           if (mappedId) heroImportedIds.add(mappedId);
         }
