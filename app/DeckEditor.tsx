@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch, Alert, Share } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
@@ -31,6 +31,16 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const [importUrl, setImportUrl] = useState('');
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
+  const scrollRef = useRef<ScrollView>(null);
+
+  // Al elegir héroe (mazo nuevo), la pantalla cambia de "elegir héroe" al editor completo.
+  // React reutiliza la misma instancia de ScrollView, así que sin esto se conserva el
+  // scroll donde estaba en el selector, en vez de empezar arriba del todo.
+  useEffect(() => {
+    if (deck?.hero) {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    }
+  }, [deck?.hero]);
 
   if (!deck) {
     return (
@@ -292,7 +302,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   }
 
   return (
-    <ScrollView style={s.scroll} contentContainerStyle={s.container}>
+    <ScrollView ref={scrollRef} style={s.scroll} contentContainerStyle={s.container}>
       <CardPreviewModal card={previewCard} onClose={() => setPreviewCard(null)} />
       <Pressable onPress={onBack} style={s.backBtn}><Text style={s.backTxt}>← Decks</Text></Pressable>
 
