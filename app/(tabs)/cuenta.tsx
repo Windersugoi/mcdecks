@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { View, Text, ScrollView, StyleSheet, Switch, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
@@ -30,6 +30,7 @@ export default function CuentaScreen() {
   const { ownedSets, setOwnedSets, lightMode, lang } = useApp();
   const C = lightMode ? LightColors : DarkColors;
   const s = useMemo(() => getStyles(C), [C]);
+  const scrollRef = useRef<ScrollView>(null);
 
   const setByCode: Record<string, typeof SET_CATALOG[0]> = {};
   for (const x of SET_CATALOG) setByCode[x.code] = x;
@@ -37,7 +38,7 @@ export default function CuentaScreen() {
   const totalOwned = SET_CATALOG.filter(x => ownedSets[x.code]).length;
   const totalCards = SET_CATALOG.filter(x => ownedSets[x.code]).reduce((a,x) => a + x.totalCards, 0);
 
-  const availableSets = SET_CATALOG;
+  const availableSets = SET_CATALOG.filter(x => !x.comingSoon);
   const allOwned = availableSets.length > 0 && availableSets.every(x => ownedSets[x.code]);
   const someOwned = availableSets.some(x => ownedSets[x.code]) && !allOwned;
   const noneOwned = !allOwned && !someOwned;
@@ -72,7 +73,7 @@ export default function CuentaScreen() {
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={s.container}>
+      <ScrollView ref={scrollRef} contentContainerStyle={s.container}>
 
         {/* Header */}
         <View style={s.headerRow}>
@@ -153,6 +154,15 @@ export default function CuentaScreen() {
           );
         })}
       </ScrollView>
+
+      <View style={s.scrollFabCol} pointerEvents="box-none">
+        <Pressable style={s.scrollFab} onPress={() => scrollRef.current?.scrollTo({ y: 0, animated: true })}>
+          <Text style={s.scrollFabTxt}>▲</Text>
+        </Pressable>
+        <Pressable style={s.scrollFab} onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}>
+          <Text style={s.scrollFabTxt}>▼</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -199,5 +209,10 @@ function getStyles(C: typeof DarkColors) {
     soonBadge:   { borderWidth:1, borderColor:C.info+'66', borderRadius:4,
                    paddingHorizontal:6, paddingVertical:3, backgroundColor:C.surface2 },
     soonTxt:     { fontSize:10, color:C.info, fontWeight:'600' },
+    scrollFabCol:{ position:'absolute', right:14, bottom:18, gap:10 },
+    scrollFab:   { width:44, height:44, borderRadius:22, backgroundColor:C.surface2, borderWidth:1,
+                   borderColor:C.borderStrong, alignItems:'center', justifyContent:'center',
+                   shadowColor:'#000', shadowOpacity:0.3, shadowRadius:4, shadowOffset:{width:0,height:2}, elevation:4 },
+    scrollFabTxt:{ fontSize:16, color:C.text, fontWeight:'700' },
   });
 }

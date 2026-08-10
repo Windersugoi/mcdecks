@@ -33,5 +33,6 @@ export interface HeroRule {
 export interface SetInfo {
   code: string; name: string; nameEs: string; cycle: string;
   type: 'box' | 'hero' | 'scenario' | 'campaign' | 'module'; totalCards: number;
+  comingSoon?: boolean;
 }
 export interface OwnedSets { [setCode: string]: boolean; }

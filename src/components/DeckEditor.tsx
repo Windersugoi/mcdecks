@@ -302,6 +302,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   }
 
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView ref={scrollRef} style={s.scroll} contentContainerStyle={s.container}>
       <CardPreviewModal card={previewCard} onClose={() => setPreviewCard(null)} />
       <Pressable onPress={onBack} style={s.backBtn}><Text style={s.backTxt}>← Decks</Text></Pressable>
@@ -531,6 +532,16 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         <Text style={s.shareTxt}>⇪ Share deck list</Text>
       </Pressable>
     </ScrollView>
+
+      <View style={s.scrollFabCol} pointerEvents="box-none">
+        <Pressable style={s.scrollFab} onPress={() => scrollRef.current?.scrollTo({ y: 0, animated: true })}>
+          <Text style={s.scrollFabTxt}>▲</Text>
+        </Pressable>
+        <Pressable style={s.scrollFab} onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}>
+          <Text style={s.scrollFabTxt}>▼</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
@@ -586,5 +597,8 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   shareBtn:{borderWidth:1,borderColor:C.info+'66',borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.info+'11',marginTop:6},
   shareTxt:{fontSize:13,color:C.info,fontWeight:'600'},
   heroSearchInput:{backgroundColor:C.surface,borderWidth:1,borderColor:C.border,borderRadius:Radius.md,color:C.text,fontSize:14,paddingVertical:9,paddingHorizontal:12,marginBottom:6},
+  scrollFabCol:{position:'absolute',right:14,bottom:18,gap:10},
+  scrollFab:{width:44,height:44,borderRadius:22,backgroundColor:C.surface2,borderWidth:1,borderColor:C.borderStrong,alignItems:'center',justifyContent:'center',shadowColor:'#000',shadowOpacity:0.3,shadowRadius:4,shadowOffset:{width:0,height:2},elevation:4},
+  scrollFabTxt:{fontSize:16,color:C.text,fontWeight:'700'},
 });
 }
