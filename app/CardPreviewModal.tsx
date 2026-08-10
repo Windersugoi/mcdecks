@@ -49,15 +49,38 @@ export function CardPreviewModal({ card, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [fallbackTried, setFallbackTried] = useState(false);
+  const [extTried, setExtTried] = useState(false);
   const cardSets = useCardSets(card);
 
   useEffect(() => {
     if (!card) return;
     setError(false);
     setFallbackTried(false);
+    setExtTried(false);
     setLoading(false);
     setImageUrl(card.imgsrc ?? null);
   }, [card?.id]);
+
+  function swapExtension(url: string): string | null {
+    // marvelcdb no usa una extensión fija: algunos packs (ej. Age of Apocalypse)
+    // sirven .jpg en vez de .png. Antes de rendirnos, probamos la otra.
+    if (url.endsWith('.png')) return url.slice(0, -4) + '.jpg';
+    if (url.endsWith('.jpg')) return url.slice(0, -4) + '.png';
+    return null;
+  }
+
+  function handleImgError() {
+    if (!extTried && imageUrl) {
+      const swapped = swapExtension(imageUrl);
+      if (swapped) {
+        setExtTried(true);
+        setImageUrl(swapped);
+        return;
+      }
+    }
+    setError(true);
+    if (!fallbackTried) tryFallback();
+  }
 
   async function tryFallback() {
     // Solo buscar alternativa si la carta NO tiene URL propia
@@ -90,7 +113,7 @@ export function CardPreviewModal({ card, onClose }: Props) {
                 source={{ uri: imageUrl, headers: IMG_HEADERS } as any}
                 style={StyleSheet.absoluteFill}
                 resizeMode="contain"
-                onError={() => { setError(true); if (!fallbackTried) tryFallback(); }}
+                onError={handleImgError}
               />
             )}
             {((!imageUrl || error) && !loading) && (
