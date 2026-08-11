@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Add web platform support
-        run: npm install react-dom react-native-web @expo/metro-runtime --legacy-peer-deps
-
       - name: Export web build
         run: npx expo export -p web
 
