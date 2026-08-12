@@ -27,6 +27,18 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Set base path for GitHub Pages
+        run: |
+          BASE_PATH="${{ steps.pages.outputs.base_path }}"
+          echo "Detected base path: $BASE_PATH"
+          jq --arg bp "$BASE_PATH" '.expo.experiments.baseUrl = $bp' app.json > app.json.tmp
+          mv app.json.tmp app.json
+          cat app.json | jq '.expo.experiments'
+
       - name: Export web build
         run: npx expo export -p web
 
@@ -35,8 +47,6 @@ jobs:
 
       - name: SPA fallback for client-side routing
         run: cp dist/index.html dist/404.html
-
-      - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
