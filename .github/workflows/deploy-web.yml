@@ -42,6 +42,9 @@ jobs:
       - name: Export web build
         run: npx expo export -p web
 
+      - name: Generate PWA icons from assets/icon.png
+        run: node scripts/gen-pwa-icons.mjs
+
       - name: Inject PWA tags (installable icon)
         run: node scripts/inject-pwa.mjs "${{ steps.pages.outputs.base_path }}"
 
