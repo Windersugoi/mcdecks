@@ -10,6 +10,14 @@ import { Pill } from './Pill';
 import { DeckCardRow } from './DeckCardRow';
 import { PoolCardRow } from './PoolCardRow';
 import { CardPreviewModal } from './CardPreviewModal';
+import { notify } from '@/utils/dialogs';
+
+// Sets aún no publicados. Se excluyen siempre del pool, aunque una colección
+// guardada antigua los tenga marcados como poseídos (p. ej. por un "Marcar todo"
+// anterior a que se bloquearan, que Android puede restaurar al reinstalar).
+const COMING_SOON_SETS = new Set(
+  SET_CATALOG.filter(s => s.comingSoon).map(s => s.code)
+);
 
 interface Props {
   decks: Deck[]; setDecks: React.Dispatch<React.SetStateAction<Deck[]>>;
@@ -123,7 +131,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       // Solo permitir si este aspecto no va a quedar por encima de todos los demás
       if (newCount > minOther + 1) {
         const behind = MAIN_ASPECTS.filter(a => a !== card.aspect && (aspectBalance[a] ?? 0) < newCount - 1);
-        Alert.alert(
+        notify(
           'Adam Warlock — Balance requerido',
           `Los aspectos deben tener el mismo número de cartas.\nPrimero añade cartas de: ${behind.join(', ')}.`
         );
@@ -195,6 +203,8 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const poolCards = useMemo(() => {
     const filtered = ASPECT_CARDS.filter(c => {
       if (deck.cards[c.id]) return false;
+      // Sets sin publicar: nunca aparecen, ni siquiera con "All cards"
+      if (c.setCode && COMING_SOON_SETS.has(c.setCode)) return false;
       // Collection filter
       const inCollection = c.setCode ? !!ownedSets[c.setCode] : true;
       if (!localShowAll && !inCollection) return false;
@@ -224,7 +234,9 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       // Sin aspecto activo y sin Basic solo = mostrar todo
       const q = search.toLowerCase();
       if (q && !c.name.toLowerCase().includes(q)) return false;
-      if (typeFilter !== 'All' && c.type !== typeFilter) return false;
+      // Los tipos llevan prefijo de aspecto/héroe ('JusticeAlly', 'BishopUpgrade'),
+      // así que el chip debe compararse por sufijo, no por igualdad exacta.
+      if (typeFilter !== 'All' && !(c.type ?? '').endsWith(typeFilter)) return false;
       return true;
     });
 
@@ -436,7 +448,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
           value={search} onChangeText={setSearch} style={s.searchInput} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }}>
           <View style={{ flexDirection: 'row', gap: 6 }}>
-            {['All','Ally','Event','Support','Upgrade','Resource'].map(t => (
+            {['All','Ally','Event','Support','Upgrade','Resource','Scheme'].map(t => (
               <Pressable key={t} onPress={() => setTypeFilter(t)}
                 style={[s.chip, typeFilter === t && s.chipActive]}>
                 <Text style={[s.chipTxt, typeFilter === t && s.chipTxtActive]}>{t}</Text>

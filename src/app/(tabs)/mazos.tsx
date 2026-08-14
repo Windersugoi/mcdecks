@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Switch, Alert, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
+import { confirmAction } from '@/utils/dialogs';
 import { DeckEditor } from '@/components/DeckEditor';
 import { HERO_CARDS, ASPECT_CARDS, SET_CATALOG } from '@/data/cards';
 import { deckTitleColor } from '@/utils/deckUtils';
@@ -20,13 +21,10 @@ export default function MazosScreen() {
   const [importMsg, setImportMsg] = useState<string | null>(null);
 
   function confirmDelete(deckId: string, deckName: string) {
-    Alert.alert('Delete deck', `Delete "${deckName}"? This cannot be undone.`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => {
-        setDecks(prev => prev.filter(d => d.id !== deckId));
-        if (activeDeckId === deckId) setActiveDeckId(null);
-      }},
-    ]);
+    confirmAction('Delete deck', `Delete "${deckName}"? This cannot be undone.`, () => {
+      setDecks(prev => prev.filter(d => d.id !== deckId));
+      if (activeDeckId === deckId) setActiveDeckId(null);
+    });
   }
 
   async function handleImport() {
