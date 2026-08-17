@@ -30,6 +30,7 @@ const VILLAIN_URLS: Record<string, string> = {
   'Ultron':            MCDB + '01134.png',
   // Green Goblin (pack 02)
   'Green Goblin':      MCDB + '02001b.png',
+  'Norman Osborn':     MCDB + '02001a.png',
   // Wrecking Crew (pack 07)
   'The Wrecking Crew': MCDB + '07002.png',
   // Rise of Red Skull (pack 04)
