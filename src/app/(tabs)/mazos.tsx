@@ -5,8 +5,9 @@ import { useApp } from '@/context/AppContext';
 import { confirmAction } from '@/utils/dialogs';
 import { DeckEditor } from '@/components/DeckEditor';
 import { HERO_CARDS, ASPECT_CARDS, SET_CATALOG } from '@/data/cards';
-import { deckTitleColor } from '@/utils/deckUtils';
+import { deckTitleColor, aspectColor } from '@/utils/deckUtils';
 import { displayAspect, HERO_TO_SET } from '@/data/constants';
+import { suggestCards, matchDeckByQuery, DeckCardMatch } from '@/utils/cardSearch';
 import { Colors, Radius, Spacing } from '@/styles/theme';
 import { useColors } from '@/hooks/useColors';
 
@@ -19,6 +20,24 @@ export default function MazosScreen() {
   const [importUrl, setImportUrl] = useState('');
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [cardQuery, setCardQuery] = useState('');
+
+  const cardQ = cardQuery.trim();
+  const searchActive = cardQ.length >= 2;
+  const suggestions = useMemo(() => suggestCards(cardQ), [cardQ]);
+  // Oculta las sugerencias en cuanto el texto coincide EXACTO con una de ellas
+  // (pasa al tocar una sugerencia, o al terminar de escribir el nombre completo).
+  const hideSuggestions = suggestions.some(sc => sc.name.toLowerCase() === cardQ.toLowerCase());
+  const cardMatches = useMemo(() => {
+    if (!searchActive) return new Map<string, DeckCardMatch[]>();
+    const map = new Map<string, DeckCardMatch[]>();
+    for (const d of decks) {
+      const m = matchDeckByQuery(d, cardQ);
+      if (m.length) map.set(d.id, m);
+    }
+    return map;
+  }, [decks, cardQ, searchActive]);
+  const visibleDecks = searchActive ? decks.filter(d => cardMatches.has(d.id)) : decks;
 
   function confirmDelete(deckId: string, deckName: string) {
     confirmAction('Delete deck', `Delete "${deckName}"? This cannot be undone.`, () => {
@@ -219,6 +238,35 @@ export default function MazosScreen() {
         <Text style={s.appTitle}>MCDecks</Text>
   
       </View>
+      <View style={s.searchRow}>
+        <TextInput
+          placeholder="🔍 Buscar mazos por carta…"
+          placeholderTextColor={C.textMuted}
+          value={cardQuery}
+          onChangeText={setCardQuery}
+          style={s.searchInput}
+          autoCapitalize="none" autoCorrect={false}
+        />
+        {cardQuery.length > 0 && (
+          <Pressable onPress={() => setCardQuery('')} style={s.searchClear} hitSlop={8}>
+            <Text style={s.searchClearTxt}>✕</Text>
+          </Pressable>
+        )}
+      </View>
+      {searchActive && !hideSuggestions && suggestions.length > 0 && (
+        <View style={s.suggestBox}>
+          {suggestions.map(sc => (
+            <Pressable key={sc.key} onPress={() => setCardQuery(sc.name)} style={s.suggestRow}>
+              <Text style={s.suggestName} numberOfLines={1}>{sc.name}</Text>
+              {!!sc.aspect && (
+                <Text style={[s.suggestAspect, { color: aspectColor(sc.aspect) }]}>
+                  {displayAspect(sc.aspect)}
+                </Text>
+              )}
+            </Pressable>
+          ))}
+        </View>
+      )}
       {activeDeck && (
         <View style={s.activeBanner}>
           <Text style={[s.activeBannerDeck, { color: deckTitleColor(activeDeck) }]}>★ {activeDeck.name}</Text>
@@ -226,7 +274,10 @@ export default function MazosScreen() {
       )}
       <ScrollView contentContainerStyle={s.list}>
         {decks.length === 0 && <Text style={s.empty}>No decks yet. Create your first one!</Text>}
-        {decks.map(deck => {
+        {searchActive && visibleDecks.length === 0 && (
+          <Text style={s.empty}>Ningún mazo contiene "{cardQuery}".</Text>
+        )}
+        {visibleDecks.map(deck => {
           const isActive = deck.id === activeDeckId;
           // Un mazo es "completo" si tiene héroe asignado
           // La cuenta total incluye mandatory hero cards (pack de héroe, sin identidad)
@@ -261,6 +312,11 @@ export default function MazosScreen() {
                   </Text>
                   {!heroOwned && heroSetName && (
                     <Text style={s.missingHero}>⚠ Missing pack: {heroSetName}</Text>
+                  )}
+                  {searchActive && cardMatches.has(deck.id) && (
+                    <Text style={s.matchInfo} numberOfLines={1}>
+                      🔍 {cardMatches.get(deck.id)!.map(m => `${m.qty}× ${m.name}`).join(', ')}
+                    </Text>
                   )}
                   {isActive && <Text style={[s.activeTag, { color }]}>★ Active deck</Text>}
                 </View>
@@ -323,6 +379,17 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   toggleLabel:{fontSize:12,color:C.textMuted},
   activeBanner:{paddingHorizontal:Spacing.lg,paddingBottom:8},
   activeBannerDeck:{fontSize:12,fontWeight:'600'},
+  searchRow:{flexDirection:'row',alignItems:'center',marginHorizontal:Spacing.lg,marginBottom:8,
+             backgroundColor:C.surface2,borderWidth:1,borderColor:C.border,borderRadius:Radius.md},
+  searchInput:{flex:1,color:C.text,fontSize:13,paddingVertical:9,paddingHorizontal:12},
+  searchClear:{paddingHorizontal:12,paddingVertical:9},
+  searchClearTxt:{fontSize:14,color:C.textMuted},
+  suggestBox:{marginHorizontal:Spacing.lg,marginBottom:8,borderWidth:1,borderColor:C.border,
+              borderRadius:Radius.md,backgroundColor:C.surface,overflow:'hidden'},
+  suggestRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,
+              paddingVertical:9,paddingHorizontal:12,borderTopWidth:1,borderTopColor:C.border},
+  suggestName:{flex:1,fontSize:13,color:C.text},
+  suggestAspect:{fontSize:11,fontWeight:'600'},
   list:{padding:Spacing.lg,paddingTop:4,gap:10,paddingBottom:30},
   empty:{fontSize:13,color:C.textMuted},
   deckCard:{flexDirection:'row',borderWidth:1,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
@@ -333,13 +400,12 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   deckName:{fontSize:15,fontWeight:'600'},
   deckMeta:{fontSize:12,color:C.textMuted},
   missingHero:{fontSize:11,color:C.warning,marginTop:2},
+  matchInfo:{fontSize:11,color:C.info,marginTop:2},
   activeTag:{fontSize:11,fontWeight:'600'},
   badge:{backgroundColor:'rgba(226,75,74,0.15)',borderRadius:6,paddingHorizontal:8,paddingVertical:2},
   badgeTxt:{fontSize:11,color:C.danger},
   trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:C.border},
   trashIcon:{fontSize:18,opacity:0.5},
-  claimBtn:{width:40,justifyContent:'center',alignItems:'center'},
-  claimBtnActive:{backgroundColor:C.warning+'22'},
   claimIcon:{fontSize:16,opacity:0.7},
   newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:C.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
   newBtnTxt:{fontSize:14,color:C.textSub},
