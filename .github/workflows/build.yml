@@ -29,7 +29,14 @@ jobs:
         run: npx expo prebuild --platform android --non-interactive
 
       - name: Restore keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | grep -v '^-----' | tr -d '[:space:]' | base64 -d > android/app/release.keystore
+          keytool -list -keystore android/app/release.keystore -storepass "$KEYSTORE_PASSWORD" > /dev/null || {
+            echo "::error::El keystore restaurado no es válido. Revisa el secreto KEYSTORE_BASE64 (¿tiene cabeceras -----BEGIN/END----- de certutil? ¿está completo?) y que KEYSTORE_PASSWORD sea correcto."
+            exit 1
+          }
 
       - name: Configure signing
         run: |
