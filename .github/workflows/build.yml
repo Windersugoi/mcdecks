@@ -28,27 +28,19 @@ jobs:
       - name: Prebuild Android
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Restore keystore from secret
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        run: |
-          echo "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > android/app/release.keystore
-          echo "Keystore size: $(wc -c < android/app/release.keystore) bytes"
+      - name: Restore keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
 
       - name: Configure signing
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          cat >> android/app/build.gradle << GRADLE
+          cat >> android/app/build.gradle << 'GRADLE'
 
           android.signingConfigs {
             release {
               storeFile file("release.keystore")
-              storePassword "$KEYSTORE_PASSWORD"
-              keyAlias "$KEY_ALIAS"
-              keyPassword "$KEY_PASSWORD"
+              storePassword System.getenv("KEYSTORE_PASSWORD")
+              keyAlias System.getenv("KEY_ALIAS")
+              keyPassword System.getenv("KEY_PASSWORD")
             }
           }
           android.buildTypes.release.signingConfig = android.signingConfigs.release
@@ -56,6 +48,10 @@ jobs:
 
       - name: Build Release APK
         working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Find APK
