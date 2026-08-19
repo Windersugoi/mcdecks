@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet, Switch, Pressable, Linking } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, Switch, Pressable, Linking, TextInput } from 'react-native';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { DarkColors, Radius, Spacing } from '@/styles/theme';
 import { t, Lang } from '@/i18n/strings';
+import { openBugReportEmail, openBugReportGithub } from '@/utils/bugReport';
 
 const KOFI_URL = 'https://ko-fi.com/mcdecks';
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.0.1';
 
 const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
   { code: 'es', label: 'Español',   flag: '🇪🇸' },
@@ -20,6 +21,7 @@ export default function AjustesScreen() {
   const { lightMode, setLightMode, lang, setLang, replayTutorial } = useApp();
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
+  const [bugText, setBugText] = useState('');
 
   return (
     <ScrollView style={s.scroll} contentContainerStyle={s.container}>
@@ -64,6 +66,31 @@ export default function AjustesScreen() {
         </Pressable>
       </View>
 
+      {/* Reportar un problema */}
+      <Text style={s.sectionLabel}>{t(lang, 'reportBug')}</Text>
+      <View style={s.card}>
+        <View style={s.bugWrap}>
+          <Text style={s.bugDesc}>{t(lang, 'reportBugDesc')}</Text>
+          <TextInput
+            placeholder={t(lang, 'reportBugPlaceholder')}
+            placeholderTextColor={C.textMuted}
+            value={bugText}
+            onChangeText={setBugText}
+            multiline
+            numberOfLines={3}
+            style={s.bugInput}
+          />
+          <View style={s.bugBtnRow}>
+            <Pressable style={s.bugBtn} onPress={() => openBugReportEmail(bugText)}>
+              <Text style={s.bugBtnTxt}>{'\ud83d\udce7'} {t(lang, 'reportBugEmail')}</Text>
+            </Pressable>
+            <Pressable style={s.bugBtn} onPress={() => openBugReportGithub(bugText)}>
+              <Text style={s.bugBtnTxt}>{'\ud83d\udc19'} {t(lang, 'reportBugGithub')}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+
       {/* Acerca de */}
       <Text style={s.sectionLabel}>{t(lang, 'about')}</Text>
       <View style={s.card}>
@@ -78,6 +105,9 @@ export default function AjustesScreen() {
           <Text style={[s.rowLabel, { color: C.info }]}>{t(lang, 'tutorial')}</Text>
           <Text style={{ color: C.info }}>{'\u2192'}</Text>
         </Pressable>
+        <View style={[s.disclaimerWrap, s.rowBorder]}>
+          <Text style={s.disclaimerTxt}>{t(lang, 'disclaimer')}</Text>
+        </View>
       </View>
 
       <View style={{ height: 40 }} />
@@ -106,5 +136,16 @@ function getStyles(C: typeof DarkColors) {
     kofiDesc:         { fontSize: 14, color: C.text, lineHeight: 21 },
     kofiBtn:          { backgroundColor: '#FF5E5B', borderRadius: Radius.md, paddingVertical: 13, alignItems: 'center' },
     kofiBtnTxt:       { color: '#fff', fontSize: 15, fontWeight: '700' },
+    bugWrap:          { padding: Spacing.md, gap: Spacing.sm },
+    bugDesc:          { fontSize: 14, color: C.text, lineHeight: 20 },
+    bugInput:         { borderWidth: 1, borderColor: C.border, borderRadius: Radius.md, backgroundColor: C.bg,
+                        color: C.text, fontSize: 13, paddingHorizontal: 12, paddingVertical: 9,
+                        minHeight: 64, textAlignVertical: 'top' },
+    bugBtnRow:        { flexDirection: 'row', gap: Spacing.sm },
+    bugBtn:           { flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: Radius.md,
+                        paddingVertical: 10, alignItems: 'center', backgroundColor: C.surface2 },
+    bugBtnTxt:        { fontSize: 13, fontWeight: '600', color: C.text },
+    disclaimerWrap:   { paddingVertical: 12, paddingHorizontal: Spacing.md },
+    disclaimerTxt:    { fontSize: 11, color: C.textMuted, lineHeight: 16 },
   });
 }

@@ -1,10 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Switch, Pressable, TextInput } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { View, Text, ScrollView, StyleSheet, Switch, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { t } from '@/i18n/strings';
 import { SET_CATALOG } from '@/data/cards';
-import { openBugReportEmail, openBugReportGithub } from '@/utils/bugReport';
 import { DarkColors, LightColors, Radius, Spacing } from '@/styles/theme';
 
 const CYCLE_GROUPS: { label: string; codes: string[] }[] = [
@@ -32,7 +31,6 @@ export default function CuentaScreen() {
   const C = lightMode ? LightColors : DarkColors;
   const s = useMemo(() => getStyles(C), [C]);
   const scrollRef = useRef<ScrollView>(null);
-  const [bugText, setBugText] = useState('');
 
   const setByCode: Record<string, typeof SET_CATALOG[0]> = {};
   for (const x of SET_CATALOG) setByCode[x.code] = x;
@@ -155,29 +153,6 @@ export default function CuentaScreen() {
             </View>
           );
         })}
-
-        {/* Reportar un problema */}
-        <View style={s.bugCard}>
-          <Text style={s.bugTitle}>🐞 ¿Algo no funciona bien?</Text>
-          <Text style={s.bugSub}>Cuéntame qué ha pasado y lo reviso.</Text>
-          <TextInput
-            placeholder="Describe el problema (opcional)…"
-            placeholderTextColor={C.textMuted}
-            value={bugText}
-            onChangeText={setBugText}
-            multiline
-            numberOfLines={3}
-            style={s.bugInput}
-          />
-          <View style={s.bugBtnRow}>
-            <Pressable style={s.bugBtn} onPress={() => openBugReportEmail(bugText)}>
-              <Text style={s.bugBtnTxt}>📧 Por email</Text>
-            </Pressable>
-            <Pressable style={s.bugBtn} onPress={() => openBugReportGithub(bugText)}>
-              <Text style={s.bugBtnTxt}>🐙 En GitHub</Text>
-            </Pressable>
-          </View>
-        </View>
       </ScrollView>
 
       <View style={s.scrollFabCol} pointerEvents="box-none">
@@ -234,17 +209,6 @@ function getStyles(C: typeof DarkColors) {
     soonBadge:   { borderWidth:1, borderColor:C.info+'66', borderRadius:4,
                    paddingHorizontal:6, paddingVertical:3, backgroundColor:C.surface2 },
     soonTxt:     { fontSize:10, color:C.info, fontWeight:'600' },
-    bugCard:     { borderWidth:1, borderColor:C.border, borderRadius:Radius.lg,
-                   backgroundColor:C.surface, padding:Spacing.md, gap:8 },
-    bugTitle:    { fontSize:14, fontWeight:'700', color:C.text },
-    bugSub:      { fontSize:12, color:C.textMuted },
-    bugInput:    { borderWidth:1, borderColor:C.border, borderRadius:Radius.md,
-                   backgroundColor:C.surface2, color:C.text, fontSize:13,
-                   paddingHorizontal:12, paddingVertical:9, minHeight:64, textAlignVertical:'top' },
-    bugBtnRow:   { flexDirection:'row', gap:8 },
-    bugBtn:      { flex:1, borderWidth:1, borderColor:C.borderStrong, borderRadius:Radius.md,
-                   paddingVertical:10, alignItems:'center', backgroundColor:C.surface2 },
-    bugBtnTxt:   { fontSize:13, fontWeight:'600', color:C.text },
     scrollFabCol:{ position:'absolute', right:14, bottom:18, gap:10 },
     scrollFab:   { width:44, height:44, borderRadius:22, backgroundColor:C.surface2, borderWidth:1,
                    borderColor:C.borderStrong, alignItems:'center', justifyContent:'center',

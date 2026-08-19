@@ -25,6 +25,10 @@ const strings = {
     tut7Body:'Switch between dark and light mode, change the app language, or replay this tutorial. If MCDecks is useful, the Ko-fi link is the best way to keep it growing.',
     dontShowAgain:"Don't show this again", skip:'Skip', next:'Next \u2192', getStarted:'Get started',
     markAll:'Mark all', unmarkAll:'Unmark all',
+    reportBug:'REPORT A PROBLEM', reportBugDesc:'Something not working right? Tell me what happened.',
+    reportBugPlaceholder:'Describe the problem (optional)\u2026',
+    reportBugEmail:'By email', reportBugGithub:'On GitHub',
+    disclaimer:'MCDecks is an unofficial, non-profit fan project. It is not affiliated with, endorsed by, or sponsored by Marvel, Disney, Fantasy Flight Games, or Asmodee. All cards, names, and characters belong to their respective rights holders.',
   },
   es: {
     decks:'Mazos', villains:'Villanos', campaigns:'Campa\u00f1as',
@@ -50,6 +54,10 @@ const strings = {
     tut7Body:'Cambia entre modo oscuro y claro, el idioma de la app, o vuelve a ver este tutorial. Si MCDecks te resulta \u00fatil, el Ko-fi es la mejor forma de que siga creciendo.',
     dontShowAgain:'No mostrar de nuevo', skip:'Saltar', next:'Siguiente \u2192', getStarted:'Empezar',
     markAll:'Marcar todo', unmarkAll:'Desmarcar todo',
+    reportBug:'REPORTAR UN PROBLEMA', reportBugDesc:'\u00bfAlgo no funciona bien? Cu\u00e9ntame qu\u00e9 ha pasado.',
+    reportBugPlaceholder:'Describe el problema (opcional)\u2026',
+    reportBugEmail:'Por email', reportBugGithub:'En GitHub',
+    disclaimer:'MCDecks es un proyecto de fans, sin \u00e1nimo de lucro y no oficial. No tiene ninguna afiliaci\u00f3n con Marvel, Disney, Fantasy Flight Games ni Asmodee, ni cuenta con su patrocinio. Todas las cartas, nombres y personajes pertenecen a sus respectivos titulares de derechos.',
   },
   fr: {
     decks:'Decks', villains:'Vilains', campaigns:'Campagnes',
@@ -75,6 +83,10 @@ const strings = {
     tut7Body:'Basculez entre mode sombre et clair, changez la langue, ou rejouez ce tutoriel. Si MCDecks vous est utile, Ko-fi est la meilleure fa\u00e7on de la faire grandir.',
     dontShowAgain:'Ne plus afficher', skip:'Passer', next:'Suivant \u2192', getStarted:'Commencer',
     markAll:'Tout cocher', unmarkAll:'Tout d\u00e9cocher',
+    reportBug:'SIGNALER UN PROBL\u00c8ME', reportBugDesc:"Quelque chose ne fonctionne pas bien\u00a0? Dites-moi ce qui s'est pass\u00e9.",
+    reportBugPlaceholder:'D\u00e9crivez le probl\u00e8me (facultatif)\u2026',
+    reportBugEmail:'Par e-mail', reportBugGithub:'Sur GitHub',
+    disclaimer:"MCDecks est un projet de fans non officiel et \u00e0 but non lucratif. Il n'est affili\u00e9 \u00e0 Marvel, Disney, Fantasy Flight Games ou Asmodee d'aucune fa\u00e7on, et n'est pas soutenu ni parrain\u00e9 par eux. Toutes les cartes, tous les noms et personnages appartiennent \u00e0 leurs ayants droit respectifs.",
   },
   it: {
     decks:'Mazzi', villains:'Cattivi', campaigns:'Campagne',
@@ -100,6 +112,10 @@ const strings = {
     tut7Body:"Passa dalla modalit\u00e0 scura a quella chiara, cambia la lingua dell'app, o rivedi questo tutorial.",
     dontShowAgain:'Non mostrare pi\u00f9', skip:'Salta', next:'Avanti \u2192', getStarted:'Inizia',
     markAll:'Seleziona tutto', unmarkAll:'Deseleziona tutto',
+    reportBug:'SEGNALA UN PROBLEMA', reportBugDesc:'Qualcosa non funziona bene? Raccontami cosa \u00e8 successo.',
+    reportBugPlaceholder:'Descrivi il problema (facoltativo)\u2026',
+    reportBugEmail:'Via email', reportBugGithub:'Su GitHub',
+    disclaimer:'MCDecks \u00e8 un progetto di fan non ufficiale e senza scopo di lucro. Non \u00e8 affiliato con Marvel, Disney, Fantasy Flight Games o Asmodee, n\u00e9 sponsorizzato da loro. Tutte le carte, i nomi e i personaggi appartengono ai rispettivi titolari dei diritti.',
   },
   pt: {
     decks:'Decks', villains:'Vil\u00f5es', campaigns:'Campanhas',
@@ -125,6 +141,10 @@ const strings = {
     tut7Body:'Alterne entre modo escuro e claro, mude o idioma da app, ou reveja este tutorial. Se o MCDecks for \u00fatil, o Ko-fi \u00e9 a melhor forma de o fazer crescer.',
     dontShowAgain:'N\u00e3o mostrar novamente', skip:'Saltar', next:'Pr\u00f3ximo \u2192', getStarted:'Come\u00e7ar',
     markAll:'Marcar tudo', unmarkAll:'Desmarcar tudo',
+    reportBug:'REPORTAR UM PROBLEMA', reportBugDesc:'Algo n\u00e3o est\u00e1 a funcionar bem? Conta-me o que aconteceu.',
+    reportBugPlaceholder:'Descreve o problema (opcional)\u2026',
+    reportBugEmail:'Por email', reportBugGithub:'No GitHub',
+    disclaimer:'O MCDecks \u00e9 um projeto de f\u00e3s n\u00e3o oficial e sem fins lucrativos. N\u00e3o tem qualquer afilia\u00e7\u00e3o com a Marvel, Disney, Fantasy Flight Games ou Asmodee, nem \u00e9 patrocinado por elas. Todas as cartas, nomes e personagens pertencem aos respetivos titulares dos direitos.',
   },
 };
 

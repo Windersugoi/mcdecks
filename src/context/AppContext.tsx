@@ -5,12 +5,28 @@ import { Lang } from '@/i18n/strings';
 import { VILLAIN_LIST } from '@/data/constants';
 import { CORE_CAMPAIGN_NORMAL, CORE_CAMPAIGN_EXPERT, SET_TO_CAMPAIGN } from '@/data/campaigns';
 import { buildSpiderManJusticeDeck, buildCaptainMarvelLeadershipDeck } from '@/utils/defaultDecks';
+import { SET_CATALOG } from '@/data/cards';
 
 const STORAGE_DECKS    = 'mcdecks_v1_decks';
 const STORAGE_OWNED    = 'mcdecks_v1_owned';
 const STORAGE_ACTIVE   = 'mcdecks_v1_active';
 const STORAGE_TUTORIAL = 'mcdecks_v1_tutorial';
 const STORAGE_LANG     = 'mcdecks_v1_lang';
+const VALID_LANGS: Lang[] = ['es', 'en', 'fr', 'it', 'pt'];
+
+// Sets aún no publicados: aunque quedaran marcados de antes (p.ej. por un
+// "marcar todo" previo), no deben contar como poseídos ni mostrar sus cartas.
+// El interruptor está oculto para ellos, así que el usuario no podría desmarcarlos.
+const COMING_SOON_CODES = new Set(
+  SET_CATALOG.filter(s => s.comingSoon).map(s => s.code)
+);
+function stripComingSoon(owned: OwnedSets): OwnedSets {
+  const out: OwnedSets = {};
+  for (const [code, val] of Object.entries(owned)) {
+    if (!COMING_SOON_CODES.has(code)) out[code] = val;
+  }
+  return out;
+}
 
 function makeDeckTracking() {
   return {
@@ -81,12 +97,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         } else {
           setDecks(makeDefaultDecks());
         }
-        if (savedOwned)  setOwnedSets(JSON.parse(savedOwned));
+        if (savedOwned)  setOwnedSets(stripComingSoon(JSON.parse(savedOwned)));
         if (savedActive) setActiveDeckId(savedActive);
         setShowTutorial(tutorialSeen !== 'true');
         if (savedLight === 'true') setLightModeRaw(true);
         const savedLang = await AsyncStorage.getItem(STORAGE_LANG);
-        if (savedLang === 'en' || savedLang === 'es') setLangRaw(savedLang);
+        if (savedLang && (VALID_LANGS as string[]).includes(savedLang)) setLangRaw(savedLang as Lang);
       } catch {
         setDecks(makeDefaultDecks());
         setShowTutorial(true);
@@ -107,7 +123,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ── Guardar ownedSets cuando cambian ─────────────────────────────────────
   useEffect(() => {
     if (!initialized.current) return;
-    AsyncStorage.setItem(STORAGE_OWNED, JSON.stringify(ownedSets)).catch(() => {});
+    AsyncStorage.setItem(STORAGE_OWNED, JSON.stringify(stripComingSoon(ownedSets))).catch(() => {});
   }, [ownedSets]);
 
   // ── Guardar activeDeckId cuando cambia ───────────────────────────────────
