@@ -569,6 +569,9 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
           <Text style={s.scrollFabTxt}>▼</Text>
         </Pressable>
       </View>
+      <Pressable style={s.backFab} onPress={onBack} hitSlop={8}>
+        <Text style={s.backFabTxt}>← Decks</Text>
+      </Pressable>
     </View>
   );
 }
@@ -628,5 +631,7 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   scrollFabCol:{position:'absolute',right:14,bottom:18,gap:10},
   scrollFab:{width:44,height:44,borderRadius:22,backgroundColor:C.surface2,borderWidth:1,borderColor:C.borderStrong,alignItems:'center',justifyContent:'center',shadowColor:'#000',shadowOpacity:0.3,shadowRadius:4,shadowOffset:{width:0,height:2},elevation:4},
   scrollFabTxt:{fontSize:16,color:C.text,fontWeight:'700'},
+  backFab:{position:'absolute',left:14,top:14,paddingVertical:9,paddingHorizontal:14,borderRadius:20,backgroundColor:C.surface2,borderWidth:1,borderColor:C.borderStrong,shadowColor:'#000',shadowOpacity:0.3,shadowRadius:4,shadowOffset:{width:0,height:2},elevation:4},
+  backFabTxt:{fontSize:13,color:C.text,fontWeight:'700'},
 });
 }

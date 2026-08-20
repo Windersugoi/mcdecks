@@ -122,11 +122,20 @@ export default function MazosScreen() {
 
       const nameToOurId: Record<string, string> = {};
       const normToOurId: Record<string, string> = {};
+      // Mapa por CÓDIGO exacto de marvelcdb (extraído de nuestra propia URL
+      // de imagen). Evita la ambigüedad de nombres repetidos en distintos
+      // aspectos — p.ej. "Spider-Man" existe 8 veces en nuestra BD, cada
+      // una en un aspecto distinto, y por nombre siempre se resolvía a la
+      // primera del archivo sin mirar cuál hacía falta de verdad.
+      const codeToOurId: Record<string, string> = {};
+      const imgCode = (imgsrc?: string) => imgsrc?.match(/\/cards\/(\d+[a-z]?)\.(png|jpg)$/i)?.[1] ?? null;
       for (const c of ASPECT_CARDS) {
         const exact = c.name.toLowerCase();
         const norm  = normalize(c.name);
         if (!nameToOurId[exact]) nameToOurId[exact] = c.id;
         if (!normToOurId[norm])  normToOurId[norm]  = c.id;
+        const code = imgCode(c.imgsrc);
+        if (code && !codeToOurId[code]) codeToOurId[code] = c.id;
       }
       // Añadir aliados únicos de packs de héroe (Ghost-Spider, Hope Summers, etc.)
       // que otros héroes pueden usar via Make the Call u otros efectos
@@ -137,6 +146,8 @@ export default function MazosScreen() {
           const norm  = normalize(c.name);
           if (!nameToOurId[exact]) nameToOurId[exact] = c.id;
           if (!normToOurId[norm])  normToOurId[norm]  = c.id;
+          const code = imgCode(c.imgsrc);
+          if (code && !codeToOurId[code]) codeToOurId[code] = c.id;
         }
       }
 
@@ -151,16 +162,15 @@ export default function MazosScreen() {
           continue;
         }
         const cardName = codeToName[code];
-        if (cardName) {
-          // Buscar: exacto → normalizado → no encontrado
-          const ourId = nameToOurId[cardName.toLowerCase()]
-                     ?? normToOurId[normalize(cardName)]
-                     ?? null;
-          if (ourId) {
-            importedCards[ourId] = qty as number;
-          } else {
-            missing.push(cardName);
-          }
+        // Primero por código exacto (sin ambigüedad de aspecto). Si no hay
+        // match directo, caer al nombre como red de seguridad.
+        const ourId = codeToOurId[code]
+                   ?? (cardName ? (nameToOurId[cardName.toLowerCase()] ?? normToOurId[normalize(cardName)]) : null)
+                   ?? null;
+        if (ourId) {
+          importedCards[ourId] = qty as number;
+        } else if (cardName) {
+          missing.push(cardName);
         } else {
           missing.push(code);
         }
@@ -224,7 +234,10 @@ export default function MazosScreen() {
       if (matchedHero && HERO_CARDS[matchedHero]) {
         const heroImportedIds = new Set<string>();
         for (const c of HERO_CARDS[matchedHero]) {
-          const mappedId = nameToOurId[c.name.toLowerCase()] ?? normToOurId[normalize(c.name)];
+          const byCode = imgCode(c.imgsrc);
+          const mappedId = (byCode ? codeToOurId[byCode] : null)
+                         ?? nameToOurId[c.name.toLowerCase()]
+                         ?? normToOurId[normalize(c.name)];
           if (mappedId) heroImportedIds.add(mappedId);
         }
         for (const id of Object.keys(importedCards)) {
@@ -373,7 +386,9 @@ export default function MazosScreen() {
               </Pressable>
               {/* 🗑 Borrar */}
               <Pressable onPress={() => confirmDelete(deck.id, deck.name)} style={s.trashBtn} hitSlop={8}>
-                <Text style={[s.trashIcon, { opacity: lightMode ? 0.5 : 0.85 }]}>🗑</Text>
+                <View style={[s.trashIconWrap, !lightMode && s.trashIconWrapDark]}>
+                  <Text style={s.trashIcon}>🗑</Text>
+                </View>
               </Pressable>
             </View>
           );
@@ -467,7 +482,9 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   badge:{backgroundColor:'rgba(226,75,74,0.15)',borderRadius:6,paddingHorizontal:8,paddingVertical:2},
   badgeTxt:{fontSize:11,color:C.danger},
   trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:C.border},
-  trashIcon:{fontSize:18},
+  trashIconWrap:{width:28,height:28,borderRadius:14,justifyContent:'center',alignItems:'center'},
+  trashIconWrapDark:{backgroundColor:'#ffffff26'},
+  trashIcon:{fontSize:16},
   claimIcon:{fontSize:16,opacity:0.7},
   newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:C.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
   newBtnTxt:{fontSize:14,color:C.textSub},
