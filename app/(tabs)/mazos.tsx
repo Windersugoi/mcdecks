@@ -14,7 +14,7 @@ import { useColors } from '@/hooks/useColors';
 export default function MazosScreen() {
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
-  const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets, setOwnedSets, makeDeckTracking, lightMode } = useApp();
+  const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets, setOwnedSets, makeDeckTracking } = useApp();
   const [openDeckId, setOpenDeckId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [importUrl, setImportUrl] = useState('');
@@ -386,8 +386,10 @@ export default function MazosScreen() {
               </Pressable>
               {/* 🗑 Borrar */}
               <Pressable onPress={() => confirmDelete(deck.id, deck.name)} style={s.trashBtn} hitSlop={8}>
-                <View style={[s.trashIconWrap, !lightMode && s.trashIconWrapDark]}>
-                  <Text style={s.trashIcon}>🗑</Text>
+                <View style={s.trashIconBox}>
+                  <View style={s.trashHandle} />
+                  <View style={s.trashLid} />
+                  <View style={s.trashBody} />
                 </View>
               </Pressable>
             </View>
@@ -482,9 +484,10 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   badge:{backgroundColor:'rgba(226,75,74,0.15)',borderRadius:6,paddingHorizontal:8,paddingVertical:2},
   badgeTxt:{fontSize:11,color:C.danger},
   trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:C.border},
-  trashIconWrap:{width:28,height:28,borderRadius:14,justifyContent:'center',alignItems:'center'},
-  trashIconWrapDark:{backgroundColor:'#ffffff26'},
-  trashIcon:{fontSize:16},
+  trashIconBox:{width:18,height:18,alignItems:'center'},
+  trashHandle:{width:6,height:3,borderTopLeftRadius:2,borderTopRightRadius:2,backgroundColor:C.danger,marginBottom:1},
+  trashLid:{width:17,height:2.5,borderRadius:1,backgroundColor:C.danger,marginBottom:1.5},
+  trashBody:{width:12,height:11,borderBottomLeftRadius:2.5,borderBottomRightRadius:2.5,backgroundColor:C.danger},
   claimIcon:{fontSize:16,opacity:0.7},
   newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:C.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
   newBtnTxt:{fontSize:14,color:C.textSub},
