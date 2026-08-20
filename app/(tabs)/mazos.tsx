@@ -47,19 +47,20 @@ export default function MazosScreen() {
     });
   }
 
-  // Cartas tan universales que jamás deben contar para el bloqueo del pin.
-  const UBIQUITOUS_CARDS = new Set(['Energy', 'Genius', 'Strength']);
-
   // Compara cuántas copias reales hay (misma cuenta que effectiveOwned de
   // DeckEditor: suma qty de todos los sets poseídos con esta carta) contra
   // cuántas hacen falta aquí + cuántas ya están comprometidas en OTROS
-  // mazos físicos. Solo es conflicto si no alcanza para todos.
+  // mazos físicos. Solo es conflicto si no alcanza para todos — esto ya
+  // cubre solo de forma natural a las básicas ubicuas (Energy/Genius/
+  // Strength: qty 4 en el Core + 1 por cada caja de héroe), sin necesidad
+  // de excluirlas a mano: con pocos mazos físicos nunca avisan, y si de
+  // verdad se agotan (5-6 mazos desde una sola Core), sí debe avisar.
   function physicalConflicts(deck: typeof decks[number]) {
     const conflicts: { cardName: string; deckNames: string[] }[] = [];
     const otherPhysical = decks.filter(d => d.id !== deck.id && d.physical);
     for (const [cardId, qtyNeeded] of Object.entries(deck.cards)) {
       const card = ASPECT_CARDS.find(c => c.id === cardId);
-      if (!card || UBIQUITOUS_CARDS.has(card.name)) continue;
+      if (!card) continue;
       const sameCard = ASPECT_CARDS.filter(c => c.name === card.name && c.aspect === card.aspect);
       const totalOwned = sameCard.reduce((sum, c) =>
         sum + ((!c.setCode || ownedSets[c.setCode]) ? (c.qty ?? 1) : 0), 0);
