@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Switch, Alert, TextInput } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Switch, TextInput, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
-import { confirmAction, notify } from '@/utils/dialogs';
+import { confirmAction } from '@/utils/dialogs';
 import { DeckEditor } from '@/components/DeckEditor';
 import { HERO_CARDS, ASPECT_CARDS, SET_CATALOG } from '@/data/cards';
 import { deckTitleColor, aspectColor } from '@/utils/deckUtils';
@@ -21,6 +21,7 @@ export default function MazosScreen() {
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState<string | null>(null);
   const [cardQuery, setCardQuery] = useState('');
+  const [conflictInfo, setConflictInfo] = useState<{ cardName: string; deckNames: string[] }[] | null>(null);
 
   const cardQ = cardQuery.trim();
   const searchActive = cardQ.length >= 2;
@@ -46,19 +47,30 @@ export default function MazosScreen() {
     });
   }
 
-  // Cartas de este mazo que ya están reclamadas por OTRO mazo marcado como
-  // físico (mismo nombre+aspecto, para pillar reimpresiones de la carta).
+  // Cartas tan universales que jamás deben contar para el bloqueo del pin.
+  const UBIQUITOUS_CARDS = new Set(['Energy', 'Genius', 'Strength']);
+
+  // Compara cuántas copias reales hay (misma cuenta que effectiveOwned de
+  // DeckEditor: suma qty de todos los sets poseídos con esta carta) contra
+  // cuántas hacen falta aquí + cuántas ya están comprometidas en OTROS
+  // mazos físicos. Solo es conflicto si no alcanza para todos.
   function physicalConflicts(deck: typeof decks[number]) {
-    const conflicts: { cardName: string; deckName: string }[] = [];
-    for (const cardId of Object.keys(deck.cards)) {
+    const conflicts: { cardName: string; deckNames: string[] }[] = [];
+    const otherPhysical = decks.filter(d => d.id !== deck.id && d.physical);
+    for (const [cardId, qtyNeeded] of Object.entries(deck.cards)) {
       const card = ASPECT_CARDS.find(c => c.id === cardId);
-      if (!card) continue;
-      const holder = decks.find(d =>
-        d.id !== deck.id && d.physical &&
-        ASPECT_CARDS.filter(c => c.name === card.name && c.aspect === card.aspect)
-          .some(c => (d.cards[c.id] ?? 0) > 0)
-      );
-      if (holder) conflicts.push({ cardName: card.name, deckName: holder.name });
+      if (!card || UBIQUITOUS_CARDS.has(card.name)) continue;
+      const sameCard = ASPECT_CARDS.filter(c => c.name === card.name && c.aspect === card.aspect);
+      const totalOwned = sameCard.reduce((sum, c) =>
+        sum + ((!c.setCode || ownedSets[c.setCode]) ? (c.qty ?? 1) : 0), 0);
+      const usedByOthers = otherPhysical.reduce((total, d) =>
+        total + sameCard.reduce((s, c) => s + (d.cards[c.id] ?? 0), 0), 0);
+      if (usedByOthers + qtyNeeded > totalOwned) {
+        const holders = otherPhysical
+          .filter(d => sameCard.some(c => (d.cards[c.id] ?? 0) > 0))
+          .map(d => d.name);
+        conflicts.push({ cardName: card.name, deckNames: holders });
+      }
     }
     return conflicts;
   }
@@ -67,11 +79,7 @@ export default function MazosScreen() {
     if (!deck.physical) {
       const conflicts = physicalConflicts(deck);
       if (conflicts.length > 0) {
-        const lines = conflicts.map(c => `• ${c.cardName} → "${c.deckName}"`).join('\n');
-        notify(
-          'No se puede marcar como físico',
-          `Estas cartas ya están reclamadas por otro mazo físico:\n\n${lines}\n\nQuita el pin del otro mazo primero si quieres pasar las cartas a este.`
-        );
+        setConflictInfo(conflicts);
         return;
       }
     }
@@ -265,6 +273,7 @@ export default function MazosScreen() {
   }
 
   return (
+    <>
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.header}>
         <Text style={s.appTitle}>MCDecks</Text>
@@ -397,6 +406,28 @@ export default function MazosScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    <Modal visible={conflictInfo !== null} transparent animationType="fade"
+      onRequestClose={() => setConflictInfo(null)}>
+      <Pressable style={s.modalBackdrop} onPress={() => setConflictInfo(null)}>
+        <Pressable style={s.modalCard} onPress={e => e.stopPropagation()}>
+          <Text style={s.modalBrand}>MCDecks</Text>
+          <Text style={s.modalTitle}>No se puede marcar como físico</Text>
+          <Text style={s.modalBody}>Estas cartas ya están reclamadas por otro mazo físico:</Text>
+          <ScrollView style={s.modalList}>
+            {conflictInfo?.map((c, i) => (
+              <Text key={i} style={s.modalItem}>
+                • {c.cardName} → {c.deckNames.map(n => `"${n}"`).join(', ')}
+              </Text>
+            ))}
+          </ScrollView>
+          <Text style={s.modalHint}>Quita el pin del otro mazo primero si quieres pasar las cartas a este.</Text>
+          <Pressable style={s.modalBtn} onPress={() => setConflictInfo(null)}>
+            <Text style={s.modalBtnTxt}>Aceptar</Text>
+          </Pressable>
+        </Pressable>
+      </Pressable>
+    </Modal>
+    </>
   );
 }
 
@@ -449,5 +480,15 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   importBtn:{paddingVertical:9,paddingHorizontal:16,borderRadius:Radius.md,backgroundColor:C.info,justifyContent:'center'},
   importBtnTxt:{fontSize:13,color:'#ffffff',fontWeight:'700'},
   importMsg:{fontSize:12},
+  modalBackdrop:{flex:1,backgroundColor:'#00000099',justifyContent:'center',alignItems:'center',padding:Spacing.lg},
+  modalCard:{backgroundColor:C.surface,borderRadius:Radius.lg,borderWidth:1,borderColor:C.border,padding:Spacing.lg,gap:8,maxWidth:420,width:'100%'},
+  modalBrand:{fontSize:11,fontWeight:'700',color:C.textMuted,letterSpacing:1},
+  modalTitle:{fontSize:16,fontWeight:'700',color:C.danger},
+  modalBody:{fontSize:13,color:C.text},
+  modalList:{maxHeight:160},
+  modalItem:{fontSize:13,color:C.text,marginBottom:4},
+  modalHint:{fontSize:12,color:C.textMuted,marginTop:4},
+  modalBtn:{marginTop:8,backgroundColor:C.info,borderRadius:Radius.md,paddingVertical:11,alignItems:'center'},
+  modalBtnTxt:{fontSize:14,fontWeight:'700',color:'#ffffff'},
 });
 }
