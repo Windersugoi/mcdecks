@@ -8,20 +8,24 @@ import { useColors } from '@/hooks/useColors';
 
 interface Props {
   card: Card; decks: Deck[]; deckId: string;
-  deckFull: boolean; onAdd: () => void; onPreview: (c: Card) => void;
+  deckFull: boolean; onAdd: () => void; onPreview: (c: Card) => void; physicalHold?: string[];
 }
 
-export function PoolCardRow({ card, decks, deckId, deckFull, onAdd, onPreview }: Props) {
+// Básicas tan universales que el aviso "en uso · disponibles" es solo ruido.
+const UBIQUITOUS_CARDS = new Set(['Energy', 'Genius', 'Strength']);
+
+export function PoolCardRow({ card, decks, deckId, deckFull, onAdd, onPreview, physicalHold = [] }: Props) {
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
 
   const elsewhere = usedElsewhere(decks, card.id, deckId);
   const elseQty = elsewhere.reduce((a, u) => a + u.qty, 0);
-  const noStock = card.owned === 0;
-  const conflict = card.owned > 0 && Math.max(0, card.owned - elseQty) === 0;
+  const heldByPhysical = card.owned === 0 && physicalHold.length > 0;
+  const noStock = card.owned === 0 && !heldByPhysical;
+  const conflict = !heldByPhysical && card.owned > 0 && Math.max(0, card.owned - elseQty) === 0;
 
   return (
-    <View style={[s.row, (noStock || conflict) && s.rowDanger, noStock && s.faded]}>
+    <View style={[s.row, (noStock || conflict || heldByPhysical) && s.rowDanger, noStock && s.faded]}>
       <Pressable style={s.info} onPress={() => onPreview(card)}>
         <Text style={s.name}>
           {card.name}
@@ -30,13 +34,16 @@ export function PoolCardRow({ card, decks, deckId, deckFull, onAdd, onPreview }:
             : null}
           <Text style={s.type}> · {card.type}</Text>
         </Text>
+        {heldByPhysical && (
+          <Text style={s.err}>Ya en uso en tu mazo físico: {physicalHold.join(', ')}</Text>
+        )}
         {noStock && <Text style={s.err}>Not in collection</Text>}
         {conflict && (
           <Text style={s.err}>
             All copies in use: {elsewhere.map(u => `${u.qty}x "${u.deckName}"`).join(', ')}
           </Text>
         )}
-        {!noStock && !conflict && elseQty > 0 && (
+        {!noStock && !conflict && !heldByPhysical && elseQty > 0 && !UBIQUITOUS_CARDS.has(card.name) && (
           <Text style={s.warn}>{elseQty} in use · avail: {Math.max(0, card.owned - elseQty)}</Text>
         )}
       </Pressable>

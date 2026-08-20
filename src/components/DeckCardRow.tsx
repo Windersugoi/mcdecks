@@ -9,18 +9,23 @@ import { useColors } from '@/hooks/useColors';
 interface Props {
   card: Card; qty: number; decks: Deck[]; deckId: string;
   deckFull: boolean; onChange: (d: number) => void;
-  onPreview: (c: Card) => void; setName?: string;
+  onPreview: (c: Card) => void; setName?: string; physicalHold?: string[];
 }
 
-export function DeckCardRow({ card, qty, decks, deckId, deckFull, onChange, onPreview, setName }: Props) {
+// Básicas tan universales (están en prácticamente todos los mazos) que el
+// aviso "también en: ..." no aporta información útil, solo ruido.
+const UBIQUITOUS_CARDS = new Set(['Energy', 'Genius', 'Strength']);
+
+export function DeckCardRow({ card, qty, decks, deckId, deckFull, onChange, onPreview, setName, physicalHold = [] }: Props) {
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
 
   const elsewhere = usedElsewhere(decks, card.id, deckId);
   const elseQty = elsewhere.reduce((a, u) => a + u.qty, 0);
-  const notOwned = card.owned === 0;
-  const overUsed = !notOwned && card.owned < qty + elseQty;
-  const missing = notOwned || overUsed;
+  const heldByPhysical = card.owned === 0 && physicalHold.length > 0;
+  const notOwned = card.owned === 0 && !heldByPhysical;
+  const overUsed = !notOwned && !heldByPhysical && card.owned < qty + elseQty;
+  const missing = notOwned || overUsed || heldByPhysical;
   const maxReached = qty >= (card.maxPerDeck ?? 4) || deckFull;
 
   return (
@@ -32,13 +37,16 @@ export function DeckCardRow({ card, qty, decks, deckId, deckFull, onChange, onPr
             ? <Text style={{ color: card.aspect === 'Basic' ? C.textMuted : aspectColor(card.aspect), fontSize: 11 }}> ({displayAspect(card.aspect)})</Text>
             : null}
         </Text>
+        {heldByPhysical && (
+          <Text style={s.err}>Ya en uso en tu mazo físico: {physicalHold.join(', ')}</Text>
+        )}
         {notOwned && <Text style={s.err}>Not in collection{setName ? ` (${setName})` : ''}</Text>}
         {overUsed && (
           <Text style={s.err}>
             Need {qty + elseQty - card.owned} more · used in: {elsewhere.map(u => `${u.qty}x "${u.deckName}"`).join(' · ')}
           </Text>
         )}
-        {!missing && elseQty > 0 && (
+        {!missing && elseQty > 0 && !UBIQUITOUS_CARDS.has(card.name) && (
           <Text style={s.warn}>{elseQty} also in: {elsewhere.map(u => `"${u.deckName}"`).join(', ')}</Text>
         )}
       </Pressable>

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Switch, Alert, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
-import { confirmAction } from '@/utils/dialogs';
+import { confirmAction, notify } from '@/utils/dialogs';
 import { DeckEditor } from '@/components/DeckEditor';
 import { HERO_CARDS, ASPECT_CARDS, SET_CATALOG } from '@/data/cards';
 import { deckTitleColor, aspectColor } from '@/utils/deckUtils';
@@ -14,7 +14,7 @@ import { useColors } from '@/hooks/useColors';
 export default function MazosScreen() {
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
-  const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets, setOwnedSets, makeDeckTracking } = useApp();
+  const { decks, setDecks, activeDeckId, setActiveDeckId, activeDeck, createDeck, ownedSets, setOwnedSets, makeDeckTracking, lightMode } = useApp();
   const [openDeckId, setOpenDeckId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [importUrl, setImportUrl] = useState('');
@@ -44,6 +44,38 @@ export default function MazosScreen() {
       setDecks(prev => prev.filter(d => d.id !== deckId));
       if (activeDeckId === deckId) setActiveDeckId(null);
     });
+  }
+
+  // Cartas de este mazo que ya están reclamadas por OTRO mazo marcado como
+  // físico (mismo nombre+aspecto, para pillar reimpresiones de la carta).
+  function physicalConflicts(deck: typeof decks[number]) {
+    const conflicts: { cardName: string; deckName: string }[] = [];
+    for (const cardId of Object.keys(deck.cards)) {
+      const card = ASPECT_CARDS.find(c => c.id === cardId);
+      if (!card) continue;
+      const holder = decks.find(d =>
+        d.id !== deck.id && d.physical &&
+        ASPECT_CARDS.filter(c => c.name === card.name && c.aspect === card.aspect)
+          .some(c => (d.cards[c.id] ?? 0) > 0)
+      );
+      if (holder) conflicts.push({ cardName: card.name, deckName: holder.name });
+    }
+    return conflicts;
+  }
+
+  function togglePhysical(deck: typeof decks[number]) {
+    if (!deck.physical) {
+      const conflicts = physicalConflicts(deck);
+      if (conflicts.length > 0) {
+        const lines = conflicts.map(c => `• ${c.cardName} → "${c.deckName}"`).join('\n');
+        notify(
+          'No se puede marcar como físico',
+          `Estas cartas ya están reclamadas por otro mazo físico:\n\n${lines}\n\nQuita el pin del otro mazo primero si quieres pasar las cartas a este.`
+        );
+        return;
+      }
+    }
+    setDecks(prev => prev.map(d => d.id === deck.id ? { ...d, physical: !d.physical } : d));
   }
 
   async function handleImport() {
@@ -324,16 +356,14 @@ export default function MazosScreen() {
               </Pressable>
               {/* 📌 Reclamar cartas */}
               <Pressable
-                onPress={() => setDecks(prev => prev.map(d =>
-                  d.id === deck.id ? { ...d, physical: !d.physical } : d
-                ))}
+                onPress={() => togglePhysical(deck)}
                 style={[s.claimBtn, deck.physical && s.claimBtnActive]}
                 hitSlop={8}>
                 <Text style={[s.claimIcon, { opacity: deck.physical ? 1 : 0.4 }]}>📍</Text>
               </Pressable>
               {/* 🗑 Borrar */}
               <Pressable onPress={() => confirmDelete(deck.id, deck.name)} style={s.trashBtn} hitSlop={8}>
-                <Text style={s.trashIcon}>🗑</Text>
+                <Text style={[s.trashIcon, { opacity: lightMode ? 0.5 : 0.85 }]}>🗑</Text>
               </Pressable>
             </View>
           );
@@ -405,7 +435,7 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   badge:{backgroundColor:'rgba(226,75,74,0.15)',borderRadius:6,paddingHorizontal:8,paddingVertical:2},
   badgeTxt:{fontSize:11,color:C.danger},
   trashBtn:{width:44,justifyContent:'center',alignItems:'center',borderLeftWidth:1,borderLeftColor:C.border},
-  trashIcon:{fontSize:18,opacity:0.5},
+  trashIcon:{fontSize:18},
   claimIcon:{fontSize:16,opacity:0.7},
   newBtn:{borderWidth:1,borderStyle:'dashed',borderColor:C.borderStrong,borderRadius:Radius.lg,padding:14,alignItems:'center'},
   newBtnTxt:{fontSize:14,color:C.textSub},

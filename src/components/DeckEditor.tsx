@@ -145,6 +145,18 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
     update({ cards });
   }
 
+  // Nombres de mazos físicos (ajenos a este) que tienen comprometida esta
+  // carta. Usa el mismo criterio nombre+aspecto que effectiveOwned, para
+  // detectar copias de otros sets de la misma carta correctamente.
+  function physicalHolders(card: Card): string[] {
+    return decks
+      .filter(d => d.id !== deckId && d.physical)
+      .filter(d => ASPECT_CARDS
+        .filter(c => c.name === card.name && c.aspect === card.aspect)
+        .some(c => (d.cards[c.id] ?? 0) > 0))
+      .map(d => d.name);
+  }
+
   // Compute effective owned based on collection
   // Suma copias de TODOS los sets poseídos que incluyen esta carta.
   // Descuenta las copias usadas en mazos marcados como "físicos" (physical=true).
@@ -152,11 +164,13 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
     if (localShowAll) return 99;
     const totalOwned = ASPECT_CARDS
       .filter(c => c.name === card.name && c.aspect === card.aspect)
-      .reduce((sum, c) => {
-        const owned = !c.setCode || ownedSets[c.setCode];
-        return sum + (owned ? (c.qty ?? 1) : 0);
-      }, 0);
-    // Restar copias usadas en otros mazos físicos (sus cartas ya están asignadas)
+      .reduce((sum, c) => sum + ((!c.setCode || ownedSets[c.setCode]) ? (c.qty ?? 1) : 0), 0);
+    // La escasez por "ya reclamada en otro mazo físico" solo importa si ESTE
+    // mazo TAMBIÉN es físico — un mazo en borrador nunca debería bloquearse
+    // por otro mazo físico; el aviso informativo de "también en uso" (más
+    // abajo, en DeckCardRow/PoolCardRow) ya avisa sin bloquear. El propio
+    // pin de marcar-como-físico es quien impide el conflicto real.
+    if (!deck.physical) return totalOwned;
     const usedByPhysical = decks
       .filter(d => d.id !== deckId && d.physical)
       .reduce((total, d) => {
@@ -393,6 +407,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
           return (
             <DeckCardRow key={cardId} card={{ ...card, owned }} qty={qty} decks={decks}
               deckId={deckId} deckFull={deckFull}
+              physicalHold={physicalHolders(card)}
               setName={!localShowAll && card.setCode && !ownedSets[card.setCode]
                 ? (SET_CATALOG.find(s => s.code === card.setCode)?.name ?? card.setCode)
                 : undefined}
@@ -495,6 +510,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         {poolCards.map(card => (
           <PoolCardRow key={card.id} card={{ ...card, owned: effectiveOwned(card) }}
             decks={decks} deckId={deckId} deckFull={deckFull}
+            physicalHold={physicalHolders(card)}
             onAdd={() => changeQty(card.id, 1)} onPreview={setPreviewCard} />
         ))}
         {poolCards.length === 0 && (
