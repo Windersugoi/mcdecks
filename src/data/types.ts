@@ -19,6 +19,7 @@ export interface Deck {
   id: string; name: string; hero: string | null; aspects: string[];
   cards: DeckCards;
   physical?: boolean; // true = estas cartas están físicamente en este mazo
+  importSource?: string; // URL de marvelcdb si este mazo se importó de ahí
   villains: { [villain: string]: VillainProgress };
   campaigns: { [campaignId: string]: CampaignProgress };
 }

@@ -253,6 +253,7 @@ export default function MazosScreen() {
         hero: matchedHero,
         aspects: importedAspects,
         cards: importedCards,
+        importSource: `https://marvelcdb.com/decklist/view/${deckId}`,
         ...makeDeckTracking(),
       }]);
 

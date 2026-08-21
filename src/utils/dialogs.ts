@@ -1,4 +1,4 @@
-import { Alert, Platform } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 
 // `Alert` de React Native NO está implementado en react-native-web: la llamada
 // no hace nada y el usuario ve que "el botón no responde" (p. ej. la papelera
@@ -31,4 +31,20 @@ export function notify(title: string, message: string) {
     return;
   }
   Alert.alert(title, message);
+}
+
+/**
+ * Abre una URL externa (mailto:, https://) desde cualquier plataforma.
+ * En web, Linking.openURL de react-native-web no siempre entrega bien los
+ * mailto: (a veces abre una pestaña en blanco en vez de delegar al cliente
+ * de correo), así que usamos las APIs del navegador directamente.
+ */
+export function openExternal(url: string) {
+  if (Platform.OS === 'web') {
+    if (typeof window === 'undefined') return;
+    if (url.startsWith('mailto:')) window.location.href = url;
+    else window.open(url, '_blank');
+    return;
+  }
+  Linking.openURL(url).catch(() => {});
 }

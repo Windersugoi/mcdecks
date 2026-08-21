@@ -10,7 +10,7 @@ import { Pill } from './Pill';
 import { DeckCardRow } from './DeckCardRow';
 import { PoolCardRow } from './PoolCardRow';
 import { CardPreviewModal } from './CardPreviewModal';
-import { notify } from '@/utils/dialogs';
+import { notify, openExternal } from '@/utils/dialogs';
 
 // Sets aún no publicados. Se excluyen siempre del pool, aunque una colección
 // guardada antigua los tenga marcados como poseídos (p. ej. por un "Marcar todo"
@@ -559,6 +559,12 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       }}>
         <Text style={s.shareTxt}>⇪ Share deck list</Text>
       </Pressable>
+
+      {deck.importSource && (
+        <Pressable style={s.linkBtn} onPress={() => openExternal(deck.importSource!)}>
+          <Text style={s.linkTxt}>🔗 View on marvelcdb</Text>
+        </Pressable>
+      )}
     </ScrollView>
 
       <View style={s.scrollFabCol} pointerEvents="box-none">
@@ -627,6 +633,8 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   exportTxt:{fontSize:13,color:C.text},
   shareBtn:{borderWidth:1,borderColor:C.info+'66',borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.info+'11',marginTop:6},
   shareTxt:{fontSize:13,color:C.info,fontWeight:'600'},
+  linkBtn:{borderWidth:1,borderColor:C.borderStrong,borderRadius:Radius.md,padding:12,alignItems:'center',backgroundColor:C.surface,marginTop:6},
+  linkTxt:{fontSize:13,color:C.textSub,fontWeight:'600'},
   heroSearchInput:{backgroundColor:C.surface,borderWidth:1,borderColor:C.border,borderRadius:Radius.md,color:C.text,fontSize:14,paddingVertical:9,paddingHorizontal:12,marginBottom:6},
   scrollFabCol:{position:'absolute',right:14,bottom:18,gap:10},
   scrollFab:{width:44,height:44,borderRadius:22,backgroundColor:C.surface2,borderWidth:1,borderColor:C.borderStrong,alignItems:'center',justifyContent:'center',shadowColor:'#000',shadowOpacity:0.3,shadowRadius:4,shadowOffset:{width:0,height:2},elevation:4},
