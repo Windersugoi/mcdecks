@@ -52,6 +52,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const [sortBy, setSortBy] = useState<'name'|'aspect'>('name');
   const [localShowAll, setLocalShowAll] = useState(showAll);
   const [gridMode, setGridMode] = useState(false);
+  const [gridModePool, setGridModePool] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(deck?.name ?? '');
   const [showNemesis, setShowNemesis] = useState(false);
@@ -366,6 +367,13 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       )}
       <Text style={s.sub}>Hero: {deck.hero}</Text>
 
+      <Pressable style={s.gridToggleRow} onPress={() => setGridMode(v => !v)}>
+        <Text style={s.gridToggleLabel}>🎴 Ver cartas del mazo en imágenes</Text>
+        <Switch value={gridMode} onValueChange={setGridMode}
+          trackColor={{ false: C.border, true: C.success }}
+          thumbColor={gridMode ? C.text : C.textMuted} />
+      </Pressable>
+
       {/* Summary */}
       <View style={[s.summaryCard, { borderColor: countColor + '88' }]}>
         <View style={s.summaryRow}>
@@ -419,6 +427,18 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
               })}
             </View>
           </View>
+
+          {/* Nemesis — se ven directamente al activar la rejilla, sin botón aparte */}
+          {nemesis.length > 0 && (
+            <View style={{ marginTop: 12 }}>
+              <Text style={s.sectionTitle}>{deck.hero} nemesis</Text>
+              <View style={s.gridRow}>
+                {nemesis.map(card => (
+                  <GridCard key={card.id} card={card} qty={card.qty} style={s} onPress={() => setPreviewCard(card)} />
+                ))}
+              </View>
+            </View>
+          )}
         </View>
       ) : (
         <View>
@@ -483,12 +503,12 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         </View>
       )}
 
-      {/* Toggle de vista en rejilla — al lado del selector de aspecto */}
-      <Pressable style={s.gridToggleRow} onPress={() => setGridMode(v => !v)}>
-        <Text style={s.gridToggleLabel}>🎴 Ver cartas del mazo en imágenes</Text>
-        <Switch value={gridMode} onValueChange={setGridMode}
+      {/* Toggle de vista en rejilla para el pool de abajo (todas las cartas) */}
+      <Pressable style={s.gridToggleRow} onPress={() => setGridModePool(v => !v)}>
+        <Text style={s.gridToggleLabel}>🎴 Ver todas las cartas en imágenes</Text>
+        <Switch value={gridModePool} onValueChange={setGridModePool}
           trackColor={{ false: C.border, true: C.success }}
-          thumbColor={gridMode ? C.text : C.textMuted} />
+          thumbColor={gridModePool ? C.text : C.textMuted} />
       </Pressable>
 
       {/* Aspect selector */}
@@ -582,12 +602,20 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
             {!localShowAll ? ' · My collection' : ''}
           </Text>
         )}
-        {poolCards.map(card => (
-          <PoolCardRow key={card.id} card={{ ...card, owned: effectiveOwned(card) }}
-            decks={decks} deckId={deckId} deckFull={deckFull}
-            physicalHold={physicalHolders(card)}
-            onAdd={() => changeQty(card.id, 1)} onPreview={setPreviewCard} />
-        ))}
+        {gridModePool ? (
+          <View style={s.gridRow}>
+            {poolCards.map(card => (
+              <GridCard key={card.id} card={card} style={s} onPress={() => setPreviewCard(card)} />
+            ))}
+          </View>
+        ) : (
+          poolCards.map(card => (
+            <PoolCardRow key={card.id} card={{ ...card, owned: effectiveOwned(card) }}
+              decks={decks} deckId={deckId} deckFull={deckFull}
+              physicalHold={physicalHolders(card)}
+              onAdd={() => changeQty(card.id, 1)} onPreview={setPreviewCard} />
+          ))
+        )}
         {poolCards.length === 0 && (
           <Text style={s.emptyHint}>
             {!localShowAll ? 'No cards in collection. Tap "My collection" to see all.' : 'No cards match.'}
@@ -692,7 +720,7 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
                  paddingVertical:9,paddingHorizontal:12,backgroundColor:C.surface},
   gridToggleLabel:{fontSize:13,color:C.text,fontWeight:'600'},
   gridRow:{flexDirection:'row',flexWrap:'wrap',gap:8},
-  gridCard:{width:72,height:100,borderRadius:6,overflow:'hidden',backgroundColor:C.surface2,
+  gridCard:{width:92,height:128,borderRadius:8,overflow:'hidden',backgroundColor:C.surface2,
             borderWidth:1,borderColor:C.border},
   gridCardImg:{width:'100%',height:'100%'},
   gridCardImgPlaceholder:{alignItems:'center',justifyContent:'center',padding:4},
