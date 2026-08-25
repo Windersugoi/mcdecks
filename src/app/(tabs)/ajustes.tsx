@@ -7,7 +7,7 @@ import { t, Lang } from '@/i18n/strings';
 import { openBugReportEmail, openBugReportGithub } from '@/utils/bugReport';
 
 const KOFI_URL = 'https://ko-fi.com/mcdecks';
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.1.0';
 
 const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
   { code: 'es', label: 'Español',   flag: '🇪🇸' },
