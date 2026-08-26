@@ -34,5 +34,5 @@ export const COMING_SOON_CYCLES: string[] = [];
 // Aparecen en el selector con badge "★ Soon" — funcionales cuando salgan
 // Héroes cuyas cartas aún no están disponibles en marvelcdb
 export const COMING_SOON_HEROES = new Set([
-  'Shadowland', 'Elektra', 'Iron Fist', 'Jessica Jones', 'Luke Cage',
+  'Shadowland', 'Elektra', 'Iron Fist',
 ]);
