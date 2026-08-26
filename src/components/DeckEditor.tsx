@@ -28,9 +28,13 @@ interface Props {
 // Carta pequeña en miniatura para el modo rejilla (estilo Marvel Snap: solo
 // la imagen, con un contador de cantidad si hay más de 1). Tocarla abre la
 // misma ficha grande que ya se usa en el modo lista.
-function GridCard({ card, qty, style, onPress }: { card: Card; qty?: number; style: any; onPress: () => void }) {
+// Proporción real de una carta de Marvel Champions (ancho:alto ≈ 0.72)
+const CARD_RATIO = 128 / 92;
+
+function GridCard({ card, qty, style, size, onPress }: { card: Card; qty?: number; style: any; size: number; onPress: () => void }) {
+  const dims = { width: size, height: Math.round(size * CARD_RATIO) };
   return (
-    <Pressable onPress={onPress} style={style.gridCard}>
+    <Pressable onPress={onPress} style={[style.gridCard, dims]}>
       {card.imgsrc
         ? <Image source={{ uri: card.imgsrc }} style={style.gridCardImg} resizeMode="cover" />
         : (
@@ -53,6 +57,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const [localShowAll, setLocalShowAll] = useState(showAll);
   const [gridMode, setGridMode] = useState(false);
   const [gridModePool, setGridModePool] = useState(false);
+  const [gridCardSize, setGridCardSize] = useState(92);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(deck?.name ?? '');
   const [showNemesis, setShowNemesis] = useState(false);
@@ -374,6 +379,20 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
           thumbColor={gridMode ? C.text : C.textMuted} />
       </Pressable>
 
+      {(gridMode || gridModePool) && (
+        <View style={s.sizeRow}>
+          <Text style={s.sizeLabel}>Tamaño de las cartas</Text>
+          <View style={s.sizeBtns}>
+            <Pressable style={s.sizeBtn} onPress={() => setGridCardSize(v => Math.max(56, v - 12))}>
+              <Text style={s.sizeBtnTxt}>−</Text>
+            </Pressable>
+            <Pressable style={s.sizeBtn} onPress={() => setGridCardSize(v => Math.min(160, v + 12))}>
+              <Text style={s.sizeBtnTxt}>+</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
       {/* Summary */}
       <View style={[s.summaryCard, { borderColor: countColor + '88' }]}>
         <View style={s.summaryRow}>
@@ -394,7 +413,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
               <Text style={s.sectionTitle}>Identity — {deck.hero}</Text>
               <View style={s.gridRow}>
                 {identityCards.map(card => (
-                  <GridCard key={card.id} card={card} style={s} onPress={() => setPreviewCard(card)} />
+                  <GridCard key={card.id} card={card} style={s} size={gridCardSize} onPress={() => setPreviewCard(card)} />
                 ))}
               </View>
             </View>
@@ -405,7 +424,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
             <Text style={s.sectionTitle}>{deck.hero} deck cards ({mandCount})</Text>
             <View style={s.gridRow}>
               {deckMandatory.map(card => (
-                <GridCard key={card.id} card={card} qty={card.qty} style={s} onPress={() => setPreviewCard(card)} />
+                <GridCard key={card.id} card={card} qty={card.qty} style={s} size={gridCardSize} onPress={() => setPreviewCard(card)} />
               ))}
             </View>
           </View>
@@ -423,7 +442,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
               {Object.entries(deck.cards).map(([cardId, qty]) => {
                 const card = ASPECT_CARDS.find(c => c.id === cardId);
                 if (!card) return null;
-                return <GridCard key={cardId} card={card} qty={qty} style={s} onPress={() => setPreviewCard(card)} />;
+                return <GridCard key={cardId} card={card} qty={qty} style={s} size={gridCardSize} onPress={() => setPreviewCard(card)} />;
               })}
             </View>
           </View>
@@ -434,7 +453,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
               <Text style={s.sectionTitle}>{deck.hero} nemesis</Text>
               <View style={s.gridRow}>
                 {nemesis.map(card => (
-                  <GridCard key={card.id} card={card} qty={card.qty} style={s} onPress={() => setPreviewCard(card)} />
+                  <GridCard key={card.id} card={card} qty={card.qty} style={s} size={gridCardSize} onPress={() => setPreviewCard(card)} />
                 ))}
               </View>
             </View>
@@ -616,7 +635,7 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         {gridModePool ? (
           <View style={s.gridRow}>
             {poolCards.map(card => (
-              <GridCard key={card.id} card={card} style={s} onPress={() => setPreviewCard(card)} />
+              <GridCard key={card.id} card={card} style={s} size={gridCardSize} onPress={() => setPreviewCard(card)} />
             ))}
           </View>
         ) : (
@@ -719,8 +738,15 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
                  borderWidth:1,borderColor:C.border,borderRadius:Radius.md,
                  paddingVertical:9,paddingHorizontal:12,backgroundColor:C.surface},
   gridToggleLabel:{fontSize:13,color:C.text,fontWeight:'600'},
+  sizeRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',
+           paddingVertical:6,paddingHorizontal:2},
+  sizeLabel:{fontSize:12,color:C.textMuted},
+  sizeBtns:{flexDirection:'row',gap:8},
+  sizeBtn:{width:32,height:32,borderRadius:16,borderWidth:1,borderColor:C.borderStrong,
+           backgroundColor:C.surface2,alignItems:'center',justifyContent:'center'},
+  sizeBtnTxt:{fontSize:16,color:C.text,fontWeight:'700'},
   gridRow:{flexDirection:'row',flexWrap:'wrap',gap:8},
-  gridCard:{width:92,height:128,borderRadius:8,overflow:'hidden',backgroundColor:C.surface2,
+  gridCard:{borderRadius:8,overflow:'hidden',backgroundColor:C.surface2,
             borderWidth:1,borderColor:C.border},
   gridCardImg:{width:'100%',height:'100%'},
   gridCardImgPlaceholder:{alignItems:'center',justifyContent:'center',padding:4},
