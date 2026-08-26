@@ -503,6 +503,17 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         </View>
       )}
 
+      {/* Nemesis — justo tras las cartas del mazo, antes del toggle del pool */}
+      <Pressable onPress={() => setShowNemesis(v => !v)} style={s.smallBtn}>
+        <Text style={s.smallBtnTxt}>{showNemesis ? 'Hide' : 'Show'} {deck.hero} nemesis</Text>
+      </Pressable>
+      {showNemesis && nemesis.map(c => (
+        <View key={c.id} style={[s.row, { opacity: 0.6 }]}>
+          <Text style={s.cardName}>{c.qty ?? 1}x {c.name}</Text>
+          <Text style={s.cardSub}>{c.type}</Text>
+        </View>
+      ))}
+
       {/* Toggle de vista en rejilla para el pool de abajo (todas las cartas) */}
       <Pressable style={s.gridToggleRow} onPress={() => setGridModePool(v => !v)}>
         <Text style={s.gridToggleLabel}>🎴 Ver todas las cartas en imágenes</Text>
@@ -622,17 +633,6 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
           </Text>
         )}
       </View>
-
-      {/* Nemesis */}
-      <Pressable onPress={() => setShowNemesis(v => !v)} style={s.smallBtn}>
-        <Text style={s.smallBtnTxt}>{showNemesis ? 'Hide' : 'Show'} {deck.hero} nemesis</Text>
-      </Pressable>
-      {showNemesis && nemesis.map(c => (
-        <View key={c.id} style={[s.row, { opacity: 0.6 }]}>
-          <Text style={s.cardName}>{c.qty}x {c.name}</Text>
-          <Text style={s.cardSub}>{c.type}</Text>
-        </View>
-      ))}
 
       <Pressable style={s.exportBtn}><Text style={s.exportTxt}>⤒ Export to marvelcdb</Text></Pressable>
 
