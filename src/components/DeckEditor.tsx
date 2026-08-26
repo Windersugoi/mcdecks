@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch, Alert, Share } from 'react-native';
+import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Switch, Alert, Share, Image } from 'react-native';
 import { Deck, Card, OwnedSets } from '@/data/types';
 import { ASPECT_CARDS, HERO_CARDS, NEMESIS_CARDS, SET_CATALOG } from '@/data/cards';
 import { ASPECT_LIST, MULTI_ASPECT_HEROES, displayAspect, DECK_MIN, DECK_MAX, HERO_SETS_BY_CYCLE, HERO_TO_SET, COMING_SOON_HEROES } from '@/data/constants';
@@ -25,12 +25,34 @@ interface Props {
   ownedSets: OwnedSets; showAll: boolean;
 }
 
+// Carta pequeña en miniatura para el modo rejilla (estilo Marvel Snap: solo
+// la imagen, con un contador de cantidad si hay más de 1). Tocarla abre la
+// misma ficha grande que ya se usa en el modo lista.
+function GridCard({ card, qty, style, onPress }: { card: Card; qty?: number; style: any; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={style.gridCard}>
+      {card.imgsrc
+        ? <Image source={{ uri: card.imgsrc }} style={style.gridCardImg} resizeMode="cover" />
+        : (
+          <View style={[style.gridCardImg, style.gridCardImgPlaceholder]}>
+            <Text style={style.gridCardPlaceholderTxt} numberOfLines={4}>{card.name}</Text>
+          </View>
+        )}
+      {!!qty && qty > 1 && (
+        <View style={style.gridCardQtyBadge}><Text style={style.gridCardQtyTxt}>×{qty}</Text></View>
+      )}
+    </Pressable>
+  );
+}
+
 export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll }: Props) {
   const deck = decks.find(d => d.id === deckId);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [sortBy, setSortBy] = useState<'name'|'aspect'>('name');
   const [localShowAll, setLocalShowAll] = useState(showAll);
+  const [gridMode, setGridMode] = useState(false);
+  const [gridModePool, setGridModePool] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(deck?.name ?? '');
   const [showNemesis, setShowNemesis] = useState(false);
@@ -345,6 +367,13 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
       )}
       <Text style={s.sub}>Hero: {deck.hero}</Text>
 
+      <Pressable style={s.gridToggleRow} onPress={() => setGridMode(v => !v)}>
+        <Text style={s.gridToggleLabel}>🎴 Ver cartas del mazo en imágenes</Text>
+        <Switch value={gridMode} onValueChange={setGridMode}
+          trackColor={{ false: C.border, true: C.success }}
+          thumbColor={gridMode ? C.text : C.textMuted} />
+      </Pressable>
+
       {/* Summary */}
       <View style={[s.summaryCard, { borderColor: countColor + '88' }]}>
         <View style={s.summaryRow}>
@@ -357,64 +386,130 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
         </Text>
       </View>
 
-      {/* Identity cards */}
-      {identityCards.length > 0 && (
+      {gridMode ? (
         <View>
-          <Text style={s.sectionTitle}>Identity — {deck.hero}</Text>
-          {identityCards.map(card => (
-            <Pressable key={card.id} onPress={() => setPreviewCard(card)}
-              style={[s.row, { opacity: 0.75, borderColor: C.info + '44' }]}>
-              <View style={{ flex: 1 }}>
-                <Text style={s.cardName}>{card.name}</Text>
-                <Text style={s.cardSub}>{card.type} · Set aside</Text>
+          {/* Identity cards */}
+          {identityCards.length > 0 && (
+            <View style={{ marginBottom: 12 }}>
+              <Text style={s.sectionTitle}>Identity — {deck.hero}</Text>
+              <View style={s.gridRow}>
+                {identityCards.map(card => (
+                  <GridCard key={card.id} card={card} style={s} onPress={() => setPreviewCard(card)} />
+                ))}
               </View>
-              <View style={[s.lockedBadge, { borderColor: C.info + '66' }]}>
-                <Text style={[s.lockedTxt, { color: C.info }]}>Identity</Text>
+            </View>
+          )}
+
+          {/* Mandatory deck cards */}
+          <View style={{ marginBottom: 12 }}>
+            <Text style={s.sectionTitle}>{deck.hero} deck cards ({mandCount})</Text>
+            <View style={s.gridRow}>
+              {deckMandatory.map(card => (
+                <GridCard key={card.id} card={card} qty={card.qty} style={s} onPress={() => setPreviewCard(card)} />
+              ))}
+            </View>
+          </View>
+
+          {/* Aspect cards in deck */}
+          <View>
+            <View style={s.sectionRow}>
+              <Text style={s.sectionTitle}>Aspect cards</Text>
+              <Text style={[s.counter, { color: countColor }]}>{optCount}/{DECK_MAX - mandCount}</Text>
+            </View>
+            {Object.entries(deck.cards).length === 0 && (
+              <Text style={s.emptyHint}>Add cards from the pool below.</Text>
+            )}
+            <View style={s.gridRow}>
+              {Object.entries(deck.cards).map(([cardId, qty]) => {
+                const card = ASPECT_CARDS.find(c => c.id === cardId);
+                if (!card) return null;
+                return <GridCard key={cardId} card={card} qty={qty} style={s} onPress={() => setPreviewCard(card)} />;
+              })}
+            </View>
+          </View>
+
+          {/* Nemesis — se ven directamente al activar la rejilla, sin botón aparte */}
+          {nemesis.length > 0 && (
+            <View style={{ marginTop: 12 }}>
+              <Text style={s.sectionTitle}>{deck.hero} nemesis</Text>
+              <View style={s.gridRow}>
+                {nemesis.map(card => (
+                  <GridCard key={card.id} card={card} qty={card.qty} style={s} onPress={() => setPreviewCard(card)} />
+                ))}
               </View>
-            </Pressable>
-          ))}
+            </View>
+          )}
+        </View>
+      ) : (
+        <View>
+          {/* Identity cards */}
+          {identityCards.length > 0 && (
+            <View>
+              <Text style={s.sectionTitle}>Identity — {deck.hero}</Text>
+              {identityCards.map(card => (
+                <Pressable key={card.id} onPress={() => setPreviewCard(card)}
+                  style={[s.row, { opacity: 0.75, borderColor: C.info + '44' }]}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.cardName}>{card.name}</Text>
+                    <Text style={s.cardSub}>{card.type} · Set aside</Text>
+                  </View>
+                  <View style={[s.lockedBadge, { borderColor: C.info + '66' }]}>
+                    <Text style={[s.lockedTxt, { color: C.info }]}>Identity</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {/* Mandatory deck cards */}
+          <View>
+            <Text style={s.sectionTitle}>{deck.hero} deck cards ({mandCount})</Text>
+            {deckMandatory.map(card => (
+              <Pressable key={card.id} onPress={() => setPreviewCard(card)}
+                style={[s.row, { opacity: 0.85 }]}>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.cardName}>{card.qty}x {card.name}</Text>
+                  <Text style={s.cardSub}>{card.type.replace(/\([A-Z]+\)/g,'').trim()}</Text>
+                </View>
+                <View style={s.lockedBadge}><Text style={s.lockedTxt}>Mandatory</Text></View>
+              </Pressable>
+            ))}
+          </View>
+
+          {/* Aspect cards in deck */}
+          <View>
+            <View style={s.sectionRow}>
+              <Text style={s.sectionTitle}>Aspect cards</Text>
+              <Text style={[s.counter, { color: countColor }]}>{optCount}/{DECK_MAX - mandCount}</Text>
+            </View>
+            {Object.entries(deck.cards).length === 0 && (
+              <Text style={s.emptyHint}>Add cards from the pool below.</Text>
+            )}
+            {Object.entries(deck.cards).map(([cardId, qty]) => {
+              const card = ASPECT_CARDS.find(c => c.id === cardId);
+              if (!card) return null;
+              const owned = effectiveOwned(card);
+              return (
+                <DeckCardRow key={cardId} card={{ ...card, owned }} qty={qty} decks={decks}
+                  deckId={deckId} deckFull={deckFull}
+                  physicalHold={physicalHolders(card)}
+                  setName={!localShowAll && card.setCode && !ownedSets[card.setCode]
+                    ? (SET_CATALOG.find(s => s.code === card.setCode)?.name ?? card.setCode)
+                    : undefined}
+                  onChange={d => changeQty(cardId, d)} onPreview={setPreviewCard} />
+              );
+            })}
+          </View>
         </View>
       )}
 
-      {/* Mandatory deck cards */}
-      <View>
-        <Text style={s.sectionTitle}>{deck.hero} deck cards ({mandCount})</Text>
-        {deckMandatory.map(card => (
-          <Pressable key={card.id} onPress={() => setPreviewCard(card)}
-            style={[s.row, { opacity: 0.85 }]}>
-            <View style={{ flex: 1 }}>
-              <Text style={s.cardName}>{card.qty}x {card.name}</Text>
-              <Text style={s.cardSub}>{card.type.replace(/\([A-Z]+\)/g,'').trim()}</Text>
-            </View>
-            <View style={s.lockedBadge}><Text style={s.lockedTxt}>Mandatory</Text></View>
-          </Pressable>
-        ))}
-      </View>
-
-      {/* Aspect cards in deck */}
-      <View>
-        <View style={s.sectionRow}>
-          <Text style={s.sectionTitle}>Aspect cards</Text>
-          <Text style={[s.counter, { color: countColor }]}>{optCount}/{DECK_MAX - mandCount}</Text>
-        </View>
-        {Object.entries(deck.cards).length === 0 && (
-          <Text style={s.emptyHint}>Add cards from the pool below.</Text>
-        )}
-        {Object.entries(deck.cards).map(([cardId, qty]) => {
-          const card = ASPECT_CARDS.find(c => c.id === cardId);
-          if (!card) return null;
-          const owned = effectiveOwned(card);
-          return (
-            <DeckCardRow key={cardId} card={{ ...card, owned }} qty={qty} decks={decks}
-              deckId={deckId} deckFull={deckFull}
-              physicalHold={physicalHolders(card)}
-              setName={!localShowAll && card.setCode && !ownedSets[card.setCode]
-                ? (SET_CATALOG.find(s => s.code === card.setCode)?.name ?? card.setCode)
-                : undefined}
-              onChange={d => changeQty(cardId, d)} onPreview={setPreviewCard} />
-          );
-        })}
-      </View>
+      {/* Toggle de vista en rejilla para el pool de abajo (todas las cartas) */}
+      <Pressable style={s.gridToggleRow} onPress={() => setGridModePool(v => !v)}>
+        <Text style={s.gridToggleLabel}>🎴 Ver todas las cartas en imágenes</Text>
+        <Switch value={gridModePool} onValueChange={setGridModePool}
+          trackColor={{ false: C.border, true: C.success }}
+          thumbColor={gridModePool ? C.text : C.textMuted} />
+      </Pressable>
 
       {/* Aspect selector */}
       <View style={s.aspectSelector}>
@@ -507,12 +602,20 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
             {!localShowAll ? ' · My collection' : ''}
           </Text>
         )}
-        {poolCards.map(card => (
-          <PoolCardRow key={card.id} card={{ ...card, owned: effectiveOwned(card) }}
-            decks={decks} deckId={deckId} deckFull={deckFull}
-            physicalHold={physicalHolders(card)}
-            onAdd={() => changeQty(card.id, 1)} onPreview={setPreviewCard} />
-        ))}
+        {gridModePool ? (
+          <View style={s.gridRow}>
+            {poolCards.map(card => (
+              <GridCard key={card.id} card={card} style={s} onPress={() => setPreviewCard(card)} />
+            ))}
+          </View>
+        ) : (
+          poolCards.map(card => (
+            <PoolCardRow key={card.id} card={{ ...card, owned: effectiveOwned(card) }}
+              decks={decks} deckId={deckId} deckFull={deckFull}
+              physicalHold={physicalHolders(card)}
+              onAdd={() => changeQty(card.id, 1)} onPreview={setPreviewCard} />
+          ))
+        )}
         {poolCards.length === 0 && (
           <Text style={s.emptyHint}>
             {!localShowAll ? 'No cards in collection. Tap "My collection" to see all.' : 'No cards match.'}
@@ -612,6 +715,19 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   lockedTxt:{fontSize:10,color:C.textMuted},
   emptyHint:{fontSize:12,color:C.textMuted},
   aspectSelector:{borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,padding:Spacing.md,backgroundColor:C.surface,gap:8},
+  gridToggleRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',
+                 borderWidth:1,borderColor:C.border,borderRadius:Radius.md,
+                 paddingVertical:9,paddingHorizontal:12,backgroundColor:C.surface},
+  gridToggleLabel:{fontSize:13,color:C.text,fontWeight:'600'},
+  gridRow:{flexDirection:'row',flexWrap:'wrap',gap:8},
+  gridCard:{width:92,height:128,borderRadius:8,overflow:'hidden',backgroundColor:C.surface2,
+            borderWidth:1,borderColor:C.border},
+  gridCardImg:{width:'100%',height:'100%'},
+  gridCardImgPlaceholder:{alignItems:'center',justifyContent:'center',padding:4},
+  gridCardPlaceholderTxt:{fontSize:9,color:C.textMuted,textAlign:'center'},
+  gridCardQtyBadge:{position:'absolute',right:2,bottom:2,backgroundColor:'#000000cc',
+                    borderRadius:8,minWidth:16,paddingHorizontal:3,paddingVertical:1,alignItems:'center'},
+  gridCardQtyTxt:{fontSize:10,color:'#fff',fontWeight:'700'},
   aspectSelectorHeader:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
   aspectLocked:{fontSize:10,color:C.warning,flex:1,textAlign:'right'},
   specialNote:{backgroundColor:C.warningBg,borderWidth:1,borderColor:C.warning+'44',borderRadius:Radius.sm,padding:Spacing.sm},
