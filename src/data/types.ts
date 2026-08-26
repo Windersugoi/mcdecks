@@ -26,6 +26,7 @@ export interface Deck {
 export interface CampaignEntry { villain: string; stages?: string; modular: string[]; }
 export interface Campaign {
   id: string; name: string; source: string; mode?: string;
+  boxImage?: string; // portada oficial de la caja (FFG)
   entries: CampaignEntry[]; rating?: number; votes?: number; author?: string;
 }
 export interface HeroRule {

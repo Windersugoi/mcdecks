@@ -3,6 +3,7 @@ import { Campaign } from './types';
 // ─── Campañas oficiales del Core Set ──────────────────────────────────────────
 export const CORE_CAMPAIGN_NORMAL: Campaign = {
   id:'camp_core_normal', name:'First Encounters — Normal', source:'official', mode:'normal',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/27/52/27529566-e916-46fc-b0a9-1fc4bceee576/mc01en_main.png',
   entries:[
     { villain:'Rhino',  stages:'1 & 2', modular:['Standard','Bomb Scare'] },
     { villain:'Klaw',   stages:'1 & 2', modular:['Standard','Masters of Evil'] },
@@ -11,6 +12,7 @@ export const CORE_CAMPAIGN_NORMAL: Campaign = {
 };
 export const CORE_CAMPAIGN_EXPERT: Campaign = {
   id:'camp_core_expert', name:'First Encounters — Expert', source:'official', mode:'expert',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/27/52/27529566-e916-46fc-b0a9-1fc4bceee576/mc01en_main.png',
   entries:[
     { villain:'Rhino',  stages:'2 & 3', modular:['Standard','Expert','Bomb Scare'] },
     { villain:'Klaw',   stages:'1 & 2', modular:['Standard','Expert','Masters of Evil'] },
@@ -21,6 +23,7 @@ export const CORE_CAMPAIGN_EXPERT: Campaign = {
 // ─── Rise of Red Skull ─────────────────────────────────────────────────────────
 export const RISE_RED_SKULL: Campaign = {
   id:'camp_rors', name:'The Rise of Red Skull', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/cc/29/cc297241-6129-4702-9c30-e67bafabb413/mc10en-box-left500.png',
   entries:[
     { villain:'Crossbones',   stages:'1–3', modular:['Standard','Masters of Evil'] },
     { villain:'Absorbing Man',stages:'1–3', modular:['Standard','Legions of Hydra'] },
@@ -33,6 +36,7 @@ export const RISE_RED_SKULL: Campaign = {
 // ─── Galaxy's Most Wanted ──────────────────────────────────────────────────────
 export const GALAXYS_MOST_WANTED: Campaign = {
   id:'camp_gmw', name:"Galaxy's Most Wanted", source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/33/6b/336b7050-2f2f-42fc-9313-8d0d9a478e92/mc16en-box-left500.png',
   entries:[
     { villain:'Drang',           stages:'1–3', modular:['Standard','Band of Badoon'] },
     { villain:'The Collector',   stages:'1 & 2', modular:['Standard','Galactic Artifacts'] },
@@ -44,6 +48,7 @@ export const GALAXYS_MOST_WANTED: Campaign = {
 // ─── The Mad Titan's Shadow ────────────────────────────────────────────────────
 export const MAD_TITANS_SHADOW: Campaign = {
   id:'camp_mts', name:"The Mad Titan's Shadow", source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/c2/31/c231d81a-c118-4aff-a08a-41577c65cf46/mc21en-box-left500.png',
   entries:[
     { villain:'Ebony Maw',      stages:'1–3', modular:['Standard','Black Order'] },
     { villain:'Proxima Midnight',stages:'1–3', modular:['Standard','Black Order'] },
@@ -55,6 +60,7 @@ export const MAD_TITANS_SHADOW: Campaign = {
 // ─── Sinister Motives ──────────────────────────────────────────────────────────
 export const SINISTER_MOTIVES: Campaign = {
   id:'camp_sm', name:'Sinister Motives', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/35/d8/35d88f6a-8936-451a-8616-08b5a69ae57e/mc27en-sinistermotives_boxfront_right.png',
   entries:[
     { villain:'Sandman',      stages:'1–3', modular:['Standard'] },
     { villain:'Venom (V)',    stages:'1–3', modular:['Standard','Goblin Gear'] },
@@ -67,6 +73,7 @@ export const SINISTER_MOTIVES: Campaign = {
 // ─── Mutant Genesis ────────────────────────────────────────────────────────────
 export const MUTANT_GENESIS: Campaign = {
   id:'camp_mg', name:'Mutant Genesis', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/4e/09/4e09398d-198a-4201-ac8d-dc3233ab7a2a/mc32_box-left500.png',
   entries:[
     { villain:'Sabretooth',  stages:'1–3', modular:['Standard','Sentinels'] },
     { villain:'Sentinel',    stages:'1–3', modular:['Standard','Sentinels'] },
@@ -78,6 +85,7 @@ export const MUTANT_GENESIS: Campaign = {
 // ─── Nexus Event ──────────────────────────────────────────────────────────────
 export const NEXUS_EVENT: Campaign = {
   id:'camp_ne', name:'Nexus Event', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/9b/bd/9bbd55a6-76b7-49e4-8fd2-455b4ba1409e/mc40_box-left500.png',
   entries:[
     { villain:'Juggernaut',    stages:'1–3', modular:['Standard'] },
     { villain:'Mister Sinister',stages:'1–3', modular:['Standard','Mutant Slayers'] },
@@ -88,6 +96,7 @@ export const NEXUS_EVENT: Campaign = {
 // ─── Age of Apocalypse ────────────────────────────────────────────────────────
 export const AGE_OF_APOCALYPSE: Campaign = {
   id:'camp_aoa', name:'Age of Apocalypse', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/86/54/8654d4c3-4167-4fd6-b69f-ec89151e8ebe/mc45-image0500.png',
   entries:[
     { villain:'Unus',         stages:'1–3', modular:['Standard'] },
     { villain:'Four Horsemen',stages:'1–3', modular:['Standard','Horsemen'] },
@@ -99,6 +108,7 @@ export const AGE_OF_APOCALYPSE: Campaign = {
 // ─── Agents of SHIELD ─────────────────────────────────────────────────────────
 export const AGENTS_OF_SHIELD: Campaign = {
   id:'camp_aos', name:'Agents of S.H.I.E.L.D.', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/83/d0/83d0bb2e-9e22-411d-8681-cc94eaa80278/mc50-image0500.png',
   entries:[
     { villain:'Black Widow (V)', stages:'1–3', modular:['Standard','A.I.M.'] },
     { villain:'Batroc',          stages:'1',   modular:['Standard'] },

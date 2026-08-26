@@ -93,14 +93,15 @@ const VILLAIN_URLS: Record<string, string> = {
 function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' | 'large' }) {
   const C = useColors();
   const [error, setError] = useState(false);
-  const h = size === 'large' ? 220 : 80;
   const local = LOCAL[name];
   const remoteUrl = VILLAIN_URLS[name];
+  // Formato carta real (retrato ~0.72), no un banner horizontal que recorta la imagen
+  const dims = size === 'large' ? { width: '100%' as const, height: 220 } : { width: 104, height: 145 };
 
   // 1. Imagen local (máxima prioridad)
   if (local) {
     return (
-      <View style={{ height: h, backgroundColor: C.bg, overflow: 'hidden' }}>
+      <View style={[dims, { backgroundColor: C.bg, overflow: 'hidden' }]}>
         <Image source={local} style={{ width: '100%', height: '100%' }}
           resizeMode={size === 'large' ? 'contain' : 'cover'} />
       </View>
@@ -110,7 +111,7 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
   // 2. URL remota (marvelcdb)
   if (remoteUrl && !error) {
     return (
-      <View style={{ height: h, backgroundColor: C.bg, overflow: 'hidden' }}>
+      <View style={[dims, { backgroundColor: C.bg, overflow: 'hidden' }]}>
         <Image source={{ uri: remoteUrl }}
           style={{ width: '100%', height: '100%' }}
           resizeMode={size === 'large' ? 'contain' : 'cover'}
@@ -121,7 +122,7 @@ function VillainImage({ name, size = 'small' }: { name: string; size?: 'small' |
 
   // 3. Placeholder con nombre
   return (
-    <View style={{ height: h, backgroundColor: C.surface2, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={[dims, { backgroundColor: C.surface2, justifyContent: 'center', alignItems: 'center' }]}>
       <Text style={{ fontSize: size === 'large' ? 16 : 10, color: C.textMuted, textAlign: 'center', padding: 4 }}>
         {name}
       </Text>
@@ -324,7 +325,7 @@ function getStyles(C: typeof import("@/styles/theme").DarkColors) {
   progressBg:    { height:6, backgroundColor:C.border, borderRadius:3, overflow:'hidden' },
   progressFill:  { height:6, borderRadius:3 },
   progressSub:   { fontSize:11, color:C.textMuted },
-  vCard:{width:'47%',borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
+  vCard:{width:104,borderWidth:1,borderColor:C.border,borderRadius:Radius.lg,overflow:'hidden',backgroundColor:C.surface},
   vCardMain:{ flex:1 },
   quickBtn:{ borderTopWidth:1, borderTopColor:C.border, paddingVertical:6, alignItems:'center' },
   quickBtnDone:{ borderTopColor:C.success+'44', backgroundColor:C.success+'11' },

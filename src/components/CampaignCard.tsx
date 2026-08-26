@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import { Campaign, Deck } from '@/data/types';
 import { DarkColors, Radius, Spacing } from '@/styles/theme';
 import { useColors } from '@/hooks/useColors';
@@ -13,6 +13,7 @@ interface Props {
 export function CampaignCard({ campaign, activeDeck, isMine = false, onToggleEntry }: Props) {
   const C = useColors();
   const s = useMemo(() => getStyles(C), [C]);
+  const [imgError, setImgError] = useState(false);
 
   const progress = activeDeck?.campaigns?.[campaign.id] ?? { completed: false, entriesCompleted: {} };
   const allDone = campaign.entries.every(e => progress.entriesCompleted?.[e.villain]);
@@ -22,6 +23,10 @@ export function CampaignCard({ campaign, activeDeck, isMine = false, onToggleEnt
 
   return (
     <View style={[s.card, { borderColor: allDone && activeDeck ? C.success + '55' : isMine ? C.info + '33' : C.border }]}>
+      {campaign.boxImage && !imgError ? (
+        <Image source={{ uri: campaign.boxImage }} style={s.boxImage} resizeMode="contain"
+          onError={() => setImgError(true)} />
+      ) : null}
       <View style={s.header}>
         <Text style={[s.title, isMine && { color: C.info }]}>{campaign.name}</Text>
         {allDone && activeDeck && <Text style={s.done}>✓ Done</Text>}
@@ -60,6 +65,7 @@ export function CampaignCard({ campaign, activeDeck, isMine = false, onToggleEnt
 function getStyles(C: typeof DarkColors) {
   return StyleSheet.create({
     card:        { borderWidth:1, borderRadius:Radius.lg, padding:Spacing.md, backgroundColor:C.surface, gap:4 },
+    boxImage:    { width:'100%', height:90, marginBottom:6, borderRadius:Radius.md, backgroundColor:C.surface2 },
     header:      { flexDirection:'row', justifyContent:'space-between', alignItems:'flex-start', marginBottom:4 },
     title:       { fontSize:14, fontWeight:'600', color:C.text, flex:1 },
     done:        { fontSize:11, color:C.success, fontWeight:'600', marginLeft:8 },
