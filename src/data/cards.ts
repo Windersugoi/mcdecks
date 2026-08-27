@@ -2164,6 +2164,7 @@ export const ASPECT_CARDS: Card[] = [
   { id: 'D:LC_17_2419', name: 'The Power of Leadership', type: 'LeadershipResource', aspect: 'Leadership', cost: null, owned: 0, setCode: 'D:LC', qty: 2 },
   { id: 'D:LC_18_2420', name: 'Defensive Formation', type: 'LeadershipSupport', aspect: 'Leadership', cost: null, owned: 0, setCode: 'D:LC', qty: 3 },
   { id: 'D:LC_19_2421', name: 'Righteous Purpose', type: 'LeadershipSupport', aspect: 'Leadership', cost: null, owned: 0, setCode: 'D:LC', qty: 3 },
+  { id: 'D:LC_20_2427', name: 'Hulk', type: 'Ally', aspect: 'Basic', cost: null, owned: 0, setCode: 'D:LC', imgsrc: 'https://marvelcdb.com/bundles/cards/62020.png' },
   { id: 'D:LC_22_2422', name: 'Dynamic Duo', type: 'Event', aspect: 'Basic', cost: null, owned: 0, setCode: 'D:LC', qty: 3 },
   { id: 'D:LC_23_2423', name: 'Power Man and Iron Fist', type: 'Event', aspect: 'Basic', cost: null, owned: 0, setCode: 'D:LC' },
   { id: 'D:LC_24_2424', name: 'Unbreakable Bond', type: 'Event', aspect: 'Basic', cost: null, owned: 0, setCode: 'D:LC' },
