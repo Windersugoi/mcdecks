@@ -152,7 +152,7 @@ export default function MazosScreen() {
       }
 
       // Packs conocidos en nuestra BD: hasta el 60 (Fear No Evil)
-      const MAX_KNOWN_PACK = 60;
+      const MAX_KNOWN_PACK = 75; // margen para futuros lanzamientos, no solo el actual
       const importedCards: Record<string, number> = {};
       const missing: string[] = [];
       for (const [code, qty] of Object.entries(mcdbDeck.slots ?? {})) {
