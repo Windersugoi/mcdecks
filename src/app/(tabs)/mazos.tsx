@@ -340,7 +340,7 @@ export default function MazosScreen() {
           const mandCount = deck.hero
             ? (HERO_CARDS[deck.hero] ?? [])
                 .filter(c => !c.isIdentity && c.type !== 'Hero' && c.type !== 'Alter-Ego')
-                .reduce((a,c)=>a+(c.qty??1),0)
+                .reduce((a,c)=>a+(c.permanent ? 0 : (c.qty??1)),0)
             : 0;
           const total = mandCount + Object.values(deck.cards).reduce((a,q)=>a+q,0);
           const hasHero = !!deck.hero;
