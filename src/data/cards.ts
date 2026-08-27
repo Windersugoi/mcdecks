@@ -949,7 +949,7 @@ export const HERO_CARDS: Record<string, Card[]> = {
   "Jessica Jones": [
     { id: 'D:JJ_1A_2372', name: 'Jessica Jones', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true },
     { id: 'D:JJ_1B_2373', name: 'Jessica Jones (AE)', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true },
-    { id: 'D:JJ_2_2374', name: 'Alias Investigations', type: 'JonesSupport', cost: null, qty: 1, owned: 0 },
+    { id: 'D:JJ_2_2374', name: 'Alias Investigations', type: 'JonesSupport', cost: null, qty: 1, owned: 0, permanent: true },
     { id: 'D:JJ_3_2375', name: 'Luke Cage', type: 'JonesAlly', cost: null, qty: 1, owned: 0 },
     { id: 'D:JJ_4_2376', name: '"Big Mistake"', type: 'JonesEvent', cost: null, qty: 2, owned: 0 },
     { id: 'D:JJ_5_2377', name: 'Breakthrough', type: 'JonesEvent', cost: null, qty: 1, owned: 0 },

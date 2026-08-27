@@ -9,6 +9,7 @@ export interface Card {
   setCode?: string;
   maxPerDeck?: number;
   isIdentity?: boolean;
+  permanent?: boolean; // cartas "Permanent": van en el kit pero NO cuentan para el límite de 40
   imgsrc?: string;
 }
 
