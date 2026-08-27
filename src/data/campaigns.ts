@@ -117,6 +117,22 @@ export const AGENTS_OF_SHIELD: Campaign = {
     { villain:'Baron Zemo',      stages:'1 & 2', modular:['Standard','Thunderbolts','Masters of Evil'] },
   ],
 };
+// Fear No Evil: primera campaña con 6 escenarios (en vez de los 5 habituales).
+// Los 5 villanos callejeros se pueden combinar libremente con distintos
+// escenarios/sets modulares (diseño "mix and match" oficial) — aquí se deja
+// un modular base razonable por villano; Kingpin es el final de campaña.
+export const FEAR_NO_EVIL: Campaign = {
+  id:'camp_fne', name:'Fear No Evil', source:'official',
+  boxImage:'https://images-cdn.fantasyflightgames.com/filer_public/c2/53/c253b342-6e07-4dca-8a8c-99177b5ac918/mc60-image0500.png',
+  entries:[
+    { villain:'Bullseye',       stages:'1', modular:['Standard'] },
+    { villain:'Electro (II)',   stages:'1', modular:['Standard'] },
+    { villain:'Hammerhead',     stages:'1', modular:['Standard'] },
+    { villain:'Purple Man',     stages:'1', modular:['Standard'] },
+    { villain:'Typhoid Mary',   stages:'1', modular:['Standard'] },
+    { villain:'Kingpin',        stages:'1–3', modular:['Standard','Tracksuit Mafia'] },
+  ],
+};
 
 // ─── Mapa setCode → campaña oficial ──────────────────────────────────────────
 export const SET_TO_CAMPAIGN: Record<string, Campaign[]> = {
@@ -129,6 +145,7 @@ export const SET_TO_CAMPAIGN: Record<string, Campaign[]> = {
   'X:NE':    [NEXUS_EVENT],
   'X:AoA':   [AGE_OF_APOCALYPSE],
   'S:AoS':   [AGENTS_OF_SHIELD],
+  'D:FNE':   [FEAR_NO_EVIL],
 };
 
 export const DEFAULT_CAMPAIGNS_NORMAL: Campaign[] = [CORE_CAMPAIGN_NORMAL];
