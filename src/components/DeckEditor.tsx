@@ -232,8 +232,10 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
 
   const mandatory = HERO_CARDS[deck.hero ?? ''] ?? [];
   const nemesis   = NEMESIS_CARDS[deck.hero ?? ''] ?? [];
-  const identityCards = mandatory.filter(c => c.type === 'Hero' || c.type === 'Alter-Ego');
-  const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego');
+  // isIdentity también cubre cartas de forma alternativa que no son Hero/Alter-Ego
+  // en sí (p. ej. "Dense" de Vision) — deben ir con la identidad, no contar para el 40.
+  const identityCards = mandatory.filter(c => c.type === 'Hero' || c.type === 'Alter-Ego' || c.isIdentity);
+  const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego' && !c.isIdentity);
   const mandCount = deckMandatory.reduce((a, c) => a + (c.permanent ? 0 : (c.qty ?? 1)), 0);
   const optCount  = Object.values(deck.cards).reduce((a, q) => a + q, 0);
   const total     = mandCount + optCount;
