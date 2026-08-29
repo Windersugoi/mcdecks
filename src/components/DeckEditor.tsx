@@ -236,9 +236,9 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   // en sí — deben ir con la identidad, no contar para el 40.
   const identityCards = mandatory.filter(c => c.type === 'Hero' || c.type === 'Alter-Ego' || c.isIdentity);
   // qty:0 = "cara reverso" de una carta de doble cara (p. ej. Dense de Vision,
-  // Phased de Shadowcat): la cara frontal ya cuenta por las dos, el reverso no
-  // se lista aparte para no duplicar la carta visualmente ni en el recuento.
-  const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego' && !c.isIdentity && c.qty !== 0);
+  // Phased de Shadowcat): la cara frontal ya cuenta por las dos, pero SÍ se
+  // muestra en la lista (con la ficha/arte completa), solo que sin sumar.
+  const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego' && !c.isIdentity);
   const mandCount = deckMandatory.reduce((a, c) => a + (c.permanent ? 0 : (c.qty ?? 1)), 0);
   const optCount  = Object.values(deck.cards).reduce((a, q) => a + q, 0);
   const total     = mandCount + optCount;
@@ -492,10 +492,10 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
               <Pressable key={card.id} onPress={() => setPreviewCard(card)}
                 style={[s.row, { opacity: 0.85 }]}>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.cardName}>{card.qty}x {card.name}</Text>
+                  <Text style={s.cardName}>{card.qty === 0 ? card.name : `${card.qty}x ${card.name}`}</Text>
                   <Text style={s.cardSub}>{card.type.replace(/\([A-Z]+\)/g,'').trim()}</Text>
                 </View>
-                <View style={s.lockedBadge}><Text style={s.lockedTxt}>Mandatory</Text></View>
+                <View style={s.lockedBadge}><Text style={s.lockedTxt}>{card.qty === 0 ? 'Flip side' : 'Mandatory'}</Text></View>
               </Pressable>
             ))}
           </View>
