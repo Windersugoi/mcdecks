@@ -233,9 +233,12 @@ export function DeckEditor({ decks, setDecks, deckId, onBack, ownedSets, showAll
   const mandatory = HERO_CARDS[deck.hero ?? ''] ?? [];
   const nemesis   = NEMESIS_CARDS[deck.hero ?? ''] ?? [];
   // isIdentity también cubre cartas de forma alternativa que no son Hero/Alter-Ego
-  // en sí (p. ej. "Dense" de Vision) — deben ir con la identidad, no contar para el 40.
+  // en sí — deben ir con la identidad, no contar para el 40.
   const identityCards = mandatory.filter(c => c.type === 'Hero' || c.type === 'Alter-Ego' || c.isIdentity);
-  const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego' && !c.isIdentity);
+  // qty:0 = "cara reverso" de una carta de doble cara (p. ej. Dense de Vision,
+  // Phased de Shadowcat): la cara frontal ya cuenta por las dos, el reverso no
+  // se lista aparte para no duplicar la carta visualmente ni en el recuento.
+  const deckMandatory = mandatory.filter(c => c.type !== 'Hero' && c.type !== 'Alter-Ego' && !c.isIdentity && c.qty !== 0);
   const mandCount = deckMandatory.reduce((a, c) => a + (c.permanent ? 0 : (c.qty ?? 1)), 0);
   const optCount  = Object.values(deck.cards).reduce((a, q) => a + q, 0);
   const total     = mandCount + optCount;
