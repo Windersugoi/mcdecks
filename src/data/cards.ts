@@ -367,7 +367,7 @@ export const HERO_CARDS: Record<string, Card[]> = {
     { id: 'A:V_1A_0951', name: 'Vision', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/26001a.png' },
     { id: 'A:V_1B_0952', name: 'Vision', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/26001b.png' },
     { id: 'A:V_2A_0953', name: 'Intangible', type: 'VisionUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26002a.jpg' },
-    { id: 'A:V_2B_0954', name: 'Dense', type: 'VisionAttachment', cost: null, qty: 0, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/57046a.png' },
+    { id: 'A:V_2B_0954', name: 'Dense', type: 'VisionAttachment', cost: null, qty: 0, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26002b.png' },
     { id: 'A:V_3_0955', name: 'Vivian', type: 'VisionAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26003.png' },
     { id: 'A:V_4_0956', name: '616 Hickory Branch Lane', type: 'VisionSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26004.png' },
     { id: 'A:V_5_0957', name: 'Solar Gem', type: 'VisionUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26005.png' },
