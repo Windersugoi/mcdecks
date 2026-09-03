@@ -313,9 +313,9 @@ export const HERO_CARDS: Record<string, Card[]> = {
   "Spectrum": [
     { id: 'G:TMTS_1A_0761', name: 'Spectrum', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/21001a.png' },
     { id: 'G:TMTS_1B_0762', name: 'Monica Rambeau', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/21001b.png' },
-    { id: 'G:TMTS_2_0763', name: 'Gamma', type: 'SpectrumUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/21002.png' },
-    { id: 'G:TMTS_3_0764', name: 'Photon', type: 'SpectrumUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/21003.png' },
-    { id: 'G:TMTS_4_0765', name: 'Pulsar', type: 'SpectrumUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/21004.png' },
+    { id: 'G:TMTS_2_0763', name: 'Gamma', type: 'SpectrumUpgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/21002.png' },
+    { id: 'G:TMTS_3_0764', name: 'Photon', type: 'SpectrumUpgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/21003.png' },
+    { id: 'G:TMTS_4_0765', name: 'Pulsar', type: 'SpectrumUpgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/21004.png' },
     { id: 'G:TMTS_5_0766', name: 'Blue Marvel', type: 'SpectrumAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/21005.png' },
     { id: 'G:TMTS_6_0767', name: 'Energy Duplication', type: 'SpectrumUpgrade', cost: null, qty: 2, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/21006.png' },
     { id: 'G:TMTS_7_0768', name: 'Gamma Blast', type: 'SpectrumEvent', cost: null, qty: 3, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/21007.png' },
@@ -366,7 +366,7 @@ export const HERO_CARDS: Record<string, Card[]> = {
   "Vision": [
     { id: 'A:V_1A_0951', name: 'Vision', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/26001a.png' },
     { id: 'A:V_1B_0952', name: 'Vision', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/26001b.png' },
-    { id: 'A:V_2A_0953', name: 'Intangible', type: 'VisionUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26002a.jpg' },
+    { id: 'A:V_2A_0953', name: 'Intangible', type: 'VisionUpgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/26002a.jpg' },
     { id: 'A:V_2B_0954', name: 'Dense', type: 'VisionAttachment', cost: null, qty: 0, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26002b.png' },
     { id: 'A:V_3_0955', name: 'Vivian', type: 'VisionAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26003.png' },
     { id: 'A:V_4_0956', name: '616 Hickory Branch Lane', type: 'VisionSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/26004.png' },
@@ -496,7 +496,7 @@ export const HERO_CARDS: Record<string, Card[]> = {
   "Shadowcat": [
     { id: 'X:MG_30B_2034', name: 'Kitty Pryde', type: 'Alter-Ego', isIdentity: true, cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/32030b.png' },
     { id: 'X:MG_30A_2033', name: 'Shadowcat', type: 'Hero', isIdentity: true, cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/32030a.png' },
-    { id: 'X:MG_31A_2035', name: 'Solid', type: 'Upgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/32031a.png' },
+    { id: 'X:MG_31A_2035', name: 'Solid', type: 'Upgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/32031a.png' },
     { id: 'X:MG_31B_2036', name: 'Phased', type: 'Upgrade', cost: null, qty: 0, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/32031b.png' },
     { id: 'X:MG_32_2037', name: 'Lockheed', type: 'Ally', cost: 2, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/32032.png' },
     { id: 'X:MG_33_2038', name: 'Kitty\'s Room', type: 'Support', cost: 1, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/32033.png' },
@@ -524,7 +524,7 @@ export const HERO_CARDS: Record<string, Card[]> = {
   "Phoenix": [
     { id: 'X:P_1A_1316', name: 'Phoenix', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/34001a.png' },
     { id: 'X:P_1B_1317', name: 'Jean Grey', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/34001b.png' },
-    { id: 'X:P_2A_1318', name: 'Phoenix Force', type: 'PhoenixUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/34002a.png' },
+    { id: 'X:P_2A_1318', name: 'Phoenix Force', type: 'PhoenixUpgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/34002a.png' },
     { id: 'X:P_2B_1319', name: 'Phoenix Force', type: 'PhoenixUpgrade', cost: null, qty: 0, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/34002b.png' },
     { id: 'X:P_3_1320', name: 'Cyclops', type: 'PhoenixAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/34003.png' },
     { id: 'X:P_4_1321', name: 'White Hot Room', type: 'PhoenixSupport', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/34004.png' },
@@ -541,7 +541,7 @@ export const HERO_CARDS: Record<string, Card[]> = {
   "Wolverine": [
     { id: 'X:W_1A_1353', name: 'Wolverine', type: 'Hero', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/35001a.png' },
     { id: 'X:W_1B_1354', name: 'Logan', type: 'Alter-Ego', cost: null, qty: 1, owned: 0, isIdentity: true, imgsrc: 'https://marvelcdb.com/bundles/cards/35001b.png' },
-    { id: 'X:W_2_1355', name: "Wolverine's Claws", type: 'WolverineUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/35002.png' },
+    { id: 'X:W_2_1355', name: "Wolverine's Claws", type: 'WolverineUpgrade', cost: null, qty: 1, owned: 0, permanent: true, imgsrc: 'https://marvelcdb.com/bundles/cards/35002.png' },
     { id: 'X:W_3_1356', name: 'Jubilee', type: 'WolverineAlly', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/35003.png' },
     { id: 'X:W_4_1357', name: 'Adamantium Skeleton', type: 'WolverineUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/35004.png' },
     { id: 'X:W_5_1358', name: 'Berserker Frenzy', type: 'WolverineUpgrade', cost: null, qty: 1, owned: 0, imgsrc: 'https://marvelcdb.com/bundles/cards/35005.png' },
