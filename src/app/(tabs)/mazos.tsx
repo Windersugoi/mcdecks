@@ -99,8 +99,16 @@ export default function MazosScreen() {
       const deckId = urlMatch[1];
 
       // - 2. Obtener el mazo de marvelcdb -
-      const deckResp = await fetch(`https://marvelcdb.com/api/public/decklist/${deckId}`);
-      if (!deckResp.ok) throw new Error(`Deck not found (${deckResp.status}). Make sure it is public.`);
+      // /deck/view/{id} = mazo propio (sin publicar, con "Share your decks" activado)
+      // /decklist/view/{id}/slug = mazo publicado públicamente
+      // Ambos usan /view/(\d+) así que hay que mirar si aparece "/deck/" literal
+      // (que "/decklist/" NO contiene, ya que ahí va seguido de "list", no de "/").
+      const isPrivateDeck = importUrl.includes('/deck/');
+      const endpoint = isPrivateDeck
+        ? `https://marvelcdb.com/api/public/deck/${deckId}`
+        : `https://marvelcdb.com/api/public/decklist/${deckId}`;
+      const deckResp = await fetch(endpoint);
+      if (!deckResp.ok) throw new Error(`Deck not found (${deckResp.status}). Make sure it is public${isPrivateDeck ? ' or "Share your decks" is enabled' : ''}.`);
       const mcdbDeck = await deckResp.json();
 
       // - 3. Obtener lista completa de cartas de marvelcdb -
